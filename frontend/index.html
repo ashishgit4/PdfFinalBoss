@@ -1255,8 +1255,64 @@
       font-weight: 600;
       margin-bottom: 12px;
     }
-    
 
+    /* Shadcn-Style Custom Checkbox */
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      font-size: 13px;
+      user-select: none;
+      gap: 8px;
+    }
+    .checkbox-container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    .checkmark {
+      height: 16px;
+      width: 16px;
+      background-color: transparent;
+      border: 1px solid var(--border-hairline);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .checkbox-container:hover input ~ .checkmark {
+      border-color: rgba(243, 239, 230, 0.3);
+    }
+    .checkbox-container input:checked ~ .checkmark {
+      background-color: var(--text-primary);
+      border-color: var(--text-primary);
+    }
+    .checkmark::after {
+      content: "";
+      display: none;
+    }
+    .checkbox-container input:checked ~ .checkmark::after {
+      display: block;
+    }
+    .checkmark::after {
+      width: 4px;
+      height: 8px;
+      border: solid var(--bg-color);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg) translate(-0.5px, -1px);
+    }
+    .checkbox-label {
+      color: var(--text-secondary);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .checkbox-container:hover .checkbox-label {
+      color: var(--text-primary);
+    }
   </style>
 </head>
 <body>
@@ -1544,25 +1600,25 @@
             <p class="tool-desc">Bypass owner restrictions and open-passwords instantly.</p>
           </div>
           
-          <!-- Tool 2: Coming Soon -->
+          <!-- Tool 2: Active -->
+          <div class="tool-card">
+            <span class="tool-badge active">Active</span>
+            <h3 class="tool-title">Lock PDF</h3>
+            <p class="tool-desc">Protect your PDF documents with AES-256 secure encryption.</p>
+          </div>
+
+          <!-- Tool 3: Coming Soon -->
           <div class="tool-card">
             <span class="tool-badge soon">Coming Soon</span>
             <h3 class="tool-title">Merge PDF</h3>
             <p class="tool-desc">Combine multiple documents into a single optimized file.</p>
           </div>
 
-          <!-- Tool 3: Coming Soon -->
+          <!-- Tool 4: Coming Soon -->
           <div class="tool-card">
             <span class="tool-badge soon">Coming Soon</span>
             <h3 class="tool-title">Compress PDF</h3>
             <p class="tool-desc">Reduce file size without losing text or image resolution.</p>
-          </div>
-
-          <!-- Tool 4: Coming Soon -->
-          <div class="tool-card">
-            <span class="tool-badge soon">Coming Soon</span>
-            <h3 class="tool-title">Split PDF</h3>
-            <p class="tool-desc">Separate specific pages or export them as individual files.</p>
           </div>
         </div>
       </section>
