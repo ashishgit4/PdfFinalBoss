@@ -1,6 +1,8 @@
 export interface UploadResponse {
   id: string;
   encrypted: boolean;
+  pdfHash?: string;
+  autoDecrypted?: boolean;
 }
 
 export type UnlockFlowState =
@@ -8,10 +10,13 @@ export type UnlockFlowState =
   | "uploading"
   | "password_required"
   | "unlocking"
-  | "success";
+  | "success"
+  | "lock_config"
+  | "vault_prompt";
 
 export interface FileData {
   id: string;
   name: string;
   size: number;
 }
+

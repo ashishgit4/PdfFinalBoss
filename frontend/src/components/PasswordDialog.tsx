@@ -1,15 +1,4 @@
 import { useState, useEffect } from "react";
-import { Eye, EyeOff, Lock, Loader2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 interface PasswordDialogProps {
   isOpen: boolean;
@@ -29,7 +18,6 @@ export function PasswordDialog({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // Reset local state when dialog closes/reopens
   useEffect(() => {
     if (!isOpen) {
       setPassword("");
@@ -43,57 +31,65 @@ export function PasswordDialog({
     onSubmit(password);
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md rounded-3xl border-border/40 bg-card/95 backdrop-blur-lg">
-        <DialogHeader>
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-violet-500/10 text-violet-500 border border-violet-500/20">
-            <Lock className="h-6 w-6" />
-          </div>
-          <DialogTitle className="text-center text-xl font-bold">Password Required</DialogTitle>
-          <DialogDescription className="text-center text-sm text-muted-foreground break-all px-2">
-            The file "{fileName}" is encrypted. Enter the password to decrypt and download.
-          </DialogDescription>
-        </DialogHeader>
+  if (!isOpen) return null;
 
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
-          <div className="relative">
-            <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter PDF password"
+  return (
+    <div className="modal-backdrop active" onClick={() => onOpenChange(false)}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-header">
+            <div className="modal-lock-circle">
+              <svg className="modal-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3 className="modal-title">Password Required</h3>
+            <p className="modal-subtitle">{fileName}</p>
+          </div>
+          
+          <div className="password-input-wrapper">
+            <input 
+              type={showPassword ? "text" : "password"} 
+              placeholder="Enter PDF password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pr-10 h-11 rounded-xl border-border/60 bg-muted/20 focus-visible:ring-1 focus-visible:ring-violet-500 focus-visible:border-violet-500"
               disabled={isUnlocking}
               autoFocus
+              required
             />
-            <button
-              type="button"
+            <button 
+              type="button" 
+              className="eye-btn" 
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none cursor-pointer"
-              disabled={isUnlocking}
+              style={{ opacity: showPassword ? 1 : 0.4 }}
             >
-              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              <svg className="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
             </button>
           </div>
-
-          <DialogFooter className="sm:justify-center">
-            <Button
-              type="submit"
-              disabled={isUnlocking || !password}
-              className="w-full h-11 rounded-xl bg-gradient-to-r from-rose-500 to-violet-600 hover:from-rose-600 hover:to-violet-700 text-white font-semibold transition-all shadow-md shadow-violet-500/10 cursor-pointer"
+          
+          <div className="modal-actions">
+            <button 
+              type="button" 
+              className="btn-cancel" 
+              onClick={() => onOpenChange(false)}
+              disabled={isUnlocking}
             >
-              {isUnlocking ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Unlocking...
-                </>
-              ) : (
-                "Unlock PDF"
-              )}
-            </Button>
-          </DialogFooter>
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="btn-submit" 
+              disabled={isUnlocking || !password}
+            >
+              {isUnlocking ? "Unlocking..." : "Unlock PDF"}
+            </button>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

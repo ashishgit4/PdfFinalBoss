@@ -104,3 +104,42 @@ export async function unlockPDF(
 
   return response.blob();
 }
+
+/**
+ * Locks an uploaded PDF file using the provided password and optional hint.
+ * Returns the encrypted PDF as a Blob, plus the hash and hint from headers for local vault storage.
+ */
+export async function lockPDF(
+  id: string,
+  password: string,
+  hint?: string,
+  saveToVault?: boolean
+): Promise<{ blob: Blob; hash: string | null; hint: string | null }> {
+  const response = await fetch(`${API_URL}/api/lock`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id, password, hint, saveToVault }),
+  });
+
+  if (!response.ok) {
+    let errorMessage = "Encryption failed.";
+    try {
+      const errorJson = await response.json();
+      if (errorJson?.message) {
+        errorMessage = errorJson.message;
+      }
+    } catch {
+      errorMessage = `Locking failed with status ${response.status}`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  const blob = await response.blob();
+  const hash = response.headers.get("X-PDF-Hash");
+  const encodedHint = response.headers.get("X-PDF-Hint");
+  const decodedHint = encodedHint ? decodeURIComponent(encodedHint) : null;
+
+  return { blob, hash, hint: decodedHint };
+}

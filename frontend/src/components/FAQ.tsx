@@ -1,65 +1,74 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { useState } from "react";
 
 export function FAQ() {
-  const faqs = [
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  const toggleAccordion = (index: number) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
+
+  const faqItems = [
     {
-      question: "What is a password protected PDF?",
-      answer: "A password protected PDF is an encrypted document that requires a password to open (known as a User password) or to edit, print, or copy content (known as an Owner password). Our tool helps you remove these restrictions by entering the correct password once, allowing you to access it without prompts in the future.",
+      q: "What is a password protected PDF?",
+      a: "A password protected PDF is an encrypted document that requires an authorization key to either open, edit, print, or copy content. Our tool lets you clear these locks once the correct password has been supplied."
     },
     {
-      question: "Is my file secure?",
-      answer: "Yes, absolutely. All file transfers are secured via HTTPS with SSL/TLS encryption. Your files are processed entirely in memory or temporary environments and are never accessed by third parties. We treat data protection and user privacy with the highest priority.",
+      q: "Is my file secure?",
+      a: "Yes. All file streams utilize secure SSL/TLS connections during uploads and downloads. Processing occurs in completely isolated sandboxes, ensuring complete data privacy."
     },
     {
-      question: "Do you store my password?",
-      answer: "No. The password you enter is used strictly to decrypt the specific file you uploaded in that session. We do not store, log, or track the passwords you enter. They are discarded immediately after the file is processed.",
+      q: "Do you store my password?",
+      a: "No. The credentials you submit are solely used in memory during decryption and are never saved, logged, or recorded anywhere on disk."
     },
     {
-      question: "Is this free?",
-      answer: "Yes, our PDF unlocking tool is 100% free. There are no subscriptions, no size limits (up to 100 MB), no trial periods, and no watermarks added to your output. You can use it as much as you need.",
+      q: "Is this free?",
+      a: "Yes, it is 100% free. There are no subscriptions, email constraints, limits, or hidden fees. We do not insert custom watermarks on output files."
     },
     {
-      question: "How long are files stored?",
-      answer: "Files are automatically and permanently deleted from our servers within one hour of processing. We do not retain copies or backups of your files after this deletion window.",
+      q: "How long are files stored?",
+      a: "All document assets are automatically wiped from our cache arrays exactly 60 minutes after execution finishes."
     },
     {
-      question: "Can I unlock any PDF?",
-      answer: "You can unlock any PDF for which you know the password. If a PDF is completely locked and you do not know the password, our tool cannot crack it, as we do not run brute-force password cracking scripts. This is to ensure compliance with security and privacy laws.",
-    },
+      q: "Can I unlock any PDF?",
+      a: "You can unlock any document for which you know the correct password. We do not run brute-force crackers or dictionary attacks, ensuring compliance with security standards."
+    }
   ];
 
   return (
-    <section id="faq" className="py-20 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-foreground mb-4">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-lg text-muted-foreground font-medium">
-            Have questions? We have compiled the most common queries about our PDF unlocking service.
-          </p>
+    <section id="faq" className="section-faq container reveal">
+      <div className="faq-layout">
+        <div className="faq-left">
+          <span className="eyebrow">[ FAQ ]</span>
+          <h2 className="section-title">Frequently Asked Questions</h2>
         </div>
-
-        <div className="bg-card/30 border border-border/40 rounded-3xl p-6 sm:p-10 backdrop-blur-md">
-          <Accordion type="single" collapsible className="w-full">
-            {faqs.map((faq, index) => (
-              <AccordionItem key={index} value={`item-${index}`} className="border-b border-border/40 py-1 last:border-b-0">
-                <AccordionTrigger className="text-left font-bold text-base hover:text-primary transition-colors hover:no-underline py-4">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground leading-relaxed text-sm pb-4 pt-1">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
+        
+        <div className="faq-right">
+          <div className="accordion">
+            {faqItems.map((item, index) => (
+              <div 
+                key={index} 
+                className={`accordion-item ${activeIndex === index ? "active" : ""}`}
+              >
+                <button className="accordion-trigger" onClick={() => toggleAccordion(index)}>
+                  <span>{item.q}</span>
+                  <svg className="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+                <div 
+                  className="accordion-content" 
+                  style={{ maxHeight: activeIndex === index ? "200px" : "0px" }}
+                >
+                  <div className="accordion-content-inner">
+                    {item.a}
+                  </div>
+                </div>
+              </div>
             ))}
-          </Accordion>
+          </div>
         </div>
       </div>
     </section>
   );
 }
+export default FAQ;
