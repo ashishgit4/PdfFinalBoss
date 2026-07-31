@@ -1,55 +1,95 @@
-# PdfFinalBoss — 100% Free PDF Password Manager
+# PdfFinalBoss 🛡️ (100% Free Cinematic PDF Lock & Unlock Utility)
 
-**PdfFinalBoss** is a premium, cinematic SaaS landing page and utility for removing and applying PDF password protection. This project is structured as a full-stack monorepo:
+**PdfFinalBoss** is a premium, cinematic web utility designed to unlock password-protected PDFs or encrypt standard PDFs with AES-256 secure locks. It runs fully client-side on the frontend with a supporting Node.js backend. 
 
-- `frontend/`: Cinematic, responsive React + Vite + TypeScript single-page application.
-- `backend/`: Node.js/Express server providing PDF encryption and decryption routines.
-
----
-
-## ✨ Key Features
-
-* **Unlock & Lock Modes:** Instantly remove owner restrictions and passwords or apply AES-256 secure encryption to any PDF.
-* **🔒 Local Password Vault (Auto-Unlock):** 
-  * If you encrypt a PDF and check **"Remember this password in my vault"**, the password is encrypted and stored safely inside your browser's `localStorage` mapped to the unique hash of the PDF.
-  * If you ever upload that exact same PDF again to unlock it, the website detects the saved hash and prompts you with **"Auto Unlock"**, allowing you to unlock and decrypt the document instantly without needing to remember or type the password.
-* **Cinematic Day/Night Mode:** Fully responsive cinematic background transitions with typography adjustments at a click of a button.
+Designed with modern cinematic aesthetics, custom glassmorphism overlays, smooth entrance animations, and a dynamic **Day/Night mode**, the application delivers a premium, distraction-free user experience with zero watermarks, zero limits, and no account registrations required.
 
 ---
 
-## 🚀 Quick Start Guide
+## 🌟 Premium Features
 
-To run **PdfFinalBoss** locally:
+### 1. Bypass & Apply Restrictions
+* **Unlock PDF:** Instantly bypass owner-restricted credentials or open-passwords on files up to 100 MB.
+* **Lock PDF:** Encrypt documents with AES-256 secure standard encryption. Features a live **Password Strength Indicator** and a secure **Random Password Generator**.
 
-### 1. Start the Backend
-Navigate to the `backend` folder, install packages, and start the node server:
-```bash
-cd backend
-npm install
-npm start
+### 2. 🔑 Local Password Vault (Auto-Unlock)
+* When locking a PDF, check the **"Remember this password in my vault"** option. 
+* The password is encrypted and stored client-side inside your browser's local storage (`localStorage`), mapped to the document's unique PDF hash. 
+* If you upload that exact same PDF again to unlock it, the website detects the hash and prompts you with **"Auto Unlock"** to immediately decrypt it, removing the need to remember or type the credentials. **Your passwords never leave your device.**
+
+### 3. 🌓 Cinematic Day/Night Theme Toggling
+* Click the Sun/Moon icon in the navigation bar to transition between themes.
+* Features a smooth blend from a dark cinema layout to a light off-white layout while keeping the background video visible.
+
+---
+
+## 📂 Repository Architecture
+
+The project is structured as a full-stack monorepo:
+
+* `/frontend`: React + Vite + TypeScript single-page application. Styles are built with customized CSS variables inside `src/index.css`.
+* `/backend`: Node.js + Express API handling multer-based PDF uploads, qpdf-powered encryption processes, and automatic cleanups.
+
+---
+
+## 🚀 Step-by-Step Local Setup Guide
+
+Follow these steps to run **PdfFinalBoss** on your machine:
+
+### 1. Pre-requisites
+Make sure you have Node.js (version 16 or higher) installed on your system.
+
+### 2. Set Up the Backend
+1. Open your terminal and navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the server (runs on port 3000):
+   ```bash
+   npm start
+   ```
+   You will see the console log: `Server is running at http://localhost:3000`
+
+### 3. Set Up the Frontend
+1. Open a new terminal window and navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the Vite development server (runs on port 5173):
+   ```bash
+   npm run dev
+   ```
+4. Open your browser and navigate to [http://localhost:5173](http://localhost:5173).
+
+---
+
+## ⚙️ Environment Variables & Deployment
+
+The application is configured to build and deploy dynamically on host providers like **Vercel** (frontend) and **Render** (backend).
+
+### Backend CORS Configuration
+The Express server has CORS enabled globally (`app.use(cors())`), allowing your deployed Vercel URL to communicate with Render out-of-the-box.
+
+### API Environment Configuration
+The frontend automatically selects the backend server address inside [api.ts](file:///c:/Users/ashis/Music/projects/unlockpdf/frontend/src/services/api.ts):
+```typescript
+const API_URL = import.meta.env.VITE_API_URL || "https://pdffinalboss-1.onrender.com";
 ```
-The server runs on `http://localhost:3000`.
-
-### 2. Start the Frontend
-Navigate to the `frontend` folder, install packages, and start the dev server:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
----
-
-## 🛠️ Technology Stack
-
-- **Frontend**: React, Vite, TypeScript, Framer Motion, Tailored CSS variables, Inter display typography, responsive layout overlays.
-- **Backend**: Node.js, Express, Multer, `qpdf` command-line utility.
+* **Local Development:** Vite reads `VITE_API_URL=http://localhost:3000` from the local [.env](file:///c:/Users/ashis/Music/projects/unlockpdf/frontend/.env) file.
+* **Production Deployment:** If built on Vercel without environment variables, the system automatically falls back to your Render production URL: `https://pdffinalboss-1.onrender.com`.
 
 ---
 
 ## 🔒 Security & Privacy Policy
 
-- **SSL Encryption**: Transferred bytes are protected in flight.
-- **Temporary Cache**: Documents and temporary passwords reside in isolated memory/caches and are automatically deleted from server disks within 60 minutes.
-- **Zero Logging**: Passwords are never saved, logged, or processed permanently on the server.
+* **Secure In-Flight Decryption:** All transactions are protected via secure SSL/TLS connections during upload and download phases.
+* **In-Memory Password Processing:** Passwords submitted to the backend reside in volatile memory only during the qpdf script execution. They are never written to disk, logged, or permanently stored.
+* **Wipe Cache Policy:** All uploaded documents and processed outputs are permanently deleted from server disks automatically exactly 60 minutes after upload.
