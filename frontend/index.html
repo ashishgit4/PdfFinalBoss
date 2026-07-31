@@ -1134,6 +1134,215 @@
         transform: none !important;
       }
     }
+
+    /* Mode Tabs & Vault & Lock Style Additions */
+    .mode-tabs {
+      display: flex;
+      background: rgba(243, 239, 230, 0.03);
+      border: 1px solid var(--border-hairline);
+      padding: 4px;
+      border-radius: 9999px;
+      margin-bottom: 18px;
+      width: fit-content;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .mode-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    .mode-tab.active {
+      background: var(--text-primary);
+      color: var(--bg-color);
+    }
+    .lock-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 320px;
+      margin: 16px 0;
+      text-align: left;
+    }
+    .lock-fields input {
+      width: 100%;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid var(--border-hairline);
+      background: rgba(243, 239, 230, 0.02);
+      padding: 0 16px;
+      color: var(--text-primary);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .lock-fields input:focus {
+      border-color: rgba(243, 239, 230, 0.3);
+    }
+    .lock-pass-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .lock-fields input#lock-password {
+      padding-right: 40px;
+    }
+    .strength-meter {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      margin-top: 2px;
+    }
+    .strength-bar {
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(243, 239, 230, 0.1);
+      width: 0%;
+      transition: all 0.3s;
+    }
+    .strength-text {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 550;
+    }
+    .btn-generate {
+      background: transparent;
+      border: 1px dashed var(--border-hairline);
+      color: var(--text-secondary);
+      height: 38px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-generate:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+      background: rgba(243, 239, 230, 0.02);
+    }
+    .vault-checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .vault-prompt-text {
+      font-size: 12px;
+      color: #10b981;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    
+    /* Auth Navigation Item & Badges */
+    .nav-btn {
+      background: transparent;
+      border: 1px solid var(--border-hairline);
+      color: var(--text-secondary);
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 550;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .nav-btn:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+      background: rgba(243, 239, 230, 0.05);
+    }
+    .user-badge-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-badge-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: rgba(243, 239, 230, 0.05);
+      border: 1px solid var(--border-hairline);
+      padding: 6px 14px;
+      border-radius: 9999px;
+    }
+    .nav-btn-logout {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 550;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .nav-btn-logout:hover {
+      color: #ef4444;
+    }
+
+    /* Auth Modal layout */
+    .auth-modal-content {
+      max-width: 360px !important;
+    }
+    .auth-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-hairline);
+      padding-bottom: 8px;
+    }
+    .auth-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 12px;
+      position: relative;
+      transition: color 0.3s;
+    }
+    .auth-tab-btn.active {
+      color: var(--text-primary);
+    }
+    .auth-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -9px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--text-primary);
+    }
+    .auth-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .auth-input-group input {
+      width: 100%;
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid var(--border-hairline);
+      background: rgba(243, 239, 230, 0.03);
+      padding: 0 16px;
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .auth-input-group input:focus {
+      border-color: rgba(243, 239, 230, 0.4);
+    }
   </style>
 </head>
 <body>
@@ -1183,6 +1392,9 @@
               </svg>
             </a>
           </li>
+          <li class="rise" style="animation-delay: 550ms;" id="auth-nav-item">
+            <button class="nav-btn" onclick="openAuthModal()" id="auth-btn-text">Sign In</button>
+          </li>
         </ul>
       </nav>
     </header>
@@ -1198,6 +1410,12 @@
             Upload your encrypted PDF, enter the correct password, and download an unlocked PDF in seconds. No sign-up. No watermarks. Free forever.
           </p>
           
+          <!-- Mode Selector Tabs -->
+          <div class="mode-tabs rise" style="animation-delay: 640ms;">
+            <button class="mode-tab active" onclick="switchMode('unlock')" id="mode-unlock-btn">Unlock PDF</button>
+            <button class="mode-tab" onclick="switchMode('lock')" id="mode-lock-btn">Lock PDF</button>
+          </div>
+
           <!-- Upload Box -->
           <div class="upload-card rise" id="drop-zone" style="animation-delay: 700ms;">
             <input type="file" id="file-input" class="hidden" accept=".pdf,application/pdf">
@@ -1245,10 +1463,22 @@
                 </svg>
               </div>
               <h3 class="card-state-title">Document Encrypted</h3>
-              <p class="card-state-subtitle">This file is password protected.</p>
-              <button class="cta-pill" onclick="openPasswordDialog(); event.stopPropagation();">
-                <span>Enter Password</span>
-              </button>
+              <p class="card-state-subtitle" id="locked-sub-text">This file is password protected.</p>
+              
+              <!-- Vault Auto-Unlock Option -->
+              <div class="vault-prompt hidden" id="vault-prompt-container">
+                <p class="vault-prompt-text">A saved password exists for this PDF.</p>
+                <button class="cta-pill" onclick="performAutoUnlock(); event.stopPropagation();" style="margin-bottom: 8px;">
+                  <span>Auto Unlock</span>
+                </button>
+                <button class="link-btn" onclick="showManualPassword(); event.stopPropagation();">Or enter manually</button>
+              </div>
+              
+              <div id="manual-password-trigger">
+                <button class="cta-pill" onclick="openPasswordDialog(); event.stopPropagation();">
+                  <span>Enter Password</span>
+                </button>
+              </div>
             </div>
 
             <!-- State 4: Unlocking Processing -->
@@ -1271,14 +1501,61 @@
                   <polyline points="22 4 12 14.01 9 11.01"></polyline>
                 </svg>
               </div>
-              <h3 class="card-state-title">PDF successfully unlocked!</h3>
+              <h3 class="card-state-title" id="success-title">PDF successfully unlocked!</h3>
               <p class="card-state-subtitle truncate max-w-xs px-4" id="success-filename">unlocked.pdf</p>
               <div class="success-actions">
                 <button class="cta-pill" onclick="triggerDownload(); event.stopPropagation();">
                   <span>Download PDF</span>
                 </button>
-                <button class="link-btn" onclick="resetState(); event.stopPropagation();">Unlock Another</button>
+                <button class="link-btn" onclick="resetState(); event.stopPropagation();" id="success-reset-btn">Unlock Another</button>
               </div>
+            </div>
+
+            <!-- State 6: Lock Configuration -->
+            <div id="state-lock-config" class="card-state">
+              <div class="upload-icon-container lock-badge">
+                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <h3 class="card-state-title">Encrypt PDF</h3>
+              <p class="card-state-subtitle truncate max-w-xs px-4" id="lock-filename">document.pdf</p>
+              
+              <div class="lock-fields">
+                <div class="lock-pass-wrapper">
+                  <input type="password" id="lock-password" placeholder="Choose Password" oninput="checkLockPasswordStrength(this.value)" autocomplete="new-password">
+                  <button type="button" class="eye-btn" onclick="togglePasswordVisibility('lock-password', this)">
+                    <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+                
+                <div class="strength-meter">
+                  <div class="strength-bar" id="strength-bar"></div>
+                  <div class="strength-text" id="strength-text">Password Strength</div>
+                </div>
+
+                <button class="btn-generate" onclick="generateRandomLockPassword(); event.stopPropagation();">
+                  <span>Generate Secure Password</span>
+                </button>
+                
+                <input type="text" id="lock-hint" placeholder="Password Hint (Optional)" autocomplete="off">
+                
+                <div class="vault-checkbox-wrapper hidden" id="vault-save-wrapper">
+                  <label class="checkbox-container">
+                    <input type="checkbox" id="lock-save-vault" checked>
+                    <span class="checkmark"></span>
+                    <span class="checkbox-label">Remember this password in my vault</span>
+                  </label>
+                </div>
+              </div>
+              
+              <button class="cta-pill" onclick="performLock(); event.stopPropagation();" id="lock-submit-btn" disabled>
+                <span>Lock Document</span>
+              </button>
             </div>
 
           </div>
@@ -1589,6 +1866,30 @@
     </div>
   </div>
 
+  <!-- Authentication Modal -->
+  <div id="auth-modal" class="modal-backdrop">
+    <div class="modal-content auth-modal-content">
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" onclick="switchAuthTab('login')" id="tab-login">Log In</button>
+        <button class="auth-tab-btn" onclick="switchAuthTab('signup')" id="tab-signup">Sign Up</button>
+      </div>
+      
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+        <div class="auth-input-group">
+          <input type="text" id="auth-username" placeholder="Username" required autocomplete="username">
+          <input type="password" id="auth-password" placeholder="Password" required autocomplete="current-password">
+        </div>
+        
+        <div id="auth-error" class="error-text hidden"></div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeAuthModal()">Cancel</button>
+          <button type="submit" class="btn-submit" id="auth-submit-btn">Log In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Floating Buy Me a Coffee button -->
   <a href="https://buymeacoffee.com" target="_blank" rel="noopener noreferrer" class="coffee-btn">
     <!-- UXwing Brand SVG cup -->
@@ -1603,6 +1904,11 @@
     let fileId = null;
     let unlockedBlob = null;
     let isPasswordVisible = false;
+    let mode = 'unlock';
+    let token = localStorage.getItem('token') || null;
+    let username = localStorage.getItem('username') || null;
+    let pdfHash = null;
+    let authTab = 'login';
 
     // Confetti Physics particle system
     class ConfettiManager {
@@ -1685,6 +1991,9 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Initialize Confetti
       confetti = new ConfettiManager(document.getElementById('confetti-canvas'));
+
+      // Check auth state on load
+      updateAuthUI();
 
       // 1. Background Video Playback Fallback
       const video = document.querySelector('.bg-video');
@@ -1817,14 +2126,20 @@
           try {
             const data = JSON.parse(xhr.responseText);
             fileId = data.id;
+            pdfHash = data.pdfHash;
 
-            if (data.encrypted) {
-              setCardState('state-locked');
-              openPasswordDialog();
+            if (mode === 'lock') {
+              document.getElementById('lock-filename').textContent = file.name;
+              setCardState('state-lock-config');
             } else {
-              // Not encrypted, transition directly to Success state
-              unlockedBlob = file; // Direct fallback to original file
-              showSuccessState();
+              if (data.encrypted) {
+                setCardState('state-locked');
+                checkVault();
+              } else {
+                // Not encrypted, transition directly to Success state
+                unlockedBlob = file; // Direct fallback to original file
+                showSuccessState();
+              }
             }
           } catch(err) {
             alert('Failed to parse upload responses.');
@@ -1924,9 +2239,18 @@
     // Success State Transition
     function showSuccessState() {
       const originalName = file.name;
+      const suffix = mode === 'lock' ? '_locked.pdf' : '_unlocked.pdf';
       const downloadName = originalName.toLowerCase().endsWith('.pdf')
-        ? originalName.substring(0, originalName.length - 4) + '_unlocked.pdf'
-        : originalName + '_unlocked.pdf';
+        ? originalName.substring(0, originalName.length - 4) + suffix
+        : originalName + suffix;
+
+      document.getElementById('success-title').textContent = mode === 'lock'
+        ? 'PDF successfully locked!'
+        : 'PDF successfully unlocked!';
+      
+      document.getElementById('success-reset-btn').textContent = mode === 'lock'
+        ? 'Lock Another'
+        : 'Unlock Another';
 
       document.getElementById('success-filename').textContent = downloadName;
       setCardState('state-success');
@@ -1949,9 +2273,10 @@
       link.href = url;
       
       const originalName = file.name;
+      const suffix = mode === 'lock' ? '_locked.pdf' : '_unlocked.pdf';
       const downloadName = originalName.toLowerCase().endsWith('.pdf')
-        ? originalName.substring(0, originalName.length - 4) + '_unlocked.pdf'
-        : originalName + '_unlocked.pdf';
+        ? originalName.substring(0, originalName.length - 4) + suffix
+        : originalName + suffix;
 
       link.setAttribute('download', downloadName);
       document.body.appendChild(link);
@@ -1991,6 +2316,299 @@
         const content = item.querySelector('.accordion-content');
         const inner = item.querySelector('.accordion-content-inner');
         content.style.maxHeight = inner.offsetHeight + 'px';
+      }
+    }
+
+    // ---------------------------------
+    // MODE SWITCHING & VAULT AUTO-UNLOCK
+    // ---------------------------------
+
+    function switchMode(newMode) {
+      if (mode === newMode) return;
+      mode = newMode;
+      
+      // Update toggle buttons active class
+      document.getElementById('mode-unlock-btn').classList.toggle('active', mode === 'unlock');
+      document.getElementById('mode-lock-btn').classList.toggle('active', mode === 'lock');
+      
+      resetState();
+    }
+
+    function checkVault() {
+      if (!token || !pdfHash) {
+        showManualPassword();
+        return;
+      }
+      fetch('/api/vault/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, pdfHash })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.exists) {
+          document.getElementById('vault-prompt-container').classList.remove('hidden');
+          document.getElementById('manual-password-trigger').classList.add('hidden');
+          if (data.hint) {
+            document.getElementById('locked-sub-text').textContent = 'Hint: ' + data.hint;
+          } else {
+            document.getElementById('locked-sub-text').textContent = 'This file is password protected.';
+          }
+        } else {
+          showManualPassword();
+        }
+      })
+      .catch(err => {
+        console.error('Error checking vault:', err);
+        showManualPassword();
+      });
+    }
+
+    function performAutoUnlock() {
+      if (!fileId || !token) return;
+      setCardState('state-unlocking');
+
+      fetch('/api/unlock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: fileId, useVault: true, token })
+      })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Auto-unlock failed.');
+        }
+        return res.blob();
+      })
+      .then(blob => {
+        unlockedBlob = blob;
+        showSuccessState();
+      })
+      .catch(err => {
+        console.error(err);
+        showManualPassword();
+        openPasswordDialog();
+        document.getElementById('password-error').textContent = 'Vault unlock failed. Please enter the password manually.';
+        document.getElementById('password-error').classList.remove('hidden');
+      });
+    }
+
+    function showManualPassword() {
+      document.getElementById('vault-prompt-container').classList.add('hidden');
+      document.getElementById('manual-password-trigger').classList.remove('hidden');
+      document.getElementById('locked-sub-text').textContent = 'This file is password protected.';
+    }
+
+    // ---------------------------------
+    // ENCRYPT / LOCK PDF LOGIC
+    // ---------------------------------
+
+    function checkLockPasswordStrength(password) {
+      const submitBtn = document.getElementById('lock-submit-btn');
+      const bar = document.getElementById('strength-bar');
+      const text = document.getElementById('strength-text');
+      
+      if (!password) {
+        bar.style.width = '0%';
+        bar.style.background = 'rgba(243,239,230,0.1)';
+        text.textContent = 'Password Strength';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      let score = 0;
+      if (password.length >= 8) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[a-z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      let color = '#ef4444'; // Red
+      let label = 'Weak';
+      let percent = '30%';
+
+      if (score >= 4) {
+        color = '#10b981'; // Green
+        label = 'Strong';
+        percent = '100%';
+        submitBtn.disabled = false;
+      } else if (score >= 2) {
+        color = '#fbbf24'; // Yellow
+        label = 'Medium';
+        percent = '65%';
+        submitBtn.disabled = false;
+      } else {
+        submitBtn.disabled = true; // Block weak passwords
+      }
+
+      bar.style.width = percent;
+      bar.style.background = color;
+      text.textContent = 'Strength: ' + label;
+      text.style.color = color;
+    }
+
+    function generateRandomLockPassword() {
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=';
+      let pass = '';
+      for (let i = 0; i < 16; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      const passInput = document.getElementById('lock-password');
+      passInput.value = pass;
+      passInput.type = 'text'; // Make visible so they can copy it
+      checkLockPasswordStrength(pass);
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const isVisible = input.type === 'text';
+      input.type = isVisible ? 'password' : 'text';
+      btn.style.opacity = isVisible ? '0.4' : '1';
+    }
+
+    function performLock() {
+      const password = document.getElementById('lock-password').value;
+      const hint = document.getElementById('lock-hint').value;
+      const saveToVault = document.getElementById('lock-save-vault').checked;
+      
+      if (!fileId || !password) return;
+
+      setCardState('state-unlocking'); // Reuse processing screen
+      
+      fetch('/api/lock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: fileId,
+          password: password,
+          saveToVault: saveToVault,
+          hint: hint,
+          token: token
+        })
+      })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Locking failed with status: ' + res.status);
+        }
+        return res.blob();
+      })
+      .then(blob => {
+        unlockedBlob = blob; // Reuse success state download target
+        showSuccessState();
+      })
+      .catch(err => {
+        alert(err.message);
+        setCardState('state-lock-config');
+      });
+    }
+
+    // ---------------------------------
+    // AUTHENTICATION LOGIC (USER ACCOUNTS)
+    // ---------------------------------
+
+    function openAuthModal() {
+      document.getElementById('auth-modal').classList.add('active');
+      switchAuthTab('login');
+      document.getElementById('auth-username').value = '';
+      document.getElementById('auth-password').value = '';
+      document.getElementById('auth-error').classList.add('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.remove('active');
+    }
+
+    function switchAuthTab(tab) {
+      authTab = tab;
+      document.getElementById('tab-login').classList.toggle('active', authTab === 'login');
+      document.getElementById('tab-signup').classList.toggle('active', authTab === 'signup');
+      document.getElementById('auth-submit-btn').textContent = authTab === 'login' ? 'Log In' : 'Sign Up';
+      document.getElementById('auth-error').classList.add('hidden');
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const usernameVal = document.getElementById('auth-username').value;
+      const passwordVal = document.getElementById('auth-password').value;
+      const errorDiv = document.getElementById('auth-error');
+
+      errorDiv.classList.add('hidden');
+
+      const url = authTab === 'login' ? '/api/auth/login' : '/api/auth/signup';
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: usernameVal, password: passwordVal })
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(data => { throw new Error(data.error || 'Request failed.') });
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (authTab === 'signup') {
+          // Signup success -> switch to login tab
+          switchAuthTab('login');
+          errorDiv.textContent = 'Account created successfully! Please log in.';
+          errorDiv.style.color = '#10b981'; // Green color for success status
+          errorDiv.classList.remove('hidden');
+        } else {
+          // Login success
+          token = data.token;
+          username = data.username;
+          localStorage.setItem('token', token);
+          localStorage.setItem('username', username);
+          updateAuthUI();
+          closeAuthModal();
+        }
+      })
+      .catch(err => {
+        errorDiv.textContent = err.message;
+        errorDiv.style.color = '#ef4444'; // Red error color
+        errorDiv.classList.remove('hidden');
+      });
+    }
+
+    function performLogout() {
+      if (token) {
+        fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        }).catch(err => console.error('Logout error:', err));
+      }
+      token = null;
+      username = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      updateAuthUI();
+      resetState();
+    }
+
+    function updateAuthUI() {
+      const authNavItem = document.getElementById('auth-nav-item');
+      if (token && username) {
+        authNavItem.innerHTML = `
+          <div class="user-badge-container">
+            <span class="user-badge-name">${username}</span>
+            <button class="nav-btn-logout" onclick="performLogout()">Sign Out</button>
+          </div>
+        `;
+        // Show remember password checkbox
+        const vaultSaveWrapper = document.getElementById('vault-save-wrapper');
+        if (vaultSaveWrapper) {
+          vaultSaveWrapper.classList.remove('hidden');
+        }
+      } else {
+        authNavItem.innerHTML = `
+          <button class="nav-btn" onclick="openAuthModal()" id="auth-btn-text">Sign In</button>
+        `;
+        // Hide remember password checkbox
+        const vaultSaveWrapper = document.getElementById('vault-save-wrapper');
+        if (vaultSaveWrapper) {
+          vaultSaveWrapper.classList.add('hidden');
+        }
       }
     }
   </script>
