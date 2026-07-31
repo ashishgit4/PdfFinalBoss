@@ -103,6 +103,12 @@
       display: flex;
       gap: 32px;
       list-style: none;
+      align-items: center;
+    }
+
+    .nav-links li {
+      display: flex;
+      align-items: center;
     }
 
     .nav-links a {
@@ -112,6 +118,13 @@
       font-weight: 500;
       letter-spacing: 0.02em;
       transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
     }
 
     .nav-links a:hover {
@@ -1243,106 +1256,7 @@
       margin-bottom: 12px;
     }
     
-    /* Auth Navigation Item & Badges */
-    .nav-btn {
-      background: transparent;
-      border: 1px solid var(--border-hairline);
-      color: var(--text-secondary);
-      padding: 8px 18px;
-      border-radius: 9999px;
-      font-size: 13px;
-      font-weight: 550;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    .nav-btn:hover {
-      border-color: var(--text-primary);
-      color: var(--text-primary);
-      background: rgba(243, 239, 230, 0.05);
-    }
-    .user-badge-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .user-badge-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-primary);
-      background: rgba(243, 239, 230, 0.05);
-      border: 1px solid var(--border-hairline);
-      padding: 6px 14px;
-      border-radius: 9999px;
-    }
-    .nav-btn-logout {
-      background: transparent;
-      border: none;
-      color: var(--text-dim);
-      font-size: 13px;
-      font-weight: 550;
-      cursor: pointer;
-      transition: color 0.3s;
-    }
-    .nav-btn-logout:hover {
-      color: #ef4444;
-    }
 
-    /* Auth Modal layout */
-    .auth-modal-content {
-      max-width: 360px !important;
-    }
-    .auth-tabs {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--border-hairline);
-      padding-bottom: 8px;
-    }
-    .auth-tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 4px 12px;
-      position: relative;
-      transition: color 0.3s;
-    }
-    .auth-tab-btn.active {
-      color: var(--text-primary);
-    }
-    .auth-tab-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: -9px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--text-primary);
-    }
-    .auth-input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
-      text-align: left;
-    }
-    .auth-input-group input {
-      width: 100%;
-      height: 46px;
-      border-radius: 12px;
-      border: 1px solid var(--border-hairline);
-      background: rgba(243, 239, 230, 0.03);
-      padding: 0 16px;
-      color: var(--text-primary);
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.3s;
-    }
-    .auth-input-group input:focus {
-      border-color: rgba(243, 239, 230, 0.4);
-    }
   </style>
 </head>
 <body>
@@ -1392,9 +1306,7 @@
               </svg>
             </a>
           </li>
-          <li class="rise" style="animation-delay: 550ms;" id="auth-nav-item">
-            <button class="nav-btn" onclick="openAuthModal()" id="auth-btn-text">Sign In</button>
-          </li>
+
         </ul>
       </nav>
     </header>
@@ -1544,7 +1456,7 @@
                 
                 <input type="text" id="lock-hint" placeholder="Password Hint (Optional)" autocomplete="off">
                 
-                <div class="vault-checkbox-wrapper hidden" id="vault-save-wrapper">
+                <div class="vault-checkbox-wrapper" id="vault-save-wrapper">
                   <label class="checkbox-container">
                     <input type="checkbox" id="lock-save-vault" checked>
                     <span class="checkmark"></span>
@@ -1866,29 +1778,7 @@
     </div>
   </div>
 
-  <!-- Authentication Modal -->
-  <div id="auth-modal" class="modal-backdrop">
-    <div class="modal-content auth-modal-content">
-      <div class="auth-tabs">
-        <button class="auth-tab-btn active" onclick="switchAuthTab('login')" id="tab-login">Log In</button>
-        <button class="auth-tab-btn" onclick="switchAuthTab('signup')" id="tab-signup">Sign Up</button>
-      </div>
-      
-      <form id="auth-form" onsubmit="handleAuthSubmit(event)">
-        <div class="auth-input-group">
-          <input type="text" id="auth-username" placeholder="Username" required autocomplete="username">
-          <input type="password" id="auth-password" placeholder="Password" required autocomplete="current-password">
-        </div>
-        
-        <div id="auth-error" class="error-text hidden"></div>
-        
-        <div class="modal-actions">
-          <button type="button" class="btn-cancel" onclick="closeAuthModal()">Cancel</button>
-          <button type="submit" class="btn-submit" id="auth-submit-btn">Log In</button>
-        </div>
-      </form>
-    </div>
-  </div>
+
 
   <!-- Floating Buy Me a Coffee button -->
   <a href="https://buymeacoffee.com" target="_blank" rel="noopener noreferrer" class="coffee-btn">
@@ -1905,10 +1795,7 @@
     let unlockedBlob = null;
     let isPasswordVisible = false;
     let mode = 'unlock';
-    let token = localStorage.getItem('token') || null;
-    let username = localStorage.getItem('username') || null;
     let pdfHash = null;
-    let authTab = 'login';
 
     // Confetti Physics particle system
     class ConfettiManager {
@@ -1992,8 +1879,7 @@
       // Initialize Confetti
       confetti = new ConfettiManager(document.getElementById('confetti-canvas'));
 
-      // Check auth state on load
-      updateAuthUI();
+
 
       // 1. Background Video Playback Fallback
       const video = document.querySelector('.bg-video');
@@ -2335,61 +2221,77 @@
     }
 
     function checkVault() {
-      if (!token || !pdfHash) {
+      if (!pdfHash) {
         showManualPassword();
         return;
       }
-      fetch('/api/vault/check', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, pdfHash })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.exists) {
-          document.getElementById('vault-prompt-container').classList.remove('hidden');
-          document.getElementById('manual-password-trigger').classList.add('hidden');
-          if (data.hint) {
-            document.getElementById('locked-sub-text').textContent = 'Hint: ' + data.hint;
-          } else {
-            document.getElementById('locked-sub-text').textContent = 'This file is password protected.';
+      const vaultKey = 'pdf_vault_' + pdfHash;
+      const vaultItemStr = localStorage.getItem(vaultKey);
+      if (vaultItemStr) {
+        try {
+          const item = JSON.parse(vaultItemStr);
+          if (item && item.password) {
+            document.getElementById('vault-prompt-container').classList.remove('hidden');
+            document.getElementById('manual-password-trigger').classList.add('hidden');
+            if (item.hint) {
+              document.getElementById('locked-sub-text').textContent = 'Hint: ' + item.hint;
+            } else {
+              document.getElementById('locked-sub-text').textContent = 'This file is password protected.';
+            }
+            return;
           }
-        } else {
-          showManualPassword();
+        } catch (e) {
+          console.error('Error parsing local vault item:', e);
         }
-      })
-      .catch(err => {
-        console.error('Error checking vault:', err);
-        showManualPassword();
-      });
+      }
+      showManualPassword();
     }
 
     function performAutoUnlock() {
-      if (!fileId || !token) return;
-      setCardState('state-unlocking');
-
-      fetch('/api/unlock', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: fileId, useVault: true, token })
-      })
-      .then(res => {
-        if (!res.ok) {
-          throw new Error('Auto-unlock failed.');
-        }
-        return res.blob();
-      })
-      .then(blob => {
-        unlockedBlob = blob;
-        showSuccessState();
-      })
-      .catch(err => {
-        console.error(err);
+      if (!fileId || !pdfHash) return;
+      
+      const vaultKey = 'pdf_vault_' + pdfHash;
+      const vaultItemStr = localStorage.getItem(vaultKey);
+      if (!vaultItemStr) {
         showManualPassword();
-        openPasswordDialog();
-        document.getElementById('password-error').textContent = 'Vault unlock failed. Please enter the password manually.';
-        document.getElementById('password-error').classList.remove('hidden');
-      });
+        return;
+      }
+
+      try {
+        const item = JSON.parse(vaultItemStr);
+        if (!item || !item.password) {
+          showManualPassword();
+          return;
+        }
+
+        setCardState('state-unlocking');
+
+        fetch('/api/unlock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: fileId, password: item.password })
+        })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Auto-unlock failed.');
+          }
+          return res.blob();
+        })
+        .then(blob => {
+          unlockedBlob = blob;
+          showSuccessState();
+        })
+        .catch(err => {
+          console.error(err);
+          showManualPassword();
+          openPasswordDialog();
+          document.getElementById('password-error').textContent = 'Saved password not matching. Please enter manually.';
+          document.getElementById('password-error').classList.remove('hidden');
+        });
+      } catch (e) {
+        console.error('Error auto-unlocking:', e);
+        showManualPassword();
+      }
     }
 
     function showManualPassword() {
@@ -2481,13 +2383,21 @@
           id: fileId,
           password: password,
           saveToVault: saveToVault,
-          hint: hint,
-          token: token
+          hint: hint
         })
       })
       .then(res => {
         if (!res.ok) {
           throw new Error('Locking failed with status: ' + res.status);
+        }
+        if (saveToVault) {
+          const hash = res.headers.get('X-PDF-Hash');
+          const encodedHint = res.headers.get('X-PDF-Hint');
+          const decodedHint = encodedHint ? decodeURIComponent(encodedHint) : '';
+          if (hash) {
+            localStorage.setItem('pdf_vault_' + hash, JSON.stringify({ password, hint: decodedHint }));
+            console.log('Saved PDF password locally for hash:', hash);
+          }
         }
         return res.blob();
       })
@@ -2499,117 +2409,6 @@
         alert(err.message);
         setCardState('state-lock-config');
       });
-    }
-
-    // ---------------------------------
-    // AUTHENTICATION LOGIC (USER ACCOUNTS)
-    // ---------------------------------
-
-    function openAuthModal() {
-      document.getElementById('auth-modal').classList.add('active');
-      switchAuthTab('login');
-      document.getElementById('auth-username').value = '';
-      document.getElementById('auth-password').value = '';
-      document.getElementById('auth-error').classList.add('hidden');
-    }
-
-    function closeAuthModal() {
-      document.getElementById('auth-modal').classList.remove('active');
-    }
-
-    function switchAuthTab(tab) {
-      authTab = tab;
-      document.getElementById('tab-login').classList.toggle('active', authTab === 'login');
-      document.getElementById('tab-signup').classList.toggle('active', authTab === 'signup');
-      document.getElementById('auth-submit-btn').textContent = authTab === 'login' ? 'Log In' : 'Sign Up';
-      document.getElementById('auth-error').classList.add('hidden');
-    }
-
-    function handleAuthSubmit(e) {
-      e.preventDefault();
-      const usernameVal = document.getElementById('auth-username').value;
-      const passwordVal = document.getElementById('auth-password').value;
-      const errorDiv = document.getElementById('auth-error');
-
-      errorDiv.classList.add('hidden');
-
-      const url = authTab === 'login' ? '/api/auth/login' : '/api/auth/signup';
-
-      fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: usernameVal, password: passwordVal })
-      })
-      .then(res => {
-        if (!res.ok) {
-          return res.json().then(data => { throw new Error(data.error || 'Request failed.') });
-        }
-        return res.json();
-      })
-      .then(data => {
-        if (authTab === 'signup') {
-          // Signup success -> switch to login tab
-          switchAuthTab('login');
-          errorDiv.textContent = 'Account created successfully! Please log in.';
-          errorDiv.style.color = '#10b981'; // Green color for success status
-          errorDiv.classList.remove('hidden');
-        } else {
-          // Login success
-          token = data.token;
-          username = data.username;
-          localStorage.setItem('token', token);
-          localStorage.setItem('username', username);
-          updateAuthUI();
-          closeAuthModal();
-        }
-      })
-      .catch(err => {
-        errorDiv.textContent = err.message;
-        errorDiv.style.color = '#ef4444'; // Red error color
-        errorDiv.classList.remove('hidden');
-      });
-    }
-
-    function performLogout() {
-      if (token) {
-        fetch('/api/auth/logout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token })
-        }).catch(err => console.error('Logout error:', err));
-      }
-      token = null;
-      username = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-      updateAuthUI();
-      resetState();
-    }
-
-    function updateAuthUI() {
-      const authNavItem = document.getElementById('auth-nav-item');
-      if (token && username) {
-        authNavItem.innerHTML = `
-          <div class="user-badge-container">
-            <span class="user-badge-name">${username}</span>
-            <button class="nav-btn-logout" onclick="performLogout()">Sign Out</button>
-          </div>
-        `;
-        // Show remember password checkbox
-        const vaultSaveWrapper = document.getElementById('vault-save-wrapper');
-        if (vaultSaveWrapper) {
-          vaultSaveWrapper.classList.remove('hidden');
-        }
-      } else {
-        authNavItem.innerHTML = `
-          <button class="nav-btn" onclick="openAuthModal()" id="auth-btn-text">Sign In</button>
-        `;
-        // Hide remember password checkbox
-        const vaultSaveWrapper = document.getElementById('vault-save-wrapper');
-        if (vaultSaveWrapper) {
-          vaultSaveWrapper.classList.add('hidden');
-        }
-      }
     }
   </script>
 </body>

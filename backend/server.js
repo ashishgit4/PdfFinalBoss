@@ -40,111 +40,8 @@ try {
 
 const upload = multer({ dest: 'uploads/' });
 const filesDb = new Map(); // fileId -> { path, originalname, uploadTime, encrypted, pdfHash }
-const sessions = new Map(); // token -> username
-
-// JSON Database Setup
-const DB_FILE = path.join(__dirname, 'db.json');
-let db = { users: [], vault: [] };
-
-function loadDb() {
-  try {
-    if (fs.existsSync(DB_FILE)) {
-      db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-    } else {
-      saveDb();
-    }
-  } catch (err) {
-    console.error('Error loading db.json, resetting database:', err);
-    saveDb();
-  }
-}
-
-function saveDb() {
-  try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
-  } catch (err) {
-    console.error('Error saving db.json:', err);
-  }
-}
-
-loadDb();
-
-// ---------------------------------
-// 1. AUTHENTICATION ENDPOINTS
-// ---------------------------------
-
-app.post('/api/auth/signup', (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required.' });
-  }
-  const cleanUsername = username.trim().toLowerCase();
-  const existing = db.users.find(u => u.username === cleanUsername);
-  if (existing) {
-    return res.status(409).json({ error: 'Username already exists.' });
-  }
-  const storedHash = hashUserPassword(password);
-  db.users.push({ id: uuidv4(), username: cleanUsername, storedHash });
-  saveDb();
-  res.json({ success: true });
-});
-
-app.post('/api/auth/login', (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required.' });
-  }
-  const cleanUsername = username.trim().toLowerCase();
-  const user = db.users.find(u => u.username === cleanUsername);
-  if (!user || !verifyUserPassword(password, user.storedHash)) {
-    return res.status(401).json({ error: 'Invalid username or password.' });
-  }
-  const token = uuidv4();
-  sessions.set(token, cleanUsername);
-  res.json({ success: true, token, username: cleanUsername });
-});
-
-app.post('/api/auth/logout', (req, res) => {
-  const { token } = req.body;
-  if (token) {
-    sessions.delete(token);
-  }
-  res.json({ success: true });
-});
-
-// ---------------------------------
-// 2. SECURE PASSWORD VAULT ENDPOINTS
-// ---------------------------------
-
-app.post('/api/vault/check', (req, res) => {
-  const { token, pdfHash } = req.body;
-  if (!token || !pdfHash) {
-    return res.json({ exists: false });
-  }
-  const username = sessions.get(token);
-  if (!username) {
-    return res.json({ exists: false });
-  }
-  const item = db.vault.find(v => v.userId === username && v.pdfHash === pdfHash);
-  if (item) {
-    return res.json({ exists: true, hint: item.hint || '' });
-  }
-  res.json({ exists: false });
-});
-
-app.post('/api/vault/delete', (req, res) => {
-  const { token, pdfHash } = req.body;
-  if (!token || !pdfHash) {
-    return res.status(400).json({ error: 'Missing parameters.' });
-  }
-  const username = sessions.get(token);
-  if (!username) {
-    return res.status(401).json({ error: 'Unauthorized.' });
-  }
-  db.vault = db.vault.filter(v => !(v.userId === username && v.pdfHash === pdfHash));
-  saveDb();
-  res.json({ success: true });
-});
+// Local client-side local storage password vault system is active.
+// All backend authentication routes and db sessions are removed for zero-barrier utility.
 
 // ---------------------------------
 // 3. CORE UPLOAD & PROCESSING ENDPOINTS
@@ -224,7 +121,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 
 // API 2: Decrypt / Unlock endpoint
 app.post('/api/unlock', async (req, res) => {
-  const { id, password, useVault, token } = req.body;
+  const { id, password } = req.body;
 
   if (!id) {
     return res.status(400).json({ error: 'Missing document identity parameters.' });
@@ -236,23 +133,6 @@ app.post('/api/unlock', async (req, res) => {
   }
 
   let decryptPass = password || '';
-
-  // If useVault is requested, retrieve the password from the vault
-  if (useVault && token) {
-    const username = sessions.get(token);
-    if (!username) {
-      return res.status(401).json({ error: 'Unauthorized session.' });
-    }
-    const item = db.vault.find(v => v.userId === username && v.pdfHash === fileMeta.pdfHash);
-    if (!item) {
-      return res.status(404).json({ error: 'No saved credential found for this file.' });
-    }
-    try {
-      decryptPass = decryptPassword(item.encryptedPassword);
-    } catch (err) {
-      return res.status(500).json({ error: 'Failed to decrypt credentials from vault.' });
-    }
-  }
 
   const tempOutputPath = fileMeta.path + '.unlocked';
 
@@ -338,31 +218,16 @@ app.post('/api/lock', async (req, res) => {
     fileMeta.encrypted = true;
     filesDb.set(id, fileMeta);
 
-    // Save password in vault if requested
-    if (saveToVault && token) {
-      const username = sessions.get(token);
-      if (username) {
-        const encryptedVal = encryptPassword(password);
-        const lockedBufferForHash = fs.readFileSync(fileMeta.path);
-        const lockedHash = getFileHash(lockedBufferForHash);
-
-        // Remove duplicate hashes for the same user in vault
-        db.vault = db.vault.filter(v => !(v.userId === username && v.pdfHash === lockedHash));
-        db.vault.push({
-          userId: username,
-          pdfHash: lockedHash,
-          encryptedPassword: encryptedVal,
-          hint: hint || '',
-          createdAt: Date.now()
-        });
-        saveDb();
-        console.log(`Saved password to vault for user ${username} and locked PDF hash ${lockedHash}`);
-      }
-    }
-
     const lockedBuffer = fs.readFileSync(fileMeta.path);
+    const lockedHash = getFileHash(lockedBuffer);
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${fileMeta.originalname.replace('.pdf', '')}_locked.pdf"`);
+    res.setHeader('Access-Control-Expose-Headers', 'X-PDF-Hash, X-PDF-Hint');
+    res.setHeader('X-PDF-Hash', lockedHash);
+    if (hint) {
+      res.setHeader('X-PDF-Hint', encodeURIComponent(hint));
+    }
     res.send(lockedBuffer);
   } catch (err) {
     console.error('Error locking PDF:', err);
