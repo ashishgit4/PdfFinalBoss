@@ -53,14 +53,21 @@ export function Features() {
             <p className="tool-desc">Protect your PDF documents with AES-256 secure encryption.</p>
           </div>
 
-          {/* Tool 3: Coming Soon */}
+          {/* Tool 3: Active */}
+          <div className="tool-card">
+            <span className="tool-badge active">Active</span>
+            <h3 className="tool-title">Local Vault</h3>
+            <p className="tool-desc">Securely save PDF passwords in your browser for automatic, one-click unlocking next time.</p>
+          </div>
+
+          {/* Tool 4: Coming Soon */}
           <div className="tool-card">
             <span className="tool-badge soon">Coming Soon</span>
             <h3 className="tool-title">Merge PDF</h3>
             <p className="tool-desc">Combine multiple documents into a single optimized file.</p>
           </div>
 
-          {/* Tool 4: Coming Soon */}
+          {/* Tool 5: Coming Soon */}
           <div className="tool-card">
             <span className="tool-badge soon">Coming Soon</span>
             <h3 className="tool-title">Compress PDF</h3>

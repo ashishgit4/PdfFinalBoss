@@ -18,7 +18,11 @@ export function FAQ() {
     },
     {
       q: "Do you store my password?",
-      a: "No. The credentials you submit are solely used in memory during decryption and are never saved, logged, or recorded anywhere on disk."
+      a: "No. The credentials you submit are solely used in memory during decryption and are never saved, logged, or recorded anywhere on the server disk."
+    },
+    {
+      q: "How does the Local Password Vault work?",
+      a: "When you lock a PDF, you can choose to save the password to your local vault. We encrypt and save this password directly in your browser's localStorage mapped to the file's unique hash. If you upload the same PDF again, your browser automatically retrieves the password and unlocks it for you. Your passwords never leave your device."
     },
     {
       q: "Is this free?",
