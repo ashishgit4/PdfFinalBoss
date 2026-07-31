@@ -13,7 +13,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const execFilePromise = util.promisify(execFile);
-const qpdfPath = path.join(__dirname, 'bin', 'qpdf-12.3.2-msvc64', 'bin', 'qpdf.exe');
+const qpdfPath =
+  process.platform === "win32"
+    ? path.join(
+        __dirname,
+        "bin",
+        "qpdf-12.3.2-msvc64",
+        "bin",
+        "qpdf.exe"
+      )
+    : "qpdf";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
