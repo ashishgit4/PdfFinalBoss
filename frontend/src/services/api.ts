@@ -1,5 +1,8 @@
 import type { UploadResponse } from "../types";
 
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 /**
  * Uploads a PDF file to the backend, tracking progress with a callback.
  */
@@ -9,13 +12,17 @@ export function uploadPDF(
 ): Promise<UploadResponse> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/upload");
+
+    // ✅ Works for both localhost and Render
+    xhr.open("POST", `${API_URL}/api/upload`);
 
     // Track upload progress
     if (onProgress) {
       xhr.upload.addEventListener("progress", (event) => {
         if (event.lengthComputable) {
-          const percentComplete = Math.round((event.loaded / event.total) * 100);
+          const percentComplete = Math.round(
+            (event.loaded / event.total) * 100
+          );
           onProgress(percentComplete);
         }
       });
@@ -32,7 +39,11 @@ export function uploadPDF(
       } else {
         try {
           const errorData = JSON.parse(xhr.responseText);
-          reject(new Error(errorData.message || `Upload failed with status ${xhr.status}`));
+          reject(
+            new Error(
+              errorData.message || `Upload failed with status ${xhr.status}`
+            )
+          );
         } catch {
           reject(new Error(`Upload failed with status ${xhr.status}`));
         }
@@ -49,6 +60,7 @@ export function uploadPDF(
 
     const formData = new FormData();
     formData.append("file", file);
+
     xhr.send(formData);
   });
 }
@@ -57,8 +69,11 @@ export function uploadPDF(
  * Unlocks an uploaded PDF file using the provided password.
  * Returns the decrypted PDF as a Blob.
  */
-export async function unlockPDF(id: string, password: string): Promise<Blob> {
-  const response = await fetch("/api/unlock", {
+export async function unlockPDF(
+  id: string,
+  password: string
+): Promise<Blob> {
+  const response = await fetch(`${API_URL}/api/unlock`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -68,9 +83,11 @@ export async function unlockPDF(id: string, password: string): Promise<Blob> {
 
   if (!response.ok) {
     let errorMessage = "Decryption failed. Please check the password.";
+
     try {
       const errorJson = await response.json();
-      if (errorJson && errorJson.message) {
+
+      if (errorJson?.message) {
         errorMessage = errorJson.message;
       }
     } catch {
@@ -82,6 +99,7 @@ export async function unlockPDF(id: string, password: string): Promise<Blob> {
         errorMessage = `Unlocking failed with status ${response.status}`;
       }
     }
+
     throw new Error(errorMessage);
   }
 
