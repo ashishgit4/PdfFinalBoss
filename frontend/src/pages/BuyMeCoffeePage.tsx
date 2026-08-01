@@ -3,14 +3,13 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Globe, CreditCard, ArrowLeft, Heart, ExternalLink, ShieldCheck, 
-  Zap, Star, Copy, QrCode 
+  Zap, Star, Copy, QrCode, Feather, Droplet, Award 
 } from "lucide-react";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { loadRazorpayScript } from "@/lib/payment";
 
 export function BuyMeCoffeePage() {
@@ -150,7 +149,7 @@ export function BuyMeCoffeePage() {
           project: "PdfFinalBoss",
         },
         theme: {
-          color: "#000000",
+          color: "#24211c",
         },
         modal: {
           ondismiss: function () {
@@ -182,419 +181,412 @@ export function BuyMeCoffeePage() {
   const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(upiUrl)}`;
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 flex flex-col font-sans relative overflow-x-hidden selection:bg-zinc-800 selection:text-white">
-      {/* Premium Vercel/Linear subtle grids & glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[450px] bg-gradient-to-b from-zinc-800/10 via-transparent to-transparent blur-3xl pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_60%,transparent_100%)] pointer-events-none" />
+    <div className="min-h-screen bg-[#f6f1e7] text-[#24211c] flex flex-col font-sans relative overflow-x-hidden selection:bg-[#e8c87a]/40 selection:text-[#24211c] h-screen overflow-hidden">
+      
+      {/* Background Video loop */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="fixed inset-0 w-full h-full object-cover z-0 pointer-events-none"
+      >
+        <source src="https://zxdefgavgwfxastwmmjm.supabase.co/storage/v1/object/public/assets/plume.mp4" type="video/mp4" />
+      </video>
 
-      {/* Header Container */}
-      <header className="border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link 
-            to="/" 
-            className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-xs font-semibold uppercase tracking-wider group"
+      {/* Light warm ivory paper overlays */}
+      <div 
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          background: "linear-gradient(to top, rgba(246, 241, 231, 0.74) 0%, rgba(246, 241, 231, 0.18) 38%, transparent 62%)"
+        }}
+      />
+      <div 
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          background: "linear-gradient(to bottom, rgba(246, 241, 231, 0.6), transparent 18%)"
+        }}
+      />
+
+      {/* Paper Grain Overlay */}
+      <div className="paper-grain" />
+
+      {/* Top Navbar */}
+      <header className="relative z-50 px-4 sm:px-6 md:px-12 py-4 md:py-6 flex items-center justify-between w-full">
+        <div className="flex items-center gap-3 animate-blur-fade-up" style={{ animationDelay: "0ms" }}>
+          <span className="font-serif text-2xl tracking-[0.04em] text-[#24211c]">PdfFinalBoss</span>
+          <span className="text-[10px] tracking-[0.3em] uppercase text-[#caa24f] hidden sm:inline-block font-sans select-none">/ PAPERIE</span>
+        </div>
+
+        <div className="flex items-center gap-3 animate-blur-fade-up" style={{ animationDelay: "350ms" }}>
+          <Button asChild variant="outline" className="rounded-full px-5 py-2 text-sm text-[#24211c] border-[#caa24f]/60 bg-transparent hover:bg-[#24211c]/5 select-none transition-colors cursor-pointer">
+            <Link to="/" className="flex items-center gap-2">
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Home</span>
+            </Link>
+          </Button>
+
+          <div 
+            className="border border-[#caa24f]/60 text-[#caa24f] text-[9px] tracking-[0.25em] uppercase px-3 py-1 rounded-full bg-transparent font-semibold select-none hidden xs:inline-block"
           >
-            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            <span>Back to Home</span>
-          </Link>
-          <div className="text-zinc-500 text-xs font-mono">PdfFinalBoss Support Hub</div>
+            FREE PACK
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 container max-w-4xl mx-auto px-6 py-12 relative z-10 flex flex-col gap-12">
+      {/* Split Hero Content Container */}
+      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-12 pb-10 md:pb-16 relative z-10 flex flex-col lg:flex-row gap-12 items-stretch justify-end h-[calc(100vh-80px)] overflow-hidden">
         
-        {/* Hero Section */}
-        <div className="text-center max-w-2xl mx-auto flex flex-col items-center">
-          <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6 shadow-xl shadow-black/40">
-            <span className="text-3xl leading-none">☕</span>
-          </div>
+        {/* Left Side: Cinematic Copy */}
+        <div className="flex-1 flex flex-col justify-end max-w-xl pb-4">
           
-          <h1 className="text-4xl font-bold tracking-tight text-white mb-4">
-            Buy Me a Coffee
+          {/* Eyebrow */}
+          <div className="animate-blur-fade-up" style={{ animationDelay: "300ms" }}>
+            <span className="text-[11px] tracking-[0.34em] uppercase text-[#caa24f] font-semibold block mb-2 select-none">
+              FINE STATIONERY · SINCE 1888
+            </span>
+            <div className="hairline w-16 animate-ink-draw mb-6" />
+          </div>
+
+          {/* Headline */}
+          <h1 
+            className="font-serif text-5xl sm:text-6xl md:text-7xl font-light leading-[0.98] tracking-[-0.01em] text-[#24211c] mb-5 animate-blur-fade-up flex flex-col"
+            style={{ animationDelay: "450ms" }}
+          >
+            <span>Every word</span>
+            <span className="italic gild font-medium">worth keeping.</span>
           </h1>
 
-          <p className="text-zinc-400 text-sm leading-relaxed max-w-xl">
+          {/* Subline */}
+          <p 
+            className="text-sm sm:text-base text-[#24211c]/65 max-w-md mb-8 leading-relaxed font-sans animate-blur-fade-up"
+            style={{ animationDelay: "560ms" }}
+          >
             PdfFinalBoss is completely free and open source. If this project has helped you save time, consider supporting its development. Every contribution helps improve the project and keeps it free for everyone.
           </p>
+
+          {/* Metadata / Trust Row */}
+          <div 
+            className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] tracking-[0.22em] uppercase text-[#24211c]/50 font-semibold mb-2 animate-blur-fade-up select-none"
+            style={{ animationDelay: "380ms" }}
+          >
+            <div className="flex items-center gap-1.5">
+              <Feather className="w-3.5 h-3.5 text-[#caa24f]" />
+              <span>HAND-CUT NIBS</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Award className="w-3.5 h-3.5 text-[#caa24f]" />
+              <span>WAX SEALED</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Droplet className="w-3.5 h-3.5 text-[#caa24f]" />
+              <span>IRON-GALL INK</span>
+            </div>
+          </div>
         </div>
 
-        {/* Exactly Two Cards Support Options */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Right Side: Support Cards & Features (Scrollable Content Container) */}
+        <div className="w-full lg:w-[480px] overflow-y-auto pr-1 flex flex-col gap-6 scrollbar-thin select-none max-h-[85vh] lg:max-h-[calc(100vh-120px)] self-end pb-4 pt-2">
           
-          {/* CARD 1: International Support */}
-          <Card className="bg-zinc-950 border-zinc-900 flex flex-col justify-between hover:border-zinc-800 transition-colors shadow-2xl shadow-black/50 p-6">
-            <CardHeader className="p-0 mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-zinc-400" />
+          {/* Exactly Two Cards Grid */}
+          <div className="flex flex-col gap-4 animate-blur-fade-up" style={{ animationDelay: "660ms" }}>
+            
+            {/* CARD 1: International Support */}
+            <Card className="bg-[#faf7f0]/85 backdrop-blur-md border-[#caa24f]/20 text-[#24211c] shadow-lg flex flex-col justify-between p-5 relative overflow-hidden rounded-2xl">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-[#caa24f]" />
                   <span>🌍 International Support</span>
                 </CardTitle>
-              </div>
-              <CardDescription className="text-zinc-400 text-xs leading-relaxed">
-                Support me internationally using Ko-fi.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="p-0 flex-1">
-              <div className="mb-6">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 block mb-2.5">Accepted Methods</span>
-                <div className="grid grid-cols-2 gap-2 text-xs text-zinc-300">
-                  {["Credit Card", "PayPal", "Apple Pay", "Google Pay"].map((method) => (
-                    <div key={method} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-900">
-                      <div className="w-1 h-1 rounded-full bg-zinc-500" />
-                      <span>{method}</span>
-                    </div>
+                <CardDescription className="text-[#24211c]/60 text-xs">
+                  Support me internationally using Ko-fi.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0 mb-4">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-[#24211c]/40 block mb-1.5">Accepted Methods</span>
+                <div className="flex flex-wrap gap-1 text-[10px] text-[#24211c]/80">
+                  {["Credit Card", "PayPal", "Apple Pay", "Google Pay"].map((m) => (
+                    <span key={m} className="px-2 py-0.5 rounded bg-[#24211c]/5 border border-[#24211c]/5 font-medium">{m}</span>
                   ))}
                 </div>
-              </div>
-            </CardContent>
+              </CardContent>
+              <CardFooter className="p-0">
+                <Button asChild className="w-full h-9 bg-[#24211c] hover:bg-[#34302a] text-[#f6f1e7] font-semibold rounded-lg shadow-sm cursor-pointer text-xs">
+                  <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
+                    <span>Buy me a Coffee</span>
+                    <ExternalLink className="w-3 h-3 text-[#f6f1e7]/80" />
+                  </a>
+                </Button>
+              </CardFooter>
+            </Card>
 
-            <CardFooter className="p-0 border-t-0 bg-transparent pt-4">
-              <Button asChild className="w-full h-10 bg-white hover:bg-zinc-200 text-black font-semibold rounded-lg shadow-lg cursor-pointer">
-                <a 
-                  href="https://ko-fi.com/ashishsharma11" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5"
-                >
-                  <span>Buy me a Coffee</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </Button>
-            </CardFooter>
-          </Card>
-
-          {/* CARD 2: India Support */}
-          <Card className="bg-zinc-950 border-zinc-900 flex flex-col justify-between hover:border-zinc-800 transition-colors shadow-2xl shadow-black/50 p-6">
-            <CardHeader className="p-0 mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-zinc-400" />
+            {/* CARD 2: India Support */}
+            <Card className="bg-[#faf7f0]/85 backdrop-blur-md border-[#caa24f]/20 text-[#24211c] shadow-lg flex flex-col justify-between p-5 relative overflow-hidden rounded-2xl">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-[#caa24f]" />
                   <span>🇮🇳 India Support</span>
                 </CardTitle>
-              </div>
-              <CardDescription className="text-zinc-400 text-xs leading-relaxed">
-                Support using Razorpay Checkout.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="p-0 flex-1 flex flex-col gap-6">
-              {/* Preset buttons */}
-              <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 block mb-2.5">Amount</span>
-                <div className="grid grid-cols-3 gap-2 mb-2">
-                  {[100, 250, 500].map((amt) => (
-                    <Button
-                      key={amt}
-                      variant="outline"
-                      onClick={() => {
-                        setPresetAmount(amt);
-                        setCustomAmount("");
+                <CardDescription className="text-[#24211c]/60 text-xs">
+                  Support using Razorpay Checkout.
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="p-0 flex flex-col gap-4">
+                {/* Preset donation list */}
+                <div>
+                  <div className="grid grid-cols-3 gap-2 mb-2">
+                    {[100, 250, 500].map((amt) => (
+                      <Button
+                        key={amt}
+                        variant="outline"
+                        onClick={() => {
+                          setPresetAmount(amt);
+                          setCustomAmount("");
+                        }}
+                        className={`h-8 text-xs border rounded-lg ${
+                          presetAmount === amt && !customAmount
+                            ? "bg-[#24211c] text-[#f6f1e7] border-[#24211c]"
+                            : "bg-[#24211c]/5 border-[#caa24f]/20 text-[#24211c] hover:bg-[#24211c]/10"
+                        }`}
+                      >
+                        ₹{amt}
+                      </Button>
+                    ))}
+                  </div>
+                  
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#24211c]/40">₹</span>
+                    <Input
+                      type="number"
+                      value={customAmount}
+                      onChange={(e) => {
+                        setCustomAmount(e.target.value);
+                        setPresetAmount(0);
                       }}
-                      className={`h-9 text-xs border rounded-lg ${
-                        presetAmount === amt && !customAmount
-                          ? "bg-white text-black border-white"
-                          : "bg-zinc-900 border-zinc-800 text-zinc-300 hover:text-white"
-                      }`}
-                    >
-                      ₹{amt}
-                    </Button>
-                  ))}
-                </div>
-                
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono text-zinc-500">₹</span>
-                  <Input
-                    type="number"
-                    value={customAmount}
-                    onChange={(e) => {
-                      setCustomAmount(e.target.value);
-                      setPresetAmount(0);
-                    }}
-                    placeholder="Enter custom amount"
-                    className="h-9 bg-zinc-900 border-zinc-800 pl-6 text-xs text-white focus-visible:ring-1 focus-visible:ring-zinc-500 focus-visible:border-zinc-500 rounded-lg placeholder:text-zinc-600"
-                    min="1"
-                  />
-                </div>
-              </div>
-
-              {/* UPI ID Info with Copy and QR fallbacks */}
-              <div className="bg-zinc-900/50 border border-zinc-900 p-4 rounded-xl flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">UPI ID Fallback</span>
-                    <span className="text-xs font-mono text-white mt-0.5">{upiId}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon-xs"
-                      onClick={handleCopyUpiId}
-                      title="Copy UPI ID"
-                      className="text-zinc-400 hover:text-white"
-                    >
-                      <Copy className="size-3.5" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon-xs"
-                      onClick={() => setShowQrCode(!showQrCode)}
-                      title="Toggle QR Code fallback"
-                      className={`text-zinc-400 hover:text-white ${showQrCode ? 'text-[#FF5E5B]' : ''}`}
-                    >
-                      <QrCode className="size-3.5" />
-                    </Button>
+                      placeholder="Enter custom amount"
+                      className="h-8 bg-[#24211c]/5 border-[#caa24f]/20 pl-6 text-xs text-[#24211c] focus-visible:ring-1 focus-visible:ring-[#caa24f] focus-visible:border-[#caa24f] rounded-lg placeholder:text-[#24211c]/30"
+                      min="1"
+                    />
                   </div>
                 </div>
 
-                <AnimatePresence>
-                  {showQrCode && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden flex flex-col items-center"
-                    >
-                      <div className="bg-white p-2 rounded-xl border border-zinc-800 shadow-xl mt-2 select-none">
-                        <img 
-                          src={qrCodeImageUrl} 
-                          alt="UPI Donation QR Code" 
-                          width="180" 
-                          height="180"
-                          className="rounded-lg pointer-events-none"
-                        />
-                      </div>
-                      <span className="text-[9px] text-zinc-500 mt-2">Scan with GPay, PhonePe, Paytm, BHIM</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                {/* UPI details */}
+                <div className="bg-[#24211c]/5 border border-[#caa24f]/10 p-3.5 rounded-xl flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] font-semibold uppercase tracking-wider text-[#caa24f]">UPI ID</span>
+                      <span className="text-xs font-mono text-[#24211c] mt-0.5">{upiId}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Button 
+                        variant="ghost" 
+                        size="icon-xs"
+                        onClick={handleCopyUpiId}
+                        className="text-[#24211c]/65 hover:text-[#24211c]"
+                        title="Copy UPI ID"
+                      >
+                        <Copy className="size-3.5" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon-xs"
+                        onClick={() => setShowQrCode(!showQrCode)}
+                        className={`text-[#24211c]/65 hover:text-[#24211c] ${showQrCode ? 'text-[#caa24f]' : ''}`}
+                        title="Toggle QR Code"
+                      >
+                        <QrCode className="size-3.5" />
+                      </Button>
+                    </div>
+                  </div>
 
-              <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 block mb-2">Accepted methods</span>
-                <div className="flex flex-wrap gap-1 text-[10px] text-zinc-400">
-                  {["UPI", "Google Pay", "PhonePe", "Paytm", "Cards", "Wallets", "Net Banking"].map((item) => (
-                    <span key={item} className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-900">
-                      {item}
-                    </span>
-                  ))}
+                  <AnimatePresence>
+                    {showQrCode && (
+                      <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden flex flex-col items-center pt-2"
+                      >
+                        <div className="bg-white p-1.5 rounded-lg border border-[#caa24f]/30 shadow-md">
+                          <img 
+                            src={qrCodeImageUrl} 
+                            alt="UPI QR Code fallback" 
+                            width="140" 
+                            height="140"
+                            className="rounded"
+                          />
+                        </div>
+                        <span className="text-[8px] text-[#24211c]/40 mt-1.5 font-semibold">Scan with GPay, PhonePe, Paytm, BHIM</span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-              </div>
-            </CardContent>
+              </CardContent>
 
-            <CardFooter className="p-0 border-t-0 bg-transparent pt-4">
-              <Button 
-                onClick={handleRazorpayPayment}
-                disabled={isProcessing}
-                className="w-full h-10 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-semibold rounded-lg cursor-pointer"
-              >
-                {isProcessing ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin" />
-                    <span>Connecting...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Support via UPI</span>
-                    <Zap className="w-3.5 h-3.5 text-zinc-900" />
-                  </>
-                )}
-              </Button>
-            </CardFooter>
-          </Card>
-
-        </div>
-
-        {/* Dynamic Verification Celebration Overlay */}
-        <AnimatePresence>
-          {paymentSuccess && successDetails && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
-            >
-              <div className="max-w-sm w-full bg-zinc-950 border border-zinc-900 p-8 rounded-2xl text-center relative shadow-2xl">
-                <div className="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center mx-auto mb-5">
-                  <ShieldCheck className="w-6 h-6 text-zinc-300" />
-                </div>
-                
-                <h3 className="text-xl font-bold text-white mb-2">Transaction Success</h3>
-                <p className="text-zinc-400 text-xs mb-6">
-                  You contributed <span className="text-white font-semibold">₹{successDetails.amount}</span>. Thank you for keeping PdfFinalBoss free and open source.
-                </p>
-
-                <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-lg text-left text-[10px] mb-6 font-mono text-zinc-400 flex flex-col gap-1 select-all">
-                  <div><span className="text-zinc-600">ID:</span> {successDetails.paymentId}</div>
-                  <div><span className="text-zinc-600">Status:</span> SECURED</div>
-                </div>
-
-                <Button
-                  onClick={() => {
-                    setPaymentSuccess(false);
-                    setSuccessDetails(null);
-                    setIsProcessing(false);
-                  }}
-                  className="w-full h-9 bg-white hover:bg-zinc-200 text-black font-semibold rounded-lg cursor-pointer"
+              <CardFooter className="p-0 pt-4">
+                <Button 
+                  onClick={handleRazorpayPayment}
+                  disabled={isProcessing}
+                  className="w-full h-9 bg-[#e8c87a] hover:bg-[#eed392] text-[#24211c] font-semibold rounded-lg shadow-sm border border-[#caa24f]/30 cursor-pointer text-xs flex items-center justify-center gap-1.5"
                 >
-                  Continue
+                  {isProcessing ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-[#24211c]/30 border-t-[#24211c] rounded-full animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Support via UPI</span>
+                      <Zap className="w-3 h-3" />
+                    </>
+                  )}
                 </Button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </CardFooter>
+            </Card>
 
-        {/* Why Support Section (4 feature cards) */}
-        <div>
-          <div className="text-center max-w-xl mx-auto mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">Why support PdfFinalBoss?</h2>
-            <p className="text-xs text-zinc-500">Your contributions maintain high-speed developer environments with zero barrier entry.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Verification Celebration modal */}
+          <AnimatePresence>
+            {paymentSuccess && successDetails && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] bg-[#f6f1e7]/90 backdrop-blur-md flex items-center justify-center p-6"
+              >
+                <div className="max-w-xs w-full bg-[#faf7f0] border border-[#caa24f]/40 p-6 rounded-2xl text-center relative shadow-xl">
+                  <div className="w-12 h-12 bg-[#e8c87a]/20 border border-[#caa24f]/40 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <ShieldCheck className="w-6 h-6 text-[#caa24f]" />
+                  </div>
+                  
+                  <h3 className="text-lg font-bold text-[#24211c] mb-1 font-serif">Support Confirmed</h3>
+                  <p className="text-[#24211c]/70 text-xs mb-5">
+                    Thank you for contributing <span className="text-[#24211c] font-bold">₹{successDetails.amount}</span>. Your support keeps this project free.
+                  </p>
+
+                  <div className="bg-[#24211c]/5 border border-[#24211c]/10 p-3 rounded-lg text-left text-[9px] mb-5 font-mono text-[#24211c]/80 select-all">
+                    <div><span className="text-[#24211c]/40">TXN:</span> {successDetails.paymentId}</div>
+                    <div><span className="text-[#24211c]/40">status:</span> VERIFIED</div>
+                  </div>
+
+                  <Button
+                    onClick={() => {
+                      setPaymentSuccess(false);
+                      setSuccessDetails(null);
+                      setIsProcessing(false);
+                    }}
+                    className="w-full h-9 bg-[#24211c] hover:bg-[#34302a] text-[#f6f1e7] font-semibold rounded-lg cursor-pointer text-xs"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Why support PdfFinalBoss? (4 premium features) */}
+          <div className="flex flex-col gap-3 animate-blur-fade-up" style={{ animationDelay: "760ms" }}>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#caa24f] block">Why support PdfFinalBoss?</span>
             
-            <div className="p-5 rounded-2xl bg-zinc-950 border border-zinc-900 hover:border-zinc-800 transition-colors flex gap-4">
-              <div className="w-9 h-9 shrink-0 bg-zinc-900 rounded-lg flex items-center justify-center border border-zinc-800">
-                <span className="text-sm">🚀</span>
+            <div className="grid grid-cols-1 gap-2.5">
+              
+              <div className="p-4 rounded-xl bg-[#faf7f0]/60 border border-[#caa24f]/15 hover:border-[#caa24f]/30 transition-colors flex gap-3.5">
+                <div className="w-8 h-8 shrink-0 bg-[#e8c87a]/10 rounded-lg flex items-center justify-center border border-[#caa24f]/20">
+                  <span className="text-xs">🚀</span>
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[#24211c] mb-0.5">Faster updates</h4>
+                  <p className="text-[10.5px] text-[#24211c]/65 leading-relaxed">
+                    Sponsoring active feature development, memory buffers optimization, and CLI builds.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-white mb-1">Faster updates</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Funding development of processing algorithms and keeping the toolbox expanding.
-                </p>
-              </div>
-            </div>
 
-            <div className="p-5 rounded-2xl bg-zinc-950 border border-zinc-900 hover:border-zinc-800 transition-colors flex gap-4">
-              <div className="w-9 h-9 shrink-0 bg-zinc-900 rounded-lg flex items-center justify-center border border-zinc-800">
-                <span className="text-sm">🔒</span>
+              <div className="p-4 rounded-xl bg-[#faf7f0]/60 border border-[#caa24f]/15 hover:border-[#caa24f]/30 transition-colors flex gap-3.5">
+                <div className="w-8 h-8 shrink-0 bg-[#e8c87a]/10 rounded-lg flex items-center justify-center border border-[#caa24f]/20">
+                  <span className="text-xs">🔒</span>
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[#24211c] mb-0.5">Better PDF tools</h4>
+                  <p className="text-[10.5px] text-[#24211c]/65 leading-relaxed">
+                    Underwriting sandbox improvements, vault systems, and advanced encryption tasks.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-white mb-1">Better PDF tools</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Securing testing environments to build merges, compressors, and editor tools.
-                </p>
-              </div>
-            </div>
 
-            <div className="p-5 rounded-2xl bg-zinc-950 border border-zinc-900 hover:border-zinc-800 transition-colors flex gap-4">
-              <div className="w-9 h-9 shrink-0 bg-zinc-900 rounded-lg flex items-center justify-center border border-zinc-800">
-                <span className="text-sm">🌍</span>
+              <div className="p-4 rounded-xl bg-[#faf7f0]/60 border border-[#caa24f]/15 hover:border-[#caa24f]/30 transition-colors flex gap-3.5">
+                <div className="w-8 h-8 shrink-0 bg-[#e8c87a]/10 rounded-lg flex items-center justify-center border border-[#caa24f]/20">
+                  <span className="text-xs">🌍</span>
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[#24211c] mb-0.5">Hosting & Domain</h4>
+                  <p className="text-[10.5px] text-[#24211c]/65 leading-relaxed">
+                    Maintaining operational hosting arrays, bandwidth resources, and SSL certificates.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-white mb-1">Hosting & Domain</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Covering network costs, SSLs, sandbox CPU caches, and custom domains.
-                </p>
-              </div>
-            </div>
 
-            <div className="p-5 rounded-2xl bg-zinc-950 border border-zinc-900 hover:border-zinc-800 transition-colors flex gap-4">
-              <div className="w-9 h-9 shrink-0 bg-zinc-900 rounded-lg flex items-center justify-center border border-zinc-800">
-                <span className="text-sm">❤️</span>
+              <div className="p-4 rounded-xl bg-[#faf7f0]/60 border border-[#caa24f]/15 hover:border-[#caa24f]/30 transition-colors flex gap-3.5">
+                <div className="w-8 h-8 shrink-0 bg-[#e8c87a]/10 rounded-lg flex items-center justify-center border border-[#caa24f]/20">
+                  <span className="text-xs">❤️</span>
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[#24211c] mb-0.5">Support Open Source</h4>
+                  <p className="text-[10.5px] text-[#24211c]/65 leading-relaxed">
+                    Ensuring utility sets remain GPL-compliant, tracker-free, and 100% free of ads.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-white mb-1">Support Open Source</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Encouraging free toolchains completely clean of cookies, tracking, or ads.
-                </p>
-              </div>
-            </div>
 
+            </div>
           </div>
+
+          {/* Footer (GitHub Stars + Thank you note) */}
+          <footer className="border-t border-[#caa24f]/20 pt-6 pb-4 flex flex-col gap-5 animate-blur-fade-up" style={{ animationDelay: "860ms" }}>
+            <div className="flex flex-col items-center text-center gap-1.5">
+              <Heart className="w-4 h-4 text-[#caa24f]" />
+              <h3 className="text-sm font-serif font-bold text-[#24211c]">Thank you for supporting</h3>
+              <p className="text-[10.5px] text-[#24211c]/65 max-w-sm leading-relaxed">
+                PdfFinalBoss is run entirely by an individual developer. Your presence, code updates, and donations make everything possible.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-4 bg-[#faf7f0]/60 border border-[#caa24f]/20 p-3.5 rounded-xl justify-between w-full">
+              <div className="text-left">
+                <span className="text-[9px] font-semibold uppercase tracking-wider text-[#caa24f] block">GitHub Repository</span>
+                <span className="text-xs font-mono text-[#24211c] font-semibold select-all">github.com/ashishgit4/PdfFinalBoss</span>
+              </div>
+              
+              <Button asChild className="h-8 bg-[#24211c] hover:bg-[#34302a] text-[#f6f1e7] font-semibold rounded-lg cursor-pointer text-xs">
+                <a 
+                  href="https://github.com/ashishgit4/PdfFinalBoss" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5"
+                >
+                  <Star className="size-3.5 fill-current text-[#e8c87a]" />
+                  <span>Star on GitHub</span>
+                  <span className="text-[9px] bg-[#f6f1e7]/20 px-2 py-0.5 rounded-full font-mono text-[#f6f1e7]">
+                    {gitHubStars !== null ? gitHubStars : "50+"}
+                  </span>
+                </a>
+              </Button>
+            </div>
+
+            <div className="text-center text-[9px] text-[#24211c]/35 tracking-[0.28em] uppercase flex items-center justify-center gap-1.5 select-none font-semibold mt-2">
+              <Feather className="size-3" />
+              <span>PRESSED, NOT PRINTED</span>
+            </div>
+          </footer>
+
         </div>
 
-        {/* FAQ Area */}
-        <div>
-          <div className="text-center max-w-xl mx-auto mb-6">
-            <h2 className="text-lg font-bold text-white">Frequently Asked Questions</h2>
-          </div>
+      </div>
 
-          <div className="max-w-2xl mx-auto bg-zinc-950 border border-zinc-900 rounded-2xl p-4">
-            <Accordion type="single" collapsible className="w-full">
-              {faqItems.map((item, index) => (
-                <AccordionItem key={index} value={`item-${index}`} className="border-zinc-900">
-                  <AccordionTrigger className="text-xs font-semibold py-3 text-zinc-200 hover:text-white hover:no-underline">
-                    {item.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-xs text-zinc-400 leading-relaxed">
-                    {item.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </div>
-
-        {/* Footer (Dynamic repository stars + thank you message) */}
-        <footer className="border-t border-zinc-900 pt-10 pb-6 flex flex-col items-center text-center gap-6 relative">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-zinc-500/5 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="flex flex-col items-center">
-            <Heart className="w-6 h-6 text-zinc-500 mb-4 animate-pulse" />
-            <h3 className="text-base font-bold text-white mb-2">Thank you for your support</h3>
-            <p className="text-xs text-zinc-400 max-w-md leading-relaxed">
-              PdfFinalBoss is run entirely by an individual developer. Your support, stars, and pull requests keep open-source values alive.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4 bg-zinc-950 border border-zinc-900 p-4 rounded-2xl">
-            <div className="text-left">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 block">GitHub Repository</span>
-              <a 
-                href="https://github.com/ashishgit4/PdfFinalBoss" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-xs font-mono text-white hover:underline flex items-center gap-1"
-              >
-                <span>github.com/ashishgit4/PdfFinalBoss</span>
-                <ExternalLink className="size-3" />
-              </a>
-            </div>
-            <div className="h-px sm:h-8 w-8 sm:w-px bg-zinc-900" />
-            <Button asChild className="h-9 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-semibold rounded-lg cursor-pointer">
-              <a 
-                href="https://github.com/ashishgit4/PdfFinalBoss" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5"
-              >
-                <Star className="size-3.5 fill-current" />
-                <span>Star on GitHub</span>
-                <span className="text-[10px] bg-zinc-900 text-white px-2 py-0.5 rounded-full font-mono shrink-0 ml-1.5">
-                  {gitHubStars !== null ? gitHubStars : "50+"}
-                </span>
-              </a>
-            </Button>
-          </div>
-
-          <div className="text-[10px] text-zinc-600 font-mono mt-4">
-            PdfFinalBoss Project — Licensed under GPL.
-          </div>
-        </footer>
-
-      </main>
     </div>
   );
 }
-
-const faqItems = [
-  {
-    q: "Where does my donation money go?",
-    a: "Every donation directly funds server hosting costs, domain renewals, API bandwidth usage, and ongoing feature development. Keeping PdfFinalBoss 100% free with no ads is my main priority."
-  },
-  {
-    q: "Are domestic and international payments separate?",
-    a: "Yes. Due to gateway constraints, international users are recommended to use Ko-fi (supports global cards, Apple Pay, Google Pay, PayPal). Users in India can support directly using UPI and net banking via Razorpay."
-  },
-  {
-    q: "Is my payment safe?",
-    a: "Yes, completely. All transaction workflows occur on SSL-secured sandboxes. Razorpay handles domestic banking security, while Ko-fi routes billing through secure international networks. Your financial details never touch my servers."
-  },
-  {
-    q: "Can I contribute to the codebase instead?",
-    a: "Absolutely! PdfFinalBoss is open-source. You can submit pull requests, report issues, or suggest improvements on our GitHub repository."
-  }
-];
 
 export default BuyMeCoffeePage;
