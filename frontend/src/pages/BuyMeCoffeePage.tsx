@@ -2,18 +2,18 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Coffee, Globe, CreditCard, ArrowLeft, Check, Github, 
-  HelpCircle, Heart, Sparkles, ExternalLink, ShieldCheck, 
-  Award, Zap, Star 
+  Globe, CreditCard, ArrowLeft, Heart, ExternalLink, ShieldCheck, 
+  Zap, Star, Copy, QrCode 
 } from "lucide-react";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { loadRazorpayScript } from "@/lib/payment";
 
 export function BuyMeCoffeePage() {
-  const [theme, setTheme] = useState<"day" | "night">("night");
   const [gitHubStars, setGitHubStars] = useState<number | null>(null);
   
   // Razorpay states
@@ -21,21 +21,11 @@ export function BuyMeCoffeePage() {
   const [customAmount, setCustomAmount] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
+  const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [successDetails, setSuccessDetails] = useState<{
     paymentId: string;
     amount: number;
   } | null>(null);
-
-  // FAQ states
-  const [faqOpen, setFaqOpen] = useState<number | null>(null);
-
-  const toggleTheme = () => {
-    setTheme(theme === "day" ? "night" : "day");
-  };
-
-  useEffect(() => {
-    document.documentElement.className = `theme-${theme}`;
-  }, [theme]);
 
   // Fetch GitHub Stars dynamically
   useEffect(() => {
@@ -85,16 +75,14 @@ export function BuyMeCoffeePage() {
     }
 
     setIsProcessing(true);
-    toast.info("Initializing secure gateway connection...");
+    toast.info("Connecting to secure payment gateway...");
 
     try {
-      // 1. Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
         throw new Error("Razorpay SDK failed to load. Please check your network.");
       }
 
-      // 2. Create Razorpay order on backend
       const response = await fetch("/api/payments/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -103,7 +91,7 @@ export function BuyMeCoffeePage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to establish payment order session");
+        throw new Error(errorData.error || "Failed to establish payment session");
       }
 
       const orderData = await response.json();
@@ -113,17 +101,15 @@ export function BuyMeCoffeePage() {
         throw new Error("Payment configuration error (Missing public Key ID)");
       }
 
-      // 3. Configure Razorpay checkout options
       const options = {
         key: keyId,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: "PdfFinalBoss Toolkit",
-        description: "Support open-source project development",
-        image: "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/kofi.svg", // Fallback logo
+        name: "PdfFinalBoss",
+        description: "Support open source development",
         order_id: orderData.id,
         handler: async function (response: any) {
-          toast.loading("Securing signature verification...");
+          toast.loading("Verifying transaction authenticity...");
           try {
             const verificationResponse = await fetch("/api/payments/verify", {
               method: "POST",
@@ -144,15 +130,15 @@ export function BuyMeCoffeePage() {
               });
               setPaymentSuccess(true);
               toast.dismiss();
-              toast.success("Thank you for your generous support!");
+              toast.success("Thank you for supporting PdfFinalBoss!");
               triggerConfetti();
             } else {
-              throw new Error(verificationResult.error || "Payment validation failed");
+              throw new Error(verificationResult.error || "Payment verification failed");
             }
           } catch (verifyErr: any) {
             console.error("Signature verification error:", verifyErr);
             toast.dismiss();
-            toast.error(verifyErr.message || "Failed to confirm secure transaction.");
+            toast.error(verifyErr.message || "Failed to confirm payment status.");
           }
         },
         prefill: {
@@ -164,13 +150,13 @@ export function BuyMeCoffeePage() {
           project: "PdfFinalBoss",
         },
         theme: {
-          color: "#FF5E5B",
+          color: "#000000",
         },
         modal: {
           ondismiss: function () {
             setIsProcessing(false);
             toast.dismiss();
-            toast.info("Payment session dismissed.");
+            toast.info("Payment session cancelled.");
           },
         },
       };
@@ -178,429 +164,437 @@ export function BuyMeCoffeePage() {
       const paymentObject = new (window as any).Razorpay(options);
       paymentObject.open();
     } catch (err: any) {
-      console.error("Razorpay workflow initiation failed:", err);
+      console.error("Razorpay initiation failed:", err);
       toast.dismiss();
-      toast.error(err.message || "An unexpected transaction fault occurred.");
+      toast.error(err.message || "Failed to connect to gateway.");
       setIsProcessing(false);
     }
   };
 
-  const faqItems = [
-    {
-      q: "Where does my donation money go?",
-      a: "Every donation directly funds server hosting costs, domain renewals, API bandwidth usage, and ongoing feature development. Keeping PdfFinalBoss 100% free with no ads is my main priority."
-    },
-    {
-      q: "Are domestic and international payments separate?",
-      a: "Yes. Due to gateway constraints, international users are recommended to use Ko-fi (supports global cards, Apple Pay, Google Pay, PayPal). Users in India can support directly using UPI and net banking via Razorpay."
-    },
-    {
-      q: "Is my payment safe?",
-      a: "Yes, completely. All transaction workflows occur on SSL-secured sandboxes. Razorpay handles domestic banking security, while Ko-fi routes global billing through secure international standards. Your financial details never touch my servers."
-    },
-    {
-      q: "Can I contribute to the codebase instead?",
-      a: "Absolutely! PdfFinalBoss is open-source. You can submit pull requests, report issues, or suggest UI/UX improvements on our GitHub repository."
-    }
-  ];
+  const handleCopyUpiId = () => {
+    navigator.clipboard.writeText("ashishtawniya1@okaxis");
+    toast.success("UPI ID copied to clipboard!");
+  };
+
+  // UPI deep-link URL config
+  const upiId = "ashishtawniya1@okaxis";
+  const upiUrl = `upi://pay?pa=${upiId}&pn=PdfFinalBoss&cu=INR`;
+  const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(upiUrl)}`;
 
   return (
-    <div className="min-h-screen bg-[#0B0907] text-zinc-100 flex flex-col font-sans relative overflow-x-hidden selection:bg-[#FF5E5B]/30 selection:text-white">
-      {/* Vercel/Linear Style Ambient Blobs */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/3 right-1/4 w-[600px] h-[600px] bg-[#FF5E5B]/5 rounded-full blur-[160px] pointer-events-none" />
-      <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 flex flex-col font-sans relative overflow-x-hidden selection:bg-zinc-800 selection:text-white">
+      {/* Premium Vercel/Linear subtle grids & glows */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[450px] bg-gradient-to-b from-zinc-800/10 via-transparent to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_60%,transparent_100%)] pointer-events-none" />
 
-      {/* Grid Pattern overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
-
-      <Navbar theme={theme} onToggleTheme={toggleTheme} />
-
-      <main className="flex-1 container max-w-5xl mx-auto px-6 py-12 relative z-10">
-        
-        {/* Back Link */}
-        <div className="mb-8">
+      {/* Header Container */}
+      <header className="border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-md sticky top-0 z-40">
+        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link 
             to="/" 
-            className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors duration-200 group text-sm font-medium"
+            className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-xs font-semibold uppercase tracking-wider group"
           >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Toolkit
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Back to Home</span>
           </Link>
+          <div className="text-zinc-500 text-xs font-mono">PdfFinalBoss Support Hub</div>
         </div>
+      </header>
 
+      <main className="flex-1 container max-w-4xl mx-auto px-6 py-12 relative z-10 flex flex-col gap-12">
+        
         {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-xs font-medium text-purple-300 mb-6"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-[#FF5E5B] animate-pulse" />
-            <span>Support Open Source</span>
-          </motion.div>
+        <div className="text-center max-w-2xl mx-auto flex flex-col items-center">
+          <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6 shadow-xl shadow-black/40">
+            <span className="text-3xl leading-none">☕</span>
+          </div>
           
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.05 }}
-            className="text-4xl sm:text-6xl font-bold tracking-tight text-white mb-6 flex items-center justify-center gap-3.5"
-          >
-            <Coffee className="w-10 h-10 sm:w-14 sm:h-14 text-[#FF5E5B]" />
-            <span>Buy Me a Coffee</span>
-          </motion.h1>
+          <h1 className="text-4xl font-bold tracking-tight text-white mb-4">
+            Buy Me a Coffee
+          </h1>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto"
-          >
-            <span className="text-white font-semibold">PdfFinalBoss</span> is a completely free and open-source PDF toolkit. If this project has helped you, consider supporting me. Every donation helps me improve the project and keep it free.
-          </motion.p>
+          <p className="text-zinc-400 text-sm leading-relaxed max-w-xl">
+            PdfFinalBoss is completely free and open source. If this project has helped you save time, consider supporting its development. Every contribution helps improve the project and keeps it free for everyone.
+          </p>
         </div>
 
-        {/* Two Support Cards Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+        {/* Exactly Two Cards Support Options */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
-          {/* Card 1: International Support */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative rounded-3xl bg-white/[0.01] border border-white/[0.06] backdrop-blur-xl p-8 flex flex-col justify-between hover:border-white/[0.1] transition-all duration-300 group overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-colors" />
-            
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-sm font-semibold tracking-wider uppercase text-purple-400">Card 1</span>
-                <div className="p-2.5 rounded-2xl bg-purple-500/10 border border-purple-500/20">
-                  <Globe className="w-6 h-6 text-purple-400" />
-                </div>
+          {/* CARD 1: International Support */}
+          <Card className="bg-zinc-950 border-zinc-900 flex flex-col justify-between hover:border-zinc-800 transition-colors shadow-2xl shadow-black/50 p-6">
+            <CardHeader className="p-0 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-zinc-400" />
+                  <span>🌍 International Support</span>
+                </CardTitle>
               </div>
+              <CardDescription className="text-zinc-400 text-xs leading-relaxed">
+                Support me internationally using Ko-fi.
+              </CardDescription>
+            </CardHeader>
 
-              <h2 className="text-2xl font-bold text-white mb-3">🌍 International Support</h2>
-              <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
-                Support me from anywhere in the world using Ko-fi. High speed secure processing.
-              </p>
-
-              <div className="mb-8">
-                <h3 className="text-xs font-semibold tracking-wider uppercase text-zinc-500 mb-3">Accepted Methods</h3>
-                <div className="grid grid-cols-2 gap-2 text-xs text-zinc-300">
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                    <Check className="w-3.5 h-3.5 text-[#FF5E5B]" />
-                    <span>Credit Cards</span>
-                  </div>
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                    <Check className="w-3.5 h-3.5 text-[#FF5E5B]" />
-                    <span>PayPal</span>
-                  </div>
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                    <Check className="w-3.5 h-3.5 text-[#FF5E5B]" />
-                    <span>Apple Pay</span>
-                  </div>
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                    <Check className="w-3.5 h-3.5 text-[#FF5E5B]" />
-                    <span>Google Pay</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <motion.a 
-              href="https://ko-fi.com/ashishsharma11" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-white text-black font-semibold hover:bg-zinc-200 transition-colors cursor-pointer"
-            >
-              <span>Buy me a coffee ☕</span>
-              <ExternalLink className="w-4 h-4 text-zinc-800" />
-            </motion.a>
-          </motion.div>
-
-          {/* Card 2: India Support (Razorpay) */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative rounded-3xl bg-white/[0.01] border border-white/[0.06] backdrop-blur-xl p-8 flex flex-col justify-between hover:border-white/[0.1] transition-all duration-300 group overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF5E5B]/10 rounded-full blur-2xl group-hover:bg-[#FF5E5B]/20 transition-colors" />
-            
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-sm font-semibold tracking-wider uppercase text-[#FF5E5B]">Card 2</span>
-                <div className="p-2.5 rounded-2xl bg-[#FF5E5B]/10 border border-[#FF5E5B]/20">
-                  <CreditCard className="w-6 h-6 text-[#FF5E5B]" />
-                </div>
-              </div>
-
-              <h2 className="text-2xl font-bold text-white mb-3">🇮🇳 India Support</h2>
-              <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
-                Support me securely using Razorpay. Directly integrates UPI payment options.
-              </p>
-
-              {/* Preset Support Amounts */}
+            <CardContent className="p-0 flex-1">
               <div className="mb-6">
-                <h3 className="text-xs font-semibold tracking-wider uppercase text-zinc-500 mb-3">Choose Support Amount</h3>
-                <div className="grid grid-cols-3 gap-2.5 mb-3">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 block mb-2.5">Accepted Methods</span>
+                <div className="grid grid-cols-2 gap-2 text-xs text-zinc-300">
+                  {["Credit Card", "PayPal", "Apple Pay", "Google Pay"].map((method) => (
+                    <div key={method} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-900">
+                      <div className="w-1 h-1 rounded-full bg-zinc-500" />
+                      <span>{method}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+
+            <CardFooter className="p-0 border-t-0 bg-transparent pt-4">
+              <Button asChild className="w-full h-10 bg-white hover:bg-zinc-200 text-black font-semibold rounded-lg shadow-lg cursor-pointer">
+                <a 
+                  href="https://ko-fi.com/ashishsharma11" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1.5"
+                >
+                  <span>Buy me a Coffee</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* CARD 2: India Support */}
+          <Card className="bg-zinc-950 border-zinc-900 flex flex-col justify-between hover:border-zinc-800 transition-colors shadow-2xl shadow-black/50 p-6">
+            <CardHeader className="p-0 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-zinc-400" />
+                  <span>🇮🇳 India Support</span>
+                </CardTitle>
+              </div>
+              <CardDescription className="text-zinc-400 text-xs leading-relaxed">
+                Support using Razorpay Checkout.
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="p-0 flex-1 flex flex-col gap-6">
+              {/* Preset buttons */}
+              <div>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 block mb-2.5">Amount</span>
+                <div className="grid grid-cols-3 gap-2 mb-2">
                   {[100, 250, 500].map((amt) => (
-                    <button
+                    <Button
                       key={amt}
+                      variant="outline"
                       onClick={() => {
                         setPresetAmount(amt);
                         setCustomAmount("");
                       }}
-                      className={`py-2.5 rounded-xl text-sm font-semibold border transition-all ${
+                      className={`h-9 text-xs border rounded-lg ${
                         presetAmount === amt && !customAmount
-                          ? "bg-[#FF5E5B]/10 border-[#FF5E5B] text-white"
-                          : "bg-white/[0.02] border-white/[0.04] text-zinc-400 hover:text-white hover:border-white/[0.1]"
+                          ? "bg-white text-black border-white"
+                          : "bg-zinc-900 border-zinc-800 text-zinc-300 hover:text-white"
                       }`}
                     >
                       ₹{amt}
-                    </button>
+                    </Button>
                   ))}
                 </div>
-
+                
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-zinc-500 font-semibold">₹</span>
-                  <input
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono text-zinc-500">₹</span>
+                  <Input
                     type="number"
                     value={customAmount}
                     onChange={(e) => {
                       setCustomAmount(e.target.value);
                       setPresetAmount(0);
                     }}
-                    placeholder="Enter custom amount (INR)"
-                    className="w-full bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.1] focus:border-[#FF5E5B] focus:outline-none rounded-xl py-3 pl-8 pr-4 text-sm text-white transition-all font-medium"
+                    placeholder="Enter custom amount"
+                    className="h-9 bg-zinc-900 border-zinc-800 pl-6 text-xs text-white focus-visible:ring-1 focus-visible:ring-zinc-500 focus-visible:border-zinc-500 rounded-lg placeholder:text-zinc-600"
                     min="1"
                   />
                 </div>
               </div>
 
-              <div className="mb-8">
-                <h3 className="text-xs font-semibold tracking-wider uppercase text-zinc-500 mb-3">Accepted UPI & Cards</h3>
-                <div className="flex flex-wrap gap-2 text-[10px] text-zinc-400">
-                  {["UPI", "Google Pay", "PhonePe", "Paytm", "Cards", "Net Banking", "Wallets"].map((method) => (
-                    <span key={method} className="px-2.5 py-1 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                      {method}
+              {/* UPI ID Info with Copy and QR fallbacks */}
+              <div className="bg-zinc-900/50 border border-zinc-900 p-4 rounded-xl flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">UPI ID Fallback</span>
+                    <span className="text-xs font-mono text-white mt-0.5">{upiId}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon-xs"
+                      onClick={handleCopyUpiId}
+                      title="Copy UPI ID"
+                      className="text-zinc-400 hover:text-white"
+                    >
+                      <Copy className="size-3.5" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon-xs"
+                      onClick={() => setShowQrCode(!showQrCode)}
+                      title="Toggle QR Code fallback"
+                      className={`text-zinc-400 hover:text-white ${showQrCode ? 'text-[#FF5E5B]' : ''}`}
+                    >
+                      <QrCode className="size-3.5" />
+                    </Button>
+                  </div>
+                </div>
+
+                <AnimatePresence>
+                  {showQrCode && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden flex flex-col items-center"
+                    >
+                      <div className="bg-white p-2 rounded-xl border border-zinc-800 shadow-xl mt-2 select-none">
+                        <img 
+                          src={qrCodeImageUrl} 
+                          alt="UPI Donation QR Code" 
+                          width="180" 
+                          height="180"
+                          className="rounded-lg pointer-events-none"
+                        />
+                      </div>
+                      <span className="text-[9px] text-zinc-500 mt-2">Scan with GPay, PhonePe, Paytm, BHIM</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 block mb-2">Accepted methods</span>
+                <div className="flex flex-wrap gap-1 text-[10px] text-zinc-400">
+                  {["UPI", "Google Pay", "PhonePe", "Paytm", "Cards", "Wallets", "Net Banking"].map((item) => (
+                    <span key={item} className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-900">
+                      {item}
                     </span>
                   ))}
                 </div>
               </div>
-            </div>
+            </CardContent>
 
-            <motion.button 
-              onClick={handleRazorpayPayment}
-              disabled={isProcessing}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-[#FF5E5B] text-white font-semibold hover:bg-[#ff4a47] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            >
-              {isProcessing ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Connecting to Bank...</span>
-                </>
-              ) : (
-                <>
-                  <span>Support with UPI</span>
-                  <Zap className="w-4 h-4 text-white" />
-                </>
-              )}
-            </motion.button>
-          </motion.div>
+            <CardFooter className="p-0 border-t-0 bg-transparent pt-4">
+              <Button 
+                onClick={handleRazorpayPayment}
+                disabled={isProcessing}
+                className="w-full h-10 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-semibold rounded-lg cursor-pointer"
+              >
+                {isProcessing ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin" />
+                    <span>Connecting...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Support via UPI</span>
+                    <Zap className="w-3.5 h-3.5 text-zinc-900" />
+                  </>
+                )}
+              </Button>
+            </CardFooter>
+          </Card>
 
         </div>
 
-        {/* Celebration State Overlay */}
+        {/* Dynamic Verification Celebration Overlay */}
         <AnimatePresence>
           {paymentSuccess && successDetails && (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-0 z-50 bg-[#0B0907]/90 backdrop-blur-md flex items-center justify-center p-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
             >
-              <div className="max-w-md w-full bg-white/[0.02] border border-white/[0.08] p-8 rounded-3xl text-center relative overflow-hidden">
-                <div className="absolute -top-10 -left-10 w-32 h-32 bg-[#FF5E5B]/10 rounded-full blur-2xl" />
-                
-                <div className="w-16 h-16 bg-[#FF5E5B]/10 border border-[#FF5E5B]/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <ShieldCheck className="w-8 h-8 text-[#FF5E5B]" />
+              <div className="max-w-sm w-full bg-zinc-950 border border-zinc-900 p-8 rounded-2xl text-center relative shadow-2xl">
+                <div className="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center mx-auto mb-5">
+                  <ShieldCheck className="w-6 h-6 text-zinc-300" />
                 </div>
                 
-                <h3 className="text-2xl font-bold text-white mb-2">🎉 Payment Verified!</h3>
-                <p className="text-zinc-400 text-sm mb-6">
-                  You supported <span className="text-white font-semibold">₹{successDetails.amount}</span> to the project.
-                  Your contribution keeps PdfFinalBoss free and open-source.
+                <h3 className="text-xl font-bold text-white mb-2">Transaction Success</h3>
+                <p className="text-zinc-400 text-xs mb-6">
+                  You contributed <span className="text-white font-semibold">₹{successDetails.amount}</span>. Thank you for keeping PdfFinalBoss free and open source.
                 </p>
 
-                <div className="bg-white/[0.02] border border-white/[0.04] p-4 rounded-2xl text-left text-xs mb-6 font-mono text-zinc-400 flex flex-col gap-1.5">
-                  <div><span className="text-zinc-500">Transaction ID:</span> {successDetails.paymentId}</div>
-                  <div><span className="text-zinc-500">Status:</span> Secure/Success</div>
+                <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-lg text-left text-[10px] mb-6 font-mono text-zinc-400 flex flex-col gap-1 select-all">
+                  <div><span className="text-zinc-600">ID:</span> {successDetails.paymentId}</div>
+                  <div><span className="text-zinc-600">Status:</span> SECURED</div>
                 </div>
 
-                <button
+                <Button
                   onClick={() => {
                     setPaymentSuccess(false);
                     setSuccessDetails(null);
                     setIsProcessing(false);
                   }}
-                  className="w-full py-3 bg-[#FF5E5B] hover:bg-[#ff4a47] text-white font-semibold rounded-xl transition-colors cursor-pointer"
+                  className="w-full h-9 bg-white hover:bg-zinc-200 text-black font-semibold rounded-lg cursor-pointer"
                 >
                   Continue
-                </button>
+                </Button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Why Support Section */}
-        <div className="mb-20">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl font-bold text-white mb-3">Why Support the Project?</h2>
-            <p className="text-sm text-zinc-400">
-              Maintaining a cloud platform with zero advertisements requires sustainable hosting practices.
-            </p>
+        {/* Why Support Section (4 feature cards) */}
+        <div>
+          <div className="text-center max-w-xl mx-auto mb-8">
+            <h2 className="text-2xl font-bold text-white mb-2">Why support PdfFinalBoss?</h2>
+            <p className="text-xs text-zinc-500">Your contributions maintain high-speed developer environments with zero barrier entry.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-white/[0.01] border border-white/[0.04] hover:border-white/[0.08] transition-colors">
-              <Zap className="w-8 h-8 text-yellow-400 mb-4" />
-              <h3 className="text-base font-bold text-white mb-2">Instant Decryption Array</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                Hosting sandboxed system arrays running qpdf demands processing bandwidth. Your funds secure higher CPU nodes.
-              </p>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             
-            <div className="p-6 rounded-2xl bg-white/[0.01] border border-white/[0.04] hover:border-white/[0.08] transition-colors">
-              <Award className="w-8 h-8 text-blue-400 mb-4" />
-              <h3 className="text-base font-bold text-white mb-2">Zero Data Storage</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                Maintaining data privacy rules means we clean cache arrays every 60 minutes. Your support guarantees security standards.
-              </p>
+            <div className="p-5 rounded-2xl bg-zinc-950 border border-zinc-900 hover:border-zinc-800 transition-colors flex gap-4">
+              <div className="w-9 h-9 shrink-0 bg-zinc-900 rounded-lg flex items-center justify-center border border-zinc-800">
+                <span className="text-sm">🚀</span>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white mb-1">Faster updates</h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Funding development of processing algorithms and keeping the toolbox expanding.
+                </p>
+              </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white/[0.01] border border-white/[0.04] hover:border-white/[0.08] transition-colors">
-              <Heart className="w-8 h-8 text-pink-400 mb-4" />
-              <h3 className="text-base font-bold text-white mb-2">Free & Open Source</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                No paywalls, subscription models, or watermarks. Donations ensure development keeps progressing transparently.
-              </p>
+            <div className="p-5 rounded-2xl bg-zinc-950 border border-zinc-900 hover:border-zinc-800 transition-colors flex gap-4">
+              <div className="w-9 h-9 shrink-0 bg-zinc-900 rounded-lg flex items-center justify-center border border-zinc-800">
+                <span className="text-sm">🔒</span>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white mb-1">Better PDF tools</h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Securing testing environments to build merges, compressors, and editor tools.
+                </p>
+              </div>
             </div>
+
+            <div className="p-5 rounded-2xl bg-zinc-950 border border-zinc-900 hover:border-zinc-800 transition-colors flex gap-4">
+              <div className="w-9 h-9 shrink-0 bg-zinc-900 rounded-lg flex items-center justify-center border border-zinc-800">
+                <span className="text-sm">🌍</span>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white mb-1">Hosting & Domain</h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Covering network costs, SSLs, sandbox CPU caches, and custom domains.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-zinc-950 border border-zinc-900 hover:border-zinc-800 transition-colors flex gap-4">
+              <div className="w-9 h-9 shrink-0 bg-zinc-900 rounded-lg flex items-center justify-center border border-zinc-800">
+                <span className="text-sm">❤️</span>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white mb-1">Support Open Source</h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Encouraging free toolchains completely clean of cookies, tracking, or ads.
+                </p>
+              </div>
+            </div>
+
           </div>
         </div>
 
-        {/* GitHub Repository Card */}
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="relative rounded-3xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border border-white/[0.06] p-8 md:p-12 mb-20 overflow-hidden flex flex-col md:flex-row justify-between items-center gap-8 group"
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-500" />
-          
-          <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-300 text-xs font-semibold mb-4 border border-indigo-500/20">
-              <Github className="w-3.5 h-3.5" />
-              <span>Official Repository</span>
-            </div>
-            
-            <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">PdfFinalBoss Codebase</h2>
-            <p className="text-zinc-400 text-sm max-w-xl leading-relaxed">
-              Unlock, inspect, fork, or host the repository yourself. Our source code is fully compliant with GPL open-source licensing.
-            </p>
+        {/* FAQ Area */}
+        <div>
+          <div className="text-center max-w-xl mx-auto mb-6">
+            <h2 className="text-lg font-bold text-white">Frequently Asked Questions</h2>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 items-center shrink-0">
-            <a 
-              href="https://github.com/ashishgit4/PdfFinalBoss" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-6 py-4.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] hover:border-white/[0.15] text-zinc-300 hover:text-white transition-all cursor-pointer text-sm font-semibold"
-            >
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              <span>{gitHubStars !== null ? `${gitHubStars} Stars` : "50+ Stars"}</span>
-            </a>
-            
-            <a 
-              href="https://github.com/ashishgit4/PdfFinalBoss" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-6 py-4.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white transition-all cursor-pointer text-sm font-semibold shadow-lg shadow-indigo-600/20"
-            >
-              <span>Inspect Source</span>
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
-        </motion.div>
-
-        {/* FAQ Section */}
-        <div className="mb-20">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <h2 className="text-3xl font-bold text-white mb-3">Frequently Asked Questions</h2>
-            <p className="text-sm text-zinc-400">Everything you need to know about supporting PdfFinalBoss.</p>
-          </div>
-
-          <div className="max-w-3xl mx-auto bg-white/[0.01] border border-white/[0.04] rounded-3xl p-6">
-            <div className="divide-y divide-white/[0.04]">
+          <div className="max-w-2xl mx-auto bg-zinc-950 border border-zinc-900 rounded-2xl p-4">
+            <Accordion type="single" collapsible className="w-full">
               {faqItems.map((item, index) => (
-                <div key={index} className="py-4.5">
-                  <button 
-                    onClick={() => setFaqOpen(faqOpen === index ? null : index)}
-                    className="w-full flex items-center justify-between text-left text-zinc-200 hover:text-white transition-colors cursor-pointer"
-                  >
-                    <span className="font-semibold text-sm">{item.q}</span>
-                    <HelpCircle className={`w-4 h-4 text-zinc-500 transform transition-transform duration-300 ${faqOpen === index ? 'rotate-180 text-[#FF5E5B]' : ''}`} />
-                  </button>
-                  
-                  <AnimatePresence>
-                    {faqOpen === index && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="text-zinc-400 text-xs mt-3 leading-relaxed">
-                          {item.a}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                <AccordionItem key={index} value={`item-${index}`} className="border-zinc-900">
+                  <AccordionTrigger className="text-xs font-semibold py-3 text-zinc-200 hover:text-white hover:no-underline">
+                    {item.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-xs text-zinc-400 leading-relaxed">
+                    {item.a}
+                  </AccordionContent>
+                </AccordionItem>
               ))}
+            </Accordion>
+          </div>
+        </div>
+
+        {/* Footer (Dynamic repository stars + thank you message) */}
+        <footer className="border-t border-zinc-900 pt-10 pb-6 flex flex-col items-center text-center gap-6 relative">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-zinc-500/5 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="flex flex-col items-center">
+            <Heart className="w-6 h-6 text-zinc-500 mb-4 animate-pulse" />
+            <h3 className="text-base font-bold text-white mb-2">Thank you for your support</h3>
+            <p className="text-xs text-zinc-400 max-w-md leading-relaxed">
+              PdfFinalBoss is run entirely by an individual developer. Your support, stars, and pull requests keep open-source values alive.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 bg-zinc-950 border border-zinc-900 p-4 rounded-2xl">
+            <div className="text-left">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 block">GitHub Repository</span>
+              <a 
+                href="https://github.com/ashishgit4/PdfFinalBoss" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-xs font-mono text-white hover:underline flex items-center gap-1"
+              >
+                <span>github.com/ashishgit4/PdfFinalBoss</span>
+                <ExternalLink className="size-3" />
+              </a>
             </div>
+            <div className="h-px sm:h-8 w-8 sm:w-px bg-zinc-900" />
+            <Button asChild className="h-9 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-semibold rounded-lg cursor-pointer">
+              <a 
+                href="https://github.com/ashishgit4/PdfFinalBoss" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5"
+              >
+                <Star className="size-3.5 fill-current" />
+                <span>Star on GitHub</span>
+                <span className="text-[10px] bg-zinc-900 text-white px-2 py-0.5 rounded-full font-mono shrink-0 ml-1.5">
+                  {gitHubStars !== null ? gitHubStars : "50+"}
+                </span>
+              </a>
+            </Button>
           </div>
-        </div>
 
-        {/* Thank You Section */}
-        <div className="text-center max-w-xl mx-auto py-12 relative">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#FF5E5B]/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="w-12 h-12 bg-[#FF5E5B]/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#FF5E5B]/20">
-            <Heart className="w-5 h-5 text-[#FF5E5B]" />
+          <div className="text-[10px] text-zinc-600 font-mono mt-4">
+            PdfFinalBoss Project — Licensed under GPL.
           </div>
-
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Thank You for Believing in Us</h2>
-          <p className="text-xs text-zinc-400 leading-relaxed mb-6">
-            PdfFinalBoss is run entirely by an individual developer. Your presence, stars, and donations are a major motivator to build high-quality, zero-ad developer utilities.
-          </p>
-
-          <div className="text-[10px] text-zinc-500 font-mono">
-            PdfFinalBoss Project — Handcrafted with precision.
-          </div>
-        </div>
+        </footer>
 
       </main>
-
-      <Footer />
     </div>
   );
 }
+
+const faqItems = [
+  {
+    q: "Where does my donation money go?",
+    a: "Every donation directly funds server hosting costs, domain renewals, API bandwidth usage, and ongoing feature development. Keeping PdfFinalBoss 100% free with no ads is my main priority."
+  },
+  {
+    q: "Are domestic and international payments separate?",
+    a: "Yes. Due to gateway constraints, international users are recommended to use Ko-fi (supports global cards, Apple Pay, Google Pay, PayPal). Users in India can support directly using UPI and net banking via Razorpay."
+  },
+  {
+    q: "Is my payment safe?",
+    a: "Yes, completely. All transaction workflows occur on SSL-secured sandboxes. Razorpay handles domestic banking security, while Ko-fi routes billing through secure international networks. Your financial details never touch my servers."
+  },
+  {
+    q: "Can I contribute to the codebase instead?",
+    a: "Absolutely! PdfFinalBoss is open-source. You can submit pull requests, report issues, or suggest improvements on our GitHub repository."
+  }
+];
+
 export default BuyMeCoffeePage;
