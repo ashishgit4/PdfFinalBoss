@@ -985,8 +985,8 @@
       opacity: 0.9;
     }
 
-    /* Floating Buy Me a Coffee Badge */
-    .coffee-btn {
+    /* Floating Ko-fi Badge */
+    .kofi-btn {
       position: fixed;
       bottom: 32px;
       right: 32px;
@@ -994,8 +994,8 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #FFDD00;
-      color: #000000;
+      background: #FF5E5B;
+      color: #FFFFFF;
       padding: 12px 18px;
       border-radius: 9999px;
       font-family: var(--font-body);
@@ -1008,7 +1008,7 @@
       animation: gentleFloat 4s ease-in-out infinite;
     }
 
-    .coffee-icon {
+    .kofi-icon {
       width: 18px;
       height: 18px;
       fill: currentColor;
@@ -1047,9 +1047,9 @@
       }
     }
 
-    .coffee-btn:hover {
+    .kofi-btn:hover {
       transform: scale(1.05) translateY(-4px) !important;
-      background-color: #ffe433;
+      background-color: #ff4a47;
     }
 
     /* Scroll Reveals */
@@ -1120,12 +1120,12 @@
         margin: 12px 0;
       }
       
-      .coffee-btn {
+      .kofi-btn {
         bottom: 24px;
         right: 24px;
         padding: 10px 14px;
       }
-      .coffee-btn span {
+      .kofi-btn span {
         display: none;
       }
     }
@@ -1143,10 +1143,10 @@
         transform: none !important;
         transition: none !important;
       }
-      .coffee-btn {
+      .kofi-btn {
         animation: none !important;
       }
-      .cta-pill:hover, .coffee-btn:hover {
+      .cta-pill:hover, .kofi-btn:hover {
         transform: none !important;
       }
     }

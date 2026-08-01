@@ -4,7 +4,7 @@ import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
 import { FAQ } from "@/components/FAQ";
 import { Footer } from "@/components/Footer";
-import { BuyMeCoffee } from "@/components/BuyMeCoffee";
+import { KoFi } from "@/components/KoFi";
 
 export function Home() {
   const [theme, setTheme] = useState<"day" | "night">("night");
@@ -84,7 +84,7 @@ export function Home() {
         </main>
 
         <Footer />
-        <BuyMeCoffee />
+        <KoFi />
       </div>
     </>
   );
