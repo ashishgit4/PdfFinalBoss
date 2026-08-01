@@ -9,9 +9,11 @@
   "dependencies": {
     "@pdfsmaller/pdf-decrypt": "^1.0.1",
     "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
     "express": "^4.19.2",
     "multer": "^1.4.5-lts.1",
     "pdf-final-boss-monorepo": "file:..",
+    "razorpay": "^2.9.8",
     "uuid": "^9.0.1"
   }
 }
