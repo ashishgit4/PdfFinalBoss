@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, Heart, 
-  Star, Copy, Check, Globe, CreditCard, Send 
+  Star, Copy, Check, Globe, Send 
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -276,20 +276,17 @@ export function BuyMeCoffeePage() {
             <h3 className="text-[22px] font-semibold text-[#F5F5F5] tracking-tight leading-tight mb-3">International Support</h3>
             
             <p className="text-[15px] font-normal leading-[1.5] text-[#A1A1AA] max-w-[340px] mb-6">
-              Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
+              Support the project securely via Ko-fi, powered by PayPal.
             </p>
 
             {/* Payment Pills */}
             <div className="flex items-center justify-center gap-2 mb-8 flex-wrap select-none">
               <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[10px] font-medium text-[#A1A1AA]/80">
-                <span></span> Apple Pay
-              </span>
-              <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[10px] font-medium text-[#A1A1AA]/80">
+                <svg className="w-2.5 h-2.5 text-[#A1A1AA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="5" width="20" height="14" rx="3" />
+                  <path d="M2 10h20" />
+                </svg>
                 PayPal
-              </span>
-              <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[10px] font-medium text-[#A1A1AA]/80">
-                <CreditCard className="w-2.5 h-2.5 text-[#A1A1AA]" />
-                Card
               </span>
             </div>
             
