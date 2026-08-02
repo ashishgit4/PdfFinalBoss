@@ -187,29 +187,56 @@ export function BuyMeCoffeePage() {
         {/* MAIN HERO & CARDS CONTENT AREA */}
         <main className="flex-1 flex flex-col items-center justify-center">
           <div className="flex flex-col items-center text-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] text-[11px] font-medium tracking-[0.1em] text-[#A1A1AA] uppercase select-none">
-              <Heart className="w-3.5 h-3.5 text-white fill-white" />
-              <span>SUPPORT OPEN SOURCE</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1.5 text-[11px] font-medium tracking-[0.1em] text-[#A1A1AA] uppercase">
+              <Heart className="h-3.5 w-3.5 fill-white text-white" />
+              <span>Support Open Source</span>
             </div>
 
-            <h1 className="mt-5 text-5xl sm:text-6xl font-semibold tracking-[-0.04em] leading-[0.95] text-[#F5F5F5]">
+            <h1 className="mt-5 text-5xl font-semibold tracking-[-0.04em] text-[#F5F5F5] sm:text-6xl">
               Support PdfFinalBoss
             </h1>
 
-            <p className="mt-6 text-[18px] leading-[1.7] text-[#A1A1AA] max-w-[620px]">
+            <p className="mt-6 max-w-[620px] text-[18px] leading-[1.7] text-[#A1A1AA]">
               PdfFinalBoss is completely free and open source. Every contribution helps keep the project maintained, improved, and accessible for everyone.
             </p>
           </div>
 
           <div className="mt-[72px] grid w-full grid-cols-1 justify-items-center gap-10 lg:grid-cols-2">
-            <div className="w-full max-w-[520px] min-h-[430px] max-h-[470px] rounded-[28px] border border-white/[0.08] bg-[#111111] p-10 text-center shadow-[0_12px_40px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:-translate-y-1">
-              <div className="flex h-full flex-col items-center">
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] font-medium tracking-[0.12em] text-[#A1A1AA] uppercase">
-                  <Globe className="w-3.5 h-3.5 text-[#A1A1AA]" />
-                  <span>Global</span>
-                </div>
+            <div className="w-full max-w-[520px] rounded-[28px] border border-white/[0.08] bg-[#111111] p-10 shadow-[0_12px_40px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:-translate-y-1">
+              <div className="flex min-h-[430px] max-h-[470px] flex-col justify-between">
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex-1">
+                    <div className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] font-medium tracking-[0.12em] text-[#A1A1AA] uppercase">
+                      <Globe className="h-3.5 w-3.5 text-[#A1A1AA]" />
+                      <span>Global</span>
+                    </div>
 
-                <div className="mt-8 flex w-full items-center justify-center">
+                    <h3 className="mt-7 text-[28px] font-semibold tracking-tight text-[#F5F5F5]">
+                      International Support
+                    </h3>
+
+                    <p className="mt-3 max-w-[280px] text-[16px] leading-[1.65] text-[#A1A1AA]">
+                      Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
+                    </p>
+
+                    <div className="mt-6 flex flex-wrap gap-2.5">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
+                        <span className="text-xs"></span>
+                        <span>Apple Pay</span>
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
+                        <svg className="h-3 w-3 text-[#A1A1AA]" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .761-.645h6.417c2.423 0 4.319.53 5.485 1.534 1.166 1.004 1.58 2.457 1.272 4.417-.464 2.955-2.28 4.793-5.253 5.318l.582 3.652a.641.641 0 0 1-.633.741H10.15a.77.77 0 0 1-.76-.645l-.47-2.956H7.076z" />
+                        </svg>
+                        <span>PayPal</span>
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
+                        <CreditCard className="h-3 w-3 text-[#A1A1AA]" />
+                        <span>Card</span>
+                      </span>
+                    </div>
+                  </div>
+
                   <div className="relative flex h-[180px] w-[180px] items-center justify-center select-none">
                     <div className="absolute h-24 w-24 rounded-full bg-[#ff4d4f]/20 blur-2xl opacity-80" />
                     <svg className="relative z-10 h-[168px] w-[168px] drop-shadow-[0_12px_28px_rgba(255,77,79,0.35)]" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -248,31 +275,6 @@ export function BuyMeCoffeePage() {
                   </div>
                 </div>
 
-                <h3 className="mt-7 text-[28px] font-semibold tracking-tight text-[#F5F5F5]">
-                  International Support
-                </h3>
-
-                <p className="mt-3 max-w-[280px] text-[16px] leading-[1.65] text-[#A1A1AA]">
-                  Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
-                </p>
-
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
-                    <span className="text-xs"></span>
-                    <span>Apple Pay</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
-                    <svg className="h-3 w-3 text-[#A1A1AA]" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .761-.645h6.417c2.423 0 4.319.53 5.485 1.534 1.166 1.004 1.58 2.457 1.272 4.417-.464 2.955-2.28 4.793-5.253 5.318l.582 3.652a.641.641 0 0 1-.633.741H10.15a.77.77 0 0 1-.76-.645l-.47-2.956H7.076z" />
-                    </svg>
-                    <span>PayPal</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
-                    <CreditCard className="h-3 w-3 text-[#A1A1AA]" />
-                    <span>Card</span>
-                  </span>
-                </div>
-
                 <Button asChild onClick={handleKofiClick} className="mt-8 min-w-[260px] rounded-full border border-white/[0.08] bg-white/[0.06] px-5 text-sm font-semibold text-[#F5F5F5] hover:bg-white/[0.12]">
                   <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex h-[52px] w-full items-center justify-center gap-2">
                     <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -285,26 +287,31 @@ export function BuyMeCoffeePage() {
               </div>
             </div>
 
-            <div className="w-full max-w-[520px] min-h-[430px] max-h-[470px] rounded-[28px] border border-white/[0.08] bg-[#111111] p-10 text-center shadow-[0_12px_40px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:-translate-y-1">
-              <div className="flex h-full flex-col items-center">
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] font-medium tracking-[0.12em] text-[#A1A1AA] uppercase">
-                  <span className="text-xs">🇮🇳</span>
-                  <span>Local Payment</span>
-                </div>
+            <div className="w-full max-w-[520px] rounded-[28px] border border-white/[0.08] bg-[#111111] p-10 shadow-[0_12px_40px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:-translate-y-1">
+              <div className="flex min-h-[430px] max-h-[470px] flex-col justify-between">
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex-1">
+                    <div className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] font-medium tracking-[0.12em] text-[#A1A1AA] uppercase">
+                      <span className="text-xs">🇮🇳</span>
+                      <span>Local Payment</span>
+                    </div>
 
-                <div className="mt-8 rounded-[22px] border border-white/[0.08] bg-[#0C0C0E] p-3 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
-                  <div className="bg-white p-2">
-                    <img src={qrCodeImageUrl} alt="UPI QR Code" className="h-[164px] w-[164px] rounded-lg" />
+                    <h3 className="mt-7 text-[28px] font-semibold tracking-tight text-[#F5F5F5]">
+                      India Support
+                    </h3>
+
+                    <p className="mt-3 max-w-[300px] text-[16px] leading-[1.65] text-[#A1A1AA]">
+                      Support instantly using UPI, local cards, or net banking.
+                    </p>
+                  </div>
+
+                  <div className="rounded-[22px] border border-white/[0.08] bg-[#0C0C0E] p-3 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
+                    <div className="bg-white p-2">
+                      <img src={qrCodeImageUrl} alt="UPI QR Code" className="h-[164px] w-[164px] rounded-lg" />
+                    </div>
+                    <div className="mt-2 text-center text-[11px] text-[#A1A1AA]">Scan to pay</div>
                   </div>
                 </div>
-
-                <h3 className="mt-7 text-[28px] font-semibold tracking-tight text-[#F5F5F5]">
-                  India Support
-                </h3>
-
-                <p className="mt-3 max-w-[300px] text-[16px] leading-[1.65] text-[#A1A1AA]">
-                  Support instantly using UPI, local cards, or net banking.
-                </p>
 
                 <div className="mt-8 w-full rounded-[18px] border border-white/[0.08] bg-[#090909] px-4 py-3">
                   <div className="flex items-center justify-between gap-3">
