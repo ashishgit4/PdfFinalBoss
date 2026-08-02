@@ -184,9 +184,13 @@ export function BuyMeCoffeePage() {
       
       {/* Top Navbar */}
       <header className="relative z-50 w-full max-w-[1280px] mx-auto px-10 py-6 md:py-8 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="font-sans font-bold text-xl tracking-tight text-[#F5F5F5]">PdfFinalBoss</span>
-          <span className="text-[9px] tracking-[0.25em] uppercase text-[#A1A1AA] font-semibold select-none">/ SUPPORT</span>
+        <div className="flex items-center gap-2.5">
+          {/* Logo icon matching the screenshot */}
+          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+            <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+          </svg>
+          <span className="font-sans font-bold text-lg tracking-tight text-[#F5F5F5]">PdfFinalBoss</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -219,9 +223,11 @@ export function BuyMeCoffeePage() {
         
         {/* Centered Title & Intro */}
         <div className="text-center max-w-2xl flex flex-col items-center gap-4">
-          <span className="text-[10px] tracking-[0.25em] font-mono text-[#A1A1AA] uppercase block mb-2 select-none">
-            SUPPORT OPEN SOURCE
-          </span>
+          {/* Capsule Eyebrow Badge */}
+          <div className="flex items-center gap-2 px-3.5 py-1.5 bg-white/[0.02] border border-white/[0.06] rounded-full text-[10px] font-mono text-[#A1A1AA] uppercase tracking-wider font-semibold select-none mb-2">
+            <Heart className="w-3 h-3 text-[#A1A1AA] fill-[#A1A1AA]/20" />
+            <span>SUPPORT OPEN SOURCE</span>
+          </div>
           
           <h1 className="font-sans text-4xl sm:text-5xl font-semibold tracking-tight text-[#F5F5F5] leading-[1.15]">
             Support PdfFinalBoss
@@ -270,8 +276,8 @@ export function BuyMeCoffeePage() {
 
               {/* Mug Graphic on Right */}
               <div className="relative w-28 h-28 flex items-center justify-center flex-shrink-0 select-none">
-                <div className="absolute inset-0 bg-white/[0.01] blur-xl rounded-full"></div>
-                <svg className="w-24 h-24 relative z-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div className="absolute w-14 h-14 rounded-full bg-[#ff4d4f]/15 blur-xl opacity-90" />
+                <svg className="w-24 h-24 relative z-10 animate-[pulse_3s_ease-in-out_infinite]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <ellipse cx="45" cy="80" rx="20" ry="6" fill="black" fillOpacity="0.3" />
                   <path d="M60 40C68 40 76 45 76 55C76 65 68 70 60 70" stroke="url(#mugGradient)" strokeWidth="8" strokeLinecap="round" />
                   <rect x="25" y="32" width="36" height="42" rx="6" fill="url(#mugGradient)" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
@@ -294,7 +300,7 @@ export function BuyMeCoffeePage() {
               </div>
             </div>
             
-            <Button asChild className="w-full h-12 rounded-full bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 text-[#F5F5F5] font-semibold flex items-center justify-center gap-1.5 transition-all text-sm cursor-pointer select-none">
+            <Button asChild className="w-full h-[52px] rounded-full bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 text-[#F5F5F5] font-semibold flex items-center justify-center gap-1.5 transition-all text-sm cursor-pointer select-none">
               <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
                 <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M23.881 8.948c-.773-4.085-4.859-5.005-7.875-5.005h-9.52c-.775 0-1.404.63-1.404 1.405v13.315c0 .775.629 1.405 1.404 1.405h8.182c4.619 0 7.821-2.524 8.793-7.555.309-1.606.321-2.535.42-3.565zm-4.321 4.545c-.563 2.923-2.673 3.655-5.597 3.655H7.318V6.16h7.458c2.045 0 4.195.42 4.672 3.19.261 1.516.273 2.457.112 4.143zM16.592 11.23h1.365a1.82 1.82 0 1 1 0 3.64h-1.365V11.23z" />
@@ -338,7 +344,7 @@ export function BuyMeCoffeePage() {
             </div>
 
             {/* Copyable UPI ID row */}
-            <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-2xl flex items-center justify-between w-full max-w-[320px] mb-7">
+            <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-2xl flex items-center justify-between w-full mb-7">
               <div className="flex flex-col text-left">
                 <span className="text-[8px] font-bold uppercase tracking-wider text-[#A1A1AA]/50">UPI ID</span>
                 <span className="text-xs font-mono font-medium text-[#F5F5F5]">{upiId}</span>
@@ -356,7 +362,7 @@ export function BuyMeCoffeePage() {
             <Button 
               onClick={handleRazorpayPayment}
               disabled={isProcessing}
-              className="w-full h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-sm flex items-center justify-center gap-1.5 transition-colors border-0 select-none"
+              className="w-full h-[52px] bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-sm flex items-center justify-center gap-1.5 transition-colors border-0 select-none"
             >
               {isProcessing ? (
                 <>
