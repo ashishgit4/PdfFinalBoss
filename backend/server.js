@@ -15,6 +15,15 @@ import { getFileHash, encryptPassword, decryptPassword, hashUserPassword, verify
 // Load environment variables for local development
 dotenv.config();
 
+// Global exception and promise rejection handlers to prevent crashes
+process.on('uncaughtException', (err) => {
+  console.error('CRITICAL: Uncaught Exception:', err.stack || err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('CRITICAL: Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 // Initialize Razorpay client
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || '',
@@ -354,6 +363,12 @@ setInterval(() => {
     }
   }
 }, 5 * 60 * 1000); // Check every 5 minutes
+
+// Global error handling middleware for Express routes
+app.use((err, req, res, next) => {
+  console.error('Unhandled Route Error:', err.stack || err);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
 
 // Launch integrated Express server
 app.listen(PORT, () => {
