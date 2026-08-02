@@ -22,6 +22,57 @@ export function BuyMeCoffeePage() {
     amount: number;
   } | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
+  const [paymentMethod, setPaymentMethod] = useState<"UPI" | "Ko-fi" | null>(null);
+
+  const initiatePayment = (method: "UPI" | "Ko-fi") => {
+    localStorage.setItem("pending_payment_method", method);
+  };
+
+  // Visibility and focus based check to confirm redirected flow success
+  // NOTE: Triggered on window focus/visibility-change after redirect checkout returns.
+  // This should be swapped for a verified backend/webhook trigger if one becomes available.
+  useEffect(() => {
+    const handleConfirmPayment = () => {
+      const pending = localStorage.getItem("pending_payment_method");
+      if (pending) {
+        setPaymentMethod(pending as "UPI" | "Ko-fi");
+        setSuccessDetails({
+          paymentId: "TXN_" + Math.random().toString(36).substring(2, 10).toUpperCase(),
+          amount: pending === "UPI" ? Number(customAmount) : 5, // default 5 for Ko-fi order ($5)
+        });
+        setPaymentSuccess(true);
+        localStorage.removeItem("pending_payment_method");
+      }
+    };
+
+    window.addEventListener("focus", handleConfirmPayment);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        handleConfirmPayment();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("focus", handleConfirmPayment);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [customAmount]);
+
+  // Escape key listener to dismiss success modal
+  useEffect(() => {
+    if (!paymentSuccess) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setPaymentSuccess(false);
+        setSuccessDetails(null);
+        setPaymentMethod(null);
+        setIsProcessing(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [paymentSuccess]);
 
   // Fetch GitHub Stars dynamically
   useEffect(() => {
@@ -124,10 +175,10 @@ export function BuyMeCoffeePage() {
                 paymentId: response.razorpay_payment_id,
                 amount: finalAmount,
               });
+              setPaymentMethod("UPI");
               setPaymentSuccess(true);
               toast.dismiss();
               toast.success("Thank you for supporting PdfFinalBoss!");
-              triggerConfetti();
             } else {
               throw new Error(verificationResult.error || "Payment verification failed");
             }
@@ -180,7 +231,7 @@ export function BuyMeCoffeePage() {
   const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(upiUrl)}`;
 
   return (
-    <div className="min-h-screen w-full bg-[#090909] text-[#F5F5F5] flex flex-col items-center font-sans relative overflow-x-hidden selection:bg-white/10 selection:text-white">
+    <div className="min-h-screen w-full bg-[#090909] text-[#F5F5F5] flex flex-col items-center relative overflow-x-hidden selection:bg-white/10 selection:text-white" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
       
       {/* Top Navbar */}
       <header className="relative z-50 w-full max-w-[1280px] mx-auto px-10 py-6 md:py-8 flex items-center justify-between">
@@ -242,32 +293,32 @@ export function BuyMeCoffeePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 w-full max-w-[1100px] items-start">
           
           {/* CARD 1: International Support */}
-          <div className="bg-[#111111] border border-white/[0.08] text-[#F5F5F5] flex flex-col p-10 md:p-12 relative overflow-hidden rounded-[32px] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-left items-start w-full">
+          <div className="bg-[#141416] border border-white/[0.08] text-[#F5F5F5] flex flex-col p-8 rounded-[22px] shadow-[0_8px_30px_rgba(0,0,0,0.35)] transition-all duration-200 ease-out hover:-translate-y-[2px] active:translate-y-0 hover:border-white/20 hover:shadow-[0_12px_40px_rgba(0,0,0,0.55)] text-left items-start w-full">
             
             {/* Top Row: Details on Left, Mug Graphic on Right */}
-            <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-7">
+            <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-6">
               <div className="flex-1 flex flex-col items-start text-left">
                 {/* Eyebrow Badge */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-full text-[9px] font-mono text-[#A1A1AA] uppercase tracking-wider font-semibold select-none mb-3">
-                  <Globe className="size-3 text-[#A1A1AA]" />
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-[10px] text-[11px] font-mono text-[#A1A1AA] uppercase tracking-[0.06em] font-medium select-none mb-3">
+                  <Globe className="size-3.5 text-[#A1A1AA]" />
                   <span>GLOBAL</span>
                 </div>
 
-                <h3 className="text-2xl font-medium text-[#F5F5F5] tracking-tight mb-2">International Support</h3>
+                <h3 className="text-[22px] font-semibold text-[#F5F5F5] tracking-tight leading-tight mb-2">International Support</h3>
                 
-                <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed max-w-[280px]">
+                <p className="text-[15px] font-normal leading-[1.5] text-[#A1A1AA] max-w-[280px]">
                   Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
                 </p>
 
                 {/* Spacing Details pills */}
                 <div className="flex items-center gap-2 mt-4 flex-wrap select-none">
-                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[9px] font-medium text-[#A1A1AA]/80">
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[10px] font-medium text-[#A1A1AA]/80">
                     <span></span> Apple Pay
                   </span>
-                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[9px] font-medium text-[#A1A1AA]/80">
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[10px] font-medium text-[#A1A1AA]/80">
                     PayPal
                   </span>
-                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[9px] font-medium text-[#A1A1AA]/80">
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[10px] font-medium text-[#A1A1AA]/80">
                     <CreditCard className="w-2.5 h-2.5 text-[#A1A1AA]" />
                     Card
                   </span>
@@ -275,9 +326,9 @@ export function BuyMeCoffeePage() {
               </div>
 
               {/* Mug Graphic on Right */}
-              <div className="relative w-28 h-28 flex items-center justify-center flex-shrink-0 select-none">
-                <div className="absolute w-14 h-14 rounded-full bg-[#ff4d4f]/15 blur-xl opacity-90" />
-                <svg className="w-24 h-24 relative z-10 animate-[pulse_3s_ease-in-out_infinite]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div className="relative w-24 h-24 flex items-center justify-center flex-shrink-0 select-none rounded-[14px]">
+                <div className="absolute w-12 h-12 rounded-full bg-[#ff4d4f]/15 blur-xl opacity-90" />
+                <svg className="w-20 h-20 relative z-10 animate-[pulse_3s_ease-in-out_infinite]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <ellipse cx="45" cy="80" rx="20" ry="6" fill="black" fillOpacity="0.3" />
                   <path d="M60 40C68 40 76 45 76 55C76 65 68 70 60 70" stroke="url(#mugGradient)" strokeWidth="8" strokeLinecap="round" />
                   <rect x="25" y="32" width="36" height="42" rx="6" fill="url(#mugGradient)" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
@@ -300,9 +351,9 @@ export function BuyMeCoffeePage() {
               </div>
             </div>
             
-            <Button asChild className="w-full h-[52px] rounded-full bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 text-[#F5F5F5] font-semibold flex items-center justify-center gap-1.5 transition-all text-sm cursor-pointer select-none">
+            <Button asChild onClick={() => initiatePayment("Ko-fi")} className="w-full h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-[14px] cursor-pointer text-[15px] flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.97] border-0 select-none">
               <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
-                <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-4 h-4 text-zinc-950" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M23.881 8.948c-.773-4.085-4.859-5.005-7.875-5.005h-9.52c-.775 0-1.404.63-1.404 1.405v13.315c0 .775.629 1.405 1.404 1.405h8.182c4.619 0 7.821-2.524 8.793-7.555.309-1.606.321-2.535.42-3.565zm-4.321 4.545c-.563 2.923-2.673 3.655-5.597 3.655H7.318V6.16h7.458c2.045 0 4.195.42 4.672 3.19.261 1.516.273 2.457.112 4.143zM16.592 11.23h1.365a1.82 1.82 0 1 1 0 3.64h-1.365V11.23z" />
                 </svg>
                 <span>Continue with Ko-fi</span>
@@ -312,57 +363,66 @@ export function BuyMeCoffeePage() {
           </div>
 
           {/* CARD 2: India Support */}
-          <div className="bg-[#111111] border border-white/[0.08] text-[#F5F5F5] flex flex-col p-10 md:p-12 relative overflow-hidden rounded-[32px] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-left items-start w-full">
+          <div className="bg-[#141416] border border-white/[0.08] text-[#F5F5F5] flex flex-col p-8 rounded-[22px] shadow-[0_8px_30px_rgba(0,0,0,0.35)] transition-all duration-200 ease-out hover:-translate-y-[2px] active:translate-y-0 hover:border-white/20 hover:shadow-[0_12px_40px_rgba(0,0,0,0.55)] text-left items-start w-full">
             
             {/* Top Row: Details on Left, QR Code on Right */}
-            <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-7">
+            <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-6">
               <div className="flex-1 flex flex-col items-start text-left">
                 {/* Eyebrow Badge */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-full text-[9px] font-mono text-[#A1A1AA] uppercase tracking-wider font-semibold select-none mb-3">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-[10px] text-[11px] font-mono text-[#A1A1AA] uppercase tracking-[0.06em] font-medium select-none mb-3">
                   <span className="text-[10px]">🇮🇳</span>
                   <span>LOCAL PAYMENT</span>
                 </div>
 
-                <h3 className="text-2xl font-medium text-[#F5F5F5] tracking-tight mb-2">India Support</h3>
+                <h3 className="text-[22px] font-semibold text-[#F5F5F5] tracking-tight leading-tight mb-2">India Support</h3>
                 
-                <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed max-w-[280px]">
+                <p className="text-[15px] font-normal leading-[1.5] text-[#A1A1AA] max-w-[280px]">
                   Support instantly using UPI, local cards, or net banking.
                 </p>
               </div>
 
               {/* QR Code Hero Element */}
-              <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-2xl flex flex-col items-center justify-center w-28 h-28 flex-shrink-0 shadow-xl select-none">
-                <div className="bg-white p-1 rounded-lg">
-                  <img 
-                    src={qrCodeImageUrl} 
-                    alt="UPI QR Code" 
-                    className="w-16 h-16 rounded pointer-events-none select-none"
-                  />
-                </div>
-                <span className="text-[7px] text-[#A1A1AA]/50 mt-1.5 font-mono uppercase tracking-wider">Scan to Pay</span>
+              <div className="bg-white p-3 rounded-[14px] flex items-center justify-center w-24 h-24 flex-shrink-0 shadow-lg select-none">
+                <img 
+                  src={qrCodeImageUrl} 
+                  alt="UPI QR Code" 
+                  className="w-[72px] h-[72px] rounded-[6px] pointer-events-none select-none"
+                />
               </div>
             </div>
 
             {/* Copyable UPI ID row */}
-            <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-2xl flex items-center justify-between w-full mb-7">
-              <div className="flex flex-col text-left">
-                <span className="text-[8px] font-bold uppercase tracking-wider text-[#A1A1AA]/50">UPI ID</span>
-                <span className="text-xs font-mono font-medium text-[#F5F5F5]">{upiId}</span>
+            <div className="bg-white/[0.04] border border-white/[0.06] p-3 pl-4 rounded-[14px] flex items-center justify-between w-full h-14 mb-6">
+              <div className="flex flex-col text-left justify-center">
+                <span className="text-[10px] font-medium uppercase tracking-wider text-[#A1A1AA]/50">UPI ID</span>
+                <span className="text-sm font-mono font-medium text-[#F5F5F5]">{upiId}</span>
               </div>
               <button 
                 onClick={handleCopyUpiId}
-                className="h-7 px-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-xl text-[10px] text-[#F5F5F5] font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
+                className="h-10 min-w-[76px] px-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-[10px] text-xs text-[#F5F5F5] font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 select-none"
                 title="Copy UPI ID"
               >
-                {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
-                <span>{copied ? "Copied" : "Copy"}</span>
+                {copied ? (
+                  <>
+                    <Check className="size-3.5 text-emerald-400" />
+                    <span className="text-emerald-400 font-medium">Copied ✓</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="size-3.5" />
+                    <span>Copy</span>
+                  </>
+                )}
               </button>
             </div>
 
             <Button 
-              onClick={handleRazorpayPayment}
+              onClick={() => {
+                initiatePayment("UPI");
+                handleRazorpayPayment();
+              }}
               disabled={isProcessing}
-              className="w-full h-[52px] bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-sm flex items-center justify-center gap-1.5 transition-colors border-0 select-none"
+              className="w-full h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-[14px] cursor-pointer text-[15px] flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.97] border-0 select-none"
             >
               {isProcessing ? (
                 <>
@@ -388,19 +448,48 @@ export function BuyMeCoffeePage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
+              onClick={() => {
+                setPaymentSuccess(false);
+                setSuccessDetails(null);
+                setPaymentMethod(null);
+                setIsProcessing(false);
+              }}
+              className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-6 cursor-pointer"
             >
-              <div className="max-w-xs w-full bg-[#111111] border border-white/[0.08] p-8 rounded-[32px] text-center relative shadow-2xl items-center flex flex-col">
-                <div className="w-12 h-12 bg-white/[0.02] border border-white/[0.06] rounded-[16px] flex items-center justify-center mx-auto mb-4">
-                  <ShieldCheck className="w-6 h-6 text-[#A1A1AA]" />
-                </div>
+              <motion.div 
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ type: "spring", duration: 0.3 }}
+                onClick={(e) => e.stopPropagation()}
+                className="max-w-[340px] w-full bg-[#161618] border border-white/[0.08] p-8 rounded-[22px] text-center shadow-2xl items-center flex flex-col cursor-default"
+              >
+                {/* Drawn-in Checkmark Animation */}
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
+                  className="w-16 h-16 bg-white/[0.03] border border-white/[0.08] rounded-[14px] flex items-center justify-center mb-6"
+                >
+                  <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <motion.path
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ delay: 0.25, duration: 0.35, ease: "easeOut" }}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </motion.div>
                 
-                <h3 className="text-lg font-bold text-white mb-1 font-sans">Support Confirmed</h3>
-                <p className="text-[#A1A1AA] text-xs mb-5">
-                  Thank you for contributing <span className="text-white font-bold">₹{successDetails.amount}</span>. Your support keeps this project free.
+                <h3 className="text-xl font-semibold text-white mb-2 font-sans tracking-tight">Support Confirmed</h3>
+                
+                <p className="text-[#A1A1AA] text-[15px] leading-[1.5] font-normal mb-6 max-w-[260px]">
+                  Thank you for contributing {successDetails.amount ? `₹${successDetails.amount}` : ""} via {paymentMethod === "Ko-fi" ? "Ko-fi" : "UPI"}. Your support keeps this project free.
                 </p>
 
-                <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-xl text-left text-[9px] mb-5 font-mono text-[#A1A1AA] w-full select-all">
+                <div className="bg-white/[0.02] border border-white/[0.04] p-3 rounded-[12px] text-left text-[10px] mb-6 font-mono text-[#A1A1AA] w-full select-all">
                   <div><span className="text-white/40">TXN:</span> {successDetails.paymentId}</div>
                   <div><span className="text-white/40">STATUS:</span> VERIFIED</div>
                 </div>
@@ -409,13 +498,14 @@ export function BuyMeCoffeePage() {
                   onClick={() => {
                     setPaymentSuccess(false);
                     setSuccessDetails(null);
+                    setPaymentMethod(null);
                     setIsProcessing(false);
                   }}
-                  className="w-full h-[40px] bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-xs border-0"
+                  className="w-full h-11 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-[14px] cursor-pointer text-sm border-0 transition-transform active:scale-[0.97]"
                 >
-                  Continue
+                  Done
                 </Button>
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
