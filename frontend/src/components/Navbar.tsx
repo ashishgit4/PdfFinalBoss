@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 interface NavbarProps {
   theme: "day" | "night";
   onToggleTheme: () => void;
