@@ -19,7 +19,7 @@ export function Features() {
             <span className="card-num">02</span>
             <div className="card-content">
               <h3 className="card-title">Auto Delete</h3>
-              <p className="card-description">All uploaded files and parsed outputs are permanently deleted from our disks within 60 minutes.</p>
+              <p className="card-description">All uploaded files and parsed outputs are permanently deleted from our disks within 24 hours.</p>
             </div>
           </div>
           <div className="card">
@@ -98,8 +98,8 @@ export function Features() {
 
           <div className="tool-card">
             <span className="tool-badge active">Auto-Delete</span>
-            <h3 className="tool-title">60-Min Auto-Wipe</h3>
-            <p className="tool-desc">Uploaded PDFs and processed outputs are permanently purged from server disks automatically within 60 minutes.</p>
+            <h3 className="tool-title">24-Hour Auto-Wipe</h3>
+            <p className="tool-desc">Uploaded PDFs and processed outputs are permanently purged from server disks automatically within 24 hours.</p>
           </div>
 
           <div className="tool-card">

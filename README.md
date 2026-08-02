@@ -92,4 +92,4 @@ const API_URL = import.meta.env.VITE_API_URL || "https://pdffinalboss-1.onrender
 
 * **Secure In-Flight Decryption:** All transactions are protected via secure SSL/TLS connections during upload and download phases.
 * **In-Memory Password Processing:** Passwords submitted to the backend reside in volatile memory only during the qpdf script execution. They are never written to disk, logged, or permanently stored.
-* **Wipe Cache Policy:** All uploaded documents and processed outputs are permanently deleted from server disks automatically exactly 60 minutes after upload.
+* **Wipe Cache Policy:** All uploaded documents and processed outputs are permanently deleted from server disks automatically exactly 24 hours after upload.

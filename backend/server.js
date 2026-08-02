@@ -344,10 +344,10 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-// Periodic Cache Cleanup: Delete uploads older than 60 minutes
+// Periodic Cache Cleanup: Delete uploads older than 24 hours (1 day)
 setInterval(() => {
   const now = Date.now();
-  const expiryDuration = 60 * 60 * 1000; // 60 minutes in ms
+  const expiryDuration = 24 * 60 * 60 * 1000; // 24 hours in ms
 
   for (const [id, meta] of filesDb.entries()) {
     if (now - meta.uploadTime > expiryDuration) {
@@ -362,7 +362,7 @@ setInterval(() => {
       }
     }
   }
-}, 5 * 60 * 1000); // Check every 5 minutes
+}, 15 * 60 * 1000); // Check every 15 minutes
 
 // Global error handling middleware for Express routes
 app.use((err, req, res, next) => {

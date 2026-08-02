@@ -30,7 +30,7 @@ export function FAQ() {
     },
     {
       q: "How long are files stored?",
-      a: "All document assets are automatically wiped from our cache arrays exactly 60 minutes after execution finishes."
+      a: "All document assets are automatically wiped from our cache arrays exactly 24 hours after execution finishes."
     },
     {
       q: "Can I unlock any PDF?",
