@@ -7,10 +7,10 @@
 *.env
 !.env.example
 
-# Dependencies & Build
+# Dependencies & Uploads
 node_modules
-dist
-dist-ssr
+uploads/*
+!uploads/.gitkeep
 
 # IDE / OS
 .DS_Store
