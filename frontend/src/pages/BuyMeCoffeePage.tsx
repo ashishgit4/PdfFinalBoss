@@ -186,121 +186,60 @@ export function BuyMeCoffeePage() {
 
         {/* MAIN HERO & CARDS CONTENT AREA */}
         <main className="flex-1 flex flex-col items-center justify-center">
-          
-          {/* HERO SECTION */}
-          {/* Navbar -> Hero Badge: 48px */}
-          <div className="mt-12 flex flex-col items-center text-center">
-            
-            {/* Hero Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] text-[11px] font-medium tracking-[0.1em] text-[#A1A1AA] uppercase select-none backdrop-blur-md">
+          <div className="flex flex-col items-center text-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] text-[11px] font-medium tracking-[0.1em] text-[#A1A1AA] uppercase select-none">
               <Heart className="w-3.5 h-3.5 text-white fill-white" />
               <span>SUPPORT OPEN SOURCE</span>
             </div>
 
-            {/* Hero Badge -> Heading: 20px */}
-            <h1 className="mt-5 font-sans text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-0.04em] leading-[0.95] text-[#F5F5F5]">
+            <h1 className="mt-5 text-5xl sm:text-6xl font-semibold tracking-[-0.04em] leading-[0.95] text-[#F5F5F5]">
               Support PdfFinalBoss
             </h1>
 
-            {/* Heading -> Description: 24px */}
-            <p className="mt-6 text-sm sm:text-base text-[#A1A1AA] leading-[1.7] max-w-[620px] text-center font-normal">
+            <p className="mt-6 text-[18px] leading-[1.7] text-[#A1A1AA] max-w-[620px]">
               PdfFinalBoss is completely free and open source. Every contribution helps keep the project maintained, improved, and accessible for everyone.
             </p>
           </div>
 
-          {/* CARDS SECTION */}
-          {/* Description -> Cards: 72px */}
-          <div className="mt-[72px] grid grid-cols-1 lg:grid-cols-2 gap-8 w-full items-stretch justify-center">
-            
-            {/* CARD 1: International Support */}
-            <div className="bg-[#111111] border border-white/[0.08] rounded-[28px] p-[36px] flex flex-col justify-between min-h-[440px] sm:min-h-[460px] shadow-[0_12px_40px_rgba(0,0,0,0.28)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.38)] hover:border-white/[0.15] transition-all duration-300 relative overflow-hidden group">
-              
-              {/* Internal Content Stack */}
-              <div>
-                {/* Eyebrow */}
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/[0.08] bg-white/[0.03] text-[11px] font-medium tracking-wider uppercase text-[#A1A1AA] select-none mb-6">
+          <div className="mt-[72px] grid w-full grid-cols-1 justify-items-center gap-10 lg:grid-cols-2">
+            <div className="w-full max-w-[520px] min-h-[430px] max-h-[470px] rounded-[28px] border border-white/[0.08] bg-[#111111] p-10 text-center shadow-[0_12px_40px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:-translate-y-1">
+              <div className="flex h-full flex-col items-center">
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] font-medium tracking-[0.12em] text-[#A1A1AA] uppercase">
                   <Globe className="w-3.5 h-3.5 text-[#A1A1AA]" />
-                  <span>GLOBAL</span>
+                  <span>Global</span>
                 </div>
 
-                {/* Title + Description + 3D Mug Layout */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-6">
-                  
-                  {/* Text Content */}
-                  <div className="flex-1">
-                    <h3 className="text-2xl sm:text-[26px] font-semibold text-[#F5F5F5] tracking-tight leading-tight mb-2">
-                      International Support
-                    </h3>
-                    
-                    <p className="text-sm text-[#A1A1AA] leading-[1.6] max-w-[280px] mb-6">
-                      Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
-                    </p>
-
-                    {/* Payment Pills */}
-                    <div className="flex items-center gap-2.5 flex-wrap select-none">
-                      <span className="h-7 px-3 rounded-full border border-white/[0.08] bg-white/[0.03] text-xs font-medium text-[#A1A1AA] inline-flex items-center gap-1.5">
-                        <span className="text-xs"></span> Apple Pay
-                      </span>
-                      <span className="h-7 px-3 rounded-full border border-white/[0.08] bg-white/[0.03] text-xs font-medium text-[#A1A1AA] inline-flex items-center gap-1.5">
-                        <svg className="w-3 h-3 text-[#A1A1AA]" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .761-.645h6.417c2.423 0 4.319.53 5.485 1.534 1.166 1.004 1.58 2.457 1.272 4.417-.464 2.955-2.28 4.793-5.253 5.318l.582 3.652a.641.641 0 0 1-.633.741H10.15a.77.77 0 0 1-.76-.645l-.47-2.956H7.076z"/>
-                        </svg>
-                        PayPal
-                      </span>
-                      <span className="h-7 px-3 rounded-full border border-white/[0.08] bg-white/[0.03] text-xs font-medium text-[#A1A1AA] inline-flex items-center gap-1.5">
-                        <CreditCard className="w-3 h-3 text-[#A1A1AA]" />
-                        Card
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* 3D Mug Illustration (Increased by ~35%, Vertically Centered) */}
-                  <div className="relative w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center flex-shrink-0 select-none self-center sm:self-auto">
-                    <div className="absolute w-24 h-24 rounded-full bg-[#ff4d4f]/20 blur-2xl opacity-80" />
-                    
-                    <svg className="w-32 h-32 sm:w-36 sm:h-36 relative z-10 drop-shadow-[0_12px_28px_rgba(255,77,79,0.35)] transition-transform duration-300 group-hover:scale-105" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div className="mt-8 flex w-full items-center justify-center">
+                  <div className="relative flex h-[180px] w-[180px] items-center justify-center select-none">
+                    <div className="absolute h-24 w-24 rounded-full bg-[#ff4d4f]/20 blur-2xl opacity-80" />
+                    <svg className="relative z-10 h-[168px] w-[168px] drop-shadow-[0_12px_28px_rgba(255,77,79,0.35)]" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <ellipse cx="55" cy="100" rx="32" ry="8" fill="black" fillOpacity="0.5" />
-                      
-                      {/* Handle */}
                       <path d="M75 48C88 48 98 55 98 68C98 81 88 88 75 88" stroke="url(#mugHandleGrad)" strokeWidth="10" strokeLinecap="round" />
-                      
-                      {/* Mug Body */}
                       <rect x="25" y="38" width="52" height="54" rx="10" fill="url(#mugBodyGrad)" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
-                      
-                      {/* Rim Outer */}
                       <ellipse cx="51" cy="38" rx="26" ry="7" fill="url(#mugRimGrad)" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-                      
-                      {/* Inner Coffee Surface */}
                       <ellipse cx="51" cy="39" rx="23" ry="5.5" fill="#1C1414" />
-                      
-                      {/* Glowing Heart */}
                       <g filter="url(#heartGlow)">
                         <path d="M51 60C48.5 56 42 56 42 61.5C42 67 51 73.5 51 73.5C51 73.5 60 67 60 61.5C60 56 53.5 56 51 60Z" fill="url(#heartGrad)" />
                       </g>
-
                       <defs>
                         <linearGradient id="mugBodyGrad" x1="25" y1="38" x2="77" y2="92" gradientUnits="userSpaceOnUse">
                           <stop offset="0%" stopColor="#2A2A30" stopOpacity="0.9" />
                           <stop offset="50%" stopColor="#1A1A1E" stopOpacity="0.85" />
                           <stop offset="100%" stopColor="#0F0F12" stopOpacity="0.95" />
                         </linearGradient>
-
                         <linearGradient id="mugRimGrad" x1="25" y1="38" x2="77" y2="38" gradientUnits="userSpaceOnUse">
                           <stop offset="0%" stopColor="#4A4A52" />
                           <stop offset="50%" stopColor="#2A2A30" />
                           <stop offset="100%" stopColor="#1A1A1E" />
                         </linearGradient>
-
                         <linearGradient id="mugHandleGrad" x1="75" y1="48" x2="98" y2="88" gradientUnits="userSpaceOnUse">
                           <stop offset="0%" stopColor="#3A3A42" />
                           <stop offset="100%" stopColor="#1A1A1E" />
                         </linearGradient>
-
                         <linearGradient id="heartGrad" x1="42" y1="56" x2="60" y2="73.5" gradientUnits="userSpaceOnUse">
                           <stop offset="0%" stopColor="#FF6B6B" />
                           <stop offset="100%" stopColor="#E63946" />
                         </linearGradient>
-
                         <filter id="heartGlow" x="35" y="50" filterUnits="userSpaceOnUse">
                           <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#FF4D4F" floodOpacity="0.8" />
                         </filter>
@@ -308,112 +247,112 @@ export function BuyMeCoffeePage() {
                     </svg>
                   </div>
                 </div>
+
+                <h3 className="mt-7 text-[28px] font-semibold tracking-tight text-[#F5F5F5]">
+                  International Support
+                </h3>
+
+                <p className="mt-3 max-w-[280px] text-[16px] leading-[1.65] text-[#A1A1AA]">
+                  Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
+                </p>
+
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
+                    <span className="text-xs"></span>
+                    <span>Apple Pay</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
+                    <svg className="h-3 w-3 text-[#A1A1AA]" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .761-.645h6.417c2.423 0 4.319.53 5.485 1.534 1.166 1.004 1.58 2.457 1.272 4.417-.464 2.955-2.28 4.793-5.253 5.318l.582 3.652a.641.641 0 0 1-.633.741H10.15a.77.77 0 0 1-.76-.645l-.47-2.956H7.076z" />
+                    </svg>
+                    <span>PayPal</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
+                    <CreditCard className="h-3 w-3 text-[#A1A1AA]" />
+                    <span>Card</span>
+                  </span>
+                </div>
+
+                <Button asChild onClick={handleKofiClick} className="mt-8 min-w-[260px] rounded-full border border-white/[0.08] bg-white/[0.06] px-5 text-sm font-semibold text-[#F5F5F5] hover:bg-white/[0.12]">
+                  <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex h-[52px] w-full items-center justify-center gap-2">
+                    <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M23.881 8.948c-.773-4.085-4.859-5.005-7.875-5.005h-9.52c-.775 0-1.404.63-1.404 1.405v13.315c0 .775.629 1.405 1.404 1.405h8.182c4.619 0 7.821-2.524 8.793-7.555.309-1.606.321-2.535.42-3.565zm-4.321 4.545c-.563 2.923-2.673 3.655-5.597 3.655H7.318V6.16h7.458c2.045 0 4.195.42 4.672 3.19.261 1.516.273 2.457.112 4.143zM16.592 11.23h1.365a1.82 1.82 0 1 1 0 3.64h-1.365V11.23z" />
+                    </svg>
+                    <span>Continue with Ko-fi</span>
+                    <span>→</span>
+                  </a>
+                </Button>
               </div>
-
-              {/* Bottom CTA (height: 52px, radius: 999px, font-weight: 600) */}
-              <Button asChild onClick={handleKofiClick} className="w-full h-[52px] rounded-full border border-white/[0.08] bg-white/[0.06] hover:bg-white/[0.12] text-[#F5F5F5] font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] cursor-pointer select-none">
-                <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full">
-                  <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M23.881 8.948c-.773-4.085-4.859-5.005-7.875-5.005h-9.52c-.775 0-1.404.63-1.404 1.405v13.315c0 .775.629 1.405 1.404 1.405h8.182c4.619 0 7.821-2.524 8.793-7.555.309-1.606.321-2.535.42-3.565zm-4.321 4.545c-.563 2.923-2.673 3.655-5.597 3.655H7.318V6.16h7.458c2.045 0 4.195.42 4.672 3.19.261 1.516.273 2.457.112 4.143zM16.592 11.23h1.365a1.82 1.82 0 1 1 0 3.64h-1.365V11.23z" />
-                  </svg>
-                  <span>Continue with Ko-fi</span>
-                  <span>→</span>
-                </a>
-              </Button>
-
             </div>
 
-            {/* CARD 2: India Support */}
-            <div className="bg-[#111111] border border-white/[0.08] rounded-[28px] p-[36px] flex flex-col justify-between min-h-[440px] sm:min-h-[460px] shadow-[0_12px_40px_rgba(0,0,0,0.28)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.38)] hover:border-white/[0.15] transition-all duration-300 relative overflow-hidden group">
-              
-              {/* Internal Content Stack */}
-              <div>
-                {/* Eyebrow */}
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/[0.08] bg-white/[0.03] text-[11px] font-medium tracking-wider uppercase text-[#A1A1AA] select-none mb-6">
+            <div className="w-full max-w-[520px] min-h-[430px] max-h-[470px] rounded-[28px] border border-white/[0.08] bg-[#111111] p-10 text-center shadow-[0_12px_40px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:-translate-y-1">
+              <div className="flex h-full flex-col items-center">
+                <div className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] font-medium tracking-[0.12em] text-[#A1A1AA] uppercase">
                   <span className="text-xs">🇮🇳</span>
-                  <span>LOCAL PAYMENT</span>
+                  <span>Local Payment</span>
                 </div>
 
-                {/* Title + Description + Premium Floating QR Code */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-6">
-                  
-                  {/* Text Content */}
-                  <div className="flex-1">
-                    <h3 className="text-2xl sm:text-[26px] font-semibold text-[#F5F5F5] tracking-tight leading-tight mb-2">
-                      India Support
-                    </h3>
-                    
-                    <p className="text-sm text-[#A1A1AA] leading-[1.6] max-w-[260px]">
-                      Support instantly using UPI, local cards, or net banking.
-                    </p>
+                <div className="mt-8 rounded-[22px] border border-white/[0.08] bg-[#0C0C0E] p-3 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
+                  <div className="bg-white p-2">
+                    <img src={qrCodeImageUrl} alt="UPI QR Code" className="h-[164px] w-[164px] rounded-lg" />
                   </div>
+                </div>
 
-                  {/* Floating Premium QR Code Box */}
-                  <div className="bg-[#0C0C0E] border border-white/[0.08] p-3 rounded-2xl flex flex-col items-center justify-center flex-shrink-0 select-none self-center sm:self-auto shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
-                    <div className="bg-white p-2 rounded-xl">
-                      <img 
-                        src={qrCodeImageUrl} 
-                        alt="UPI QR Code" 
-                        className="w-24 h-24 rounded-lg pointer-events-none select-none"
-                      />
+                <h3 className="mt-7 text-[28px] font-semibold tracking-tight text-[#F5F5F5]">
+                  India Support
+                </h3>
+
+                <p className="mt-3 max-w-[300px] text-[16px] leading-[1.65] text-[#A1A1AA]">
+                  Support instantly using UPI, local cards, or net banking.
+                </p>
+
+                <div className="mt-8 w-full rounded-[18px] border border-white/[0.08] bg-[#090909] px-4 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-left">
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A1A1AA]/70">UPI ID</div>
+                      <div className="mt-1 font-mono text-sm text-[#F5F5F5]">{upiId}</div>
                     </div>
-                    <span className="text-[11px] text-[#A1A1AA] font-medium mt-2">Scan to pay</span>
+                    <button
+                      onClick={handleCopyUpiId}
+                      className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.06] px-3 py-2 text-xs font-medium text-[#F5F5F5] transition-colors hover:bg-white/[0.12]"
+                      title="Copy UPI ID"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="h-3.5 w-3.5 text-emerald-400" />
+                          <span className="text-emerald-400">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3.5 w-3.5 text-[#A1A1AA]" />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
-              </div>
 
-              {/* Bottom Section (UPI Row + CTA with 28px top margin) */}
-              <div className="mt-4">
-                {/* Sleek Thinner UPI Row */}
-                <div className="bg-[#090909] border border-white/[0.08] h-12 px-4 rounded-xl flex items-center justify-between w-full">
-                  <div className="flex flex-col justify-center">
-                    <span className="text-[9px] font-semibold uppercase tracking-wider text-[#A1A1AA]/60 font-mono">UPI ID</span>
-                    <span className="text-xs sm:text-sm font-mono font-medium text-[#F5F5F5]">{upiId}</span>
-                  </div>
-                  <button 
-                    onClick={handleCopyUpiId}
-                    className="h-7 px-3 bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] rounded-lg text-xs text-[#F5F5F5] font-medium transition-colors cursor-pointer flex items-center gap-1.5 select-none"
-                    title="Copy UPI ID"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-emerald-400 font-medium">Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5 text-[#A1A1AA]" />
-                        <span>Copy</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {/* Primary CTA (height: 52px, radius: 999px, font-weight: 600, mt: 28px) */}
-                <Button 
+                <Button
                   onClick={handleRazorpayPayment}
                   disabled={isProcessing}
-                  className="mt-[28px] w-full h-[52px] rounded-full bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] border-0 select-none cursor-pointer"
+                  className="mt-6 min-w-[260px] rounded-full bg-[#F5F5F5] px-5 text-sm font-semibold text-zinc-950 hover:bg-white"
                 >
                   {isProcessing ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin" />
+                    <div className="flex h-[52px] items-center justify-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-950/30 border-t-zinc-950" />
                       <span>Processing...</span>
-                    </>
+                    </div>
                   ) : (
-                    <>
-                      <Send className="w-3.5 h-3.5" />
+                    <div className="flex h-[52px] items-center justify-center gap-2">
+                      <Send className="h-3.5 w-3.5" />
                       <span>Pay with UPI</span>
                       <span>→</span>
-                    </>
+                    </div>
                   )}
                 </Button>
               </div>
-
             </div>
-
           </div>
-
         </main>
 
         {/* FOOTER */}
