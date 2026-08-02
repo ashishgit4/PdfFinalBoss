@@ -55,7 +55,7 @@ export function FAQ() {
               >
                 <button className="accordion-trigger" onClick={() => toggleAccordion(index)}>
                   <span>{item.q}</span>
-                  <svg className="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg className="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </button>
