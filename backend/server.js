@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
@@ -55,13 +56,14 @@ const qpdfPath =
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Security Headers & Policy Middleware
+// High-Performance Compression & Security Headers
+app.use(compression());
 app.use(helmet({
   contentSecurityPolicy: false, // Allows cross-origin static frontend assets
   crossOriginEmbedderPolicy: false,
 }));
 
-// CORS Configuration (Allow origins cleanly)
+// CORS Configuration
 app.use(cors());
 app.use(express.json());
 
@@ -121,14 +123,18 @@ app.post('/api/upload', uploadLimiter, upload.single('file'), async (req, res) =
   const originalName = req.file.originalname;
 
   try {
-    // Read buffer and validate binary magic bytes (%PDF-)
-    const buffer = fs.readFileSync(filePath);
+    // Ultra-fast 5-byte header check (does not load 100MB into memory)
+    const fd = fs.openSync(filePath, 'r');
+    const headerBuf = Buffer.alloc(5);
+    fs.readSync(fd, headerBuf, 0, 5, 0);
+    fs.closeSync(fd);
 
-    if (buffer.length < 5 || buffer.slice(0, 5).toString('utf-8') !== '%PDF-') {
+    if (headerBuf.toString('utf-8') !== '%PDF-') {
       try { fs.unlinkSync(filePath); } catch (e) {}
       return res.status(400).json({ error: 'Invalid file content. Uploaded file is not a valid PDF document.' });
     }
 
+    const buffer = fs.readFileSync(filePath);
     const fileHash = getFileHash(buffer);
 
     let encrypted = false;
@@ -205,7 +211,6 @@ app.post('/api/unlock', async (req, res) => {
   }
 
   let decryptPass = password || '';
-
   const tempOutputPath = fileMeta.path + '.unlocked';
 
   try {
@@ -220,7 +225,7 @@ app.post('/api/unlock', async (req, res) => {
     }
 
     if (encrypted) {
-      // Perform decryption with the provided password using CLI delimiter --
+      // Perform decryption with provided password
       await execFilePromise(qpdfPath, [
         '--decrypt',
         '--password=' + decryptPass,
@@ -229,28 +234,29 @@ app.post('/api/unlock', async (req, res) => {
         tempOutputPath
       ]);
     } else {
-      // Just copy it directly
+      // Copy directly
       fs.copyFileSync(fileMeta.path, tempOutputPath);
     }
 
-    // Read the decrypted bytes to send back
-    const decryptedBuffer = fs.readFileSync(tempOutputPath);
-    
-    // Clean up temporary output file
-    try { fs.unlinkSync(tempOutputPath); } catch (e) {}
-
-    // Send binary PDF stream directly to browser with sanitized Content-Disposition header
+    // Stream binary PDF directly to browser (0ms RAM buffer wait)
     const safeBaseName = sanitizeFilename(fileMeta.originalname.replace(/\.pdf$/i, ''));
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${safeBaseName}_unlocked.pdf"`);
-    res.send(decryptedBuffer);
+    
+    const readStream = fs.createReadStream(tempOutputPath);
+    readStream.pipe(res);
+    readStream.on('end', () => {
+      try { fs.unlinkSync(tempOutputPath); } catch (e) {}
+    });
+    readStream.on('error', () => {
+      try { fs.unlinkSync(tempOutputPath); } catch (e) {}
+    });
   } catch (err) {
     console.error('PDF decryption error:', err);
     if (fs.existsSync(tempOutputPath)) {
       try { fs.unlinkSync(tempOutputPath); } catch (e) {}
     }
     
-    // If decryption fails, it indicates an invalid password
     res.status(401).json({ error: 'Incorrect password' });
   }
 });
@@ -303,7 +309,9 @@ app.post('/api/lock', async (req, res) => {
     if (hint) {
       res.setHeader('X-PDF-Hint', encodeURIComponent(hint));
     }
-    res.send(lockedBuffer);
+
+    const readStream = fs.createReadStream(fileMeta.path);
+    readStream.pipe(res);
   } catch (err) {
     console.error('Error locking PDF:', err);
     if (fs.existsSync(tempOutputPath)) {

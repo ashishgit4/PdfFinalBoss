@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@pdfsmaller/pdf-decrypt": "^1.0.1",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^4.19.2",
