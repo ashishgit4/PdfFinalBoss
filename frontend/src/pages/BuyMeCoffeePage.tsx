@@ -189,7 +189,22 @@ export function BuyMeCoffeePage() {
           <span className="text-[9px] tracking-[0.25em] uppercase text-[#A1A1AA] font-semibold select-none">/ SUPPORT</span>
         </div>
 
-        <div>
+        <div className="flex items-center gap-3">
+          <Button asChild variant="ghost" className="rounded-full px-4 py-2 text-xs font-medium text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-white/[0.04] border border-white/[0.06] transition-all duration-200 cursor-pointer bg-white/[0.02] flex items-center gap-1.5">
+            <a 
+              href="https://github.com/ashishgit4/PdfFinalBoss" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5"
+            >
+              <Star className="w-3.5 h-3.5 text-[#A1A1AA]" />
+              <span>Star the Repo</span>
+              <span className="px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] font-mono text-[9px] text-[#A1A1AA]/70">
+                {gitHubStars !== null ? gitHubStars : "50+"}
+              </span>
+            </a>
+          </Button>
+
           <Button asChild variant="ghost" className="rounded-full px-5 py-2 text-xs font-medium text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-white/[0.04] border border-white/[0.06] transition-all duration-200 cursor-pointer bg-white/[0.02]">
             <Link to="/" className="flex items-center gap-2">
               <ArrowLeft className="w-3.5 h-3.5" />
@@ -223,32 +238,67 @@ export function BuyMeCoffeePage() {
           {/* CARD 1: International Support */}
           <div className="bg-[#111111] border border-white/[0.08] text-[#F5F5F5] flex flex-col p-10 md:p-12 relative overflow-hidden rounded-[32px] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-left items-start w-full">
             
-            {/* Hero Illustration */}
-            <div className="w-24 h-24 bg-white/[0.02] border border-white/[0.04] rounded-2xl flex items-center justify-center relative mb-6 select-none">
-              <svg className="w-12 h-12 text-[#F5F5F5]/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
-                <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-                <line x1="6" y1="2" x2="6" y2="4" />
-                <line x1="10" y1="2" x2="10" y2="4" />
-                <line x1="14" y1="2" x2="14" y2="4" />
-              </svg>
-              <div className="absolute -top-1 -right-1 bg-[#161616] border border-white/[0.08] text-[#A1A1AA] rounded-full p-1 shadow-sm">
-                <Heart className="w-3.5 h-3.5 fill-[#A1A1AA]" />
+            {/* Top Row: Details on Left, Mug Graphic on Right */}
+            <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-7">
+              <div className="flex-1 flex flex-col items-start text-left">
+                {/* Eyebrow Badge */}
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-full text-[9px] font-mono text-[#A1A1AA] uppercase tracking-wider font-semibold select-none mb-3">
+                  <Globe className="size-3 text-[#A1A1AA]" />
+                  <span>GLOBAL</span>
+                </div>
+
+                <h3 className="text-2xl font-medium text-[#F5F5F5] tracking-tight mb-2">International Support</h3>
+                
+                <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed max-w-[280px]">
+                  Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
+                </p>
+
+                {/* Spacing Details pills */}
+                <div className="flex items-center gap-2 mt-4 flex-wrap select-none">
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[9px] font-medium text-[#A1A1AA]/80">
+                    <span></span> Apple Pay
+                  </span>
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[9px] font-medium text-[#A1A1AA]/80">
+                    PayPal
+                  </span>
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[9px] font-medium text-[#A1A1AA]/80">
+                    <CreditCard className="w-2.5 h-2.5 text-[#A1A1AA]" />
+                    Card
+                  </span>
+                </div>
+              </div>
+
+              {/* Mug Graphic on Right */}
+              <div className="relative w-28 h-28 flex items-center justify-center flex-shrink-0 select-none">
+                <div className="absolute inset-0 bg-white/[0.01] blur-xl rounded-full"></div>
+                <svg className="w-24 h-24 relative z-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse cx="45" cy="80" rx="20" ry="6" fill="black" fillOpacity="0.3" />
+                  <path d="M60 40C68 40 76 45 76 55C76 65 68 70 60 70" stroke="url(#mugGradient)" strokeWidth="8" strokeLinecap="round" />
+                  <rect x="25" y="32" width="36" height="42" rx="6" fill="url(#mugGradient)" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+                  <ellipse cx="43" cy="32" rx="18" ry="4" fill="url(#mugRimGradient)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+                  <ellipse cx="43" cy="33" rx="16" ry="3" fill="#2d1f1e" />
+                  <path d="M43 46C41 43 36 43 36 47C36 51 43 56 43 56C43 56 50 51 50 47C50 43 45 43 43 46Z" fill="#ff4d4f" />
+                  <defs>
+                    <linearGradient id="mugGradient" x1="25" y1="32" x2="61" y2="74" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#2c2c30" />
+                      <stop offset="50%" stopColor="#1e1e21" />
+                      <stop offset="100%" stopColor="#121214" />
+                    </linearGradient>
+                    <linearGradient id="mugRimGradient" x1="25" y1="32" x2="61" y2="32" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#44444a" />
+                      <stop offset="50%" stopColor="#2c2c30" />
+                      <stop offset="100%" stopColor="#18181a" />
+                    </linearGradient>
+                  </defs>
+                </svg>
               </div>
             </div>
-
-            <span className="text-[10px] tracking-[0.2em] font-mono text-[#A1A1AA]/50 uppercase font-bold block mb-1 select-none">
-              GLOBAL
-            </span>
             
-            <h3 className="text-2xl font-medium text-[#F5F5F5] tracking-tight mb-3">International Support</h3>
-            
-            <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed max-w-[320px] mb-7">
-              Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
-            </p>
-            
-            <Button asChild className="w-full h-12 rounded-full bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 text-[#F5F5F5] font-semibold flex items-center justify-center gap-1.5 transition-all text-sm cursor-pointer">
-              <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer">
+            <Button asChild className="w-full h-12 rounded-full bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 text-[#F5F5F5] font-semibold flex items-center justify-center gap-1.5 transition-all text-sm cursor-pointer select-none">
+              <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
+                <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.881 8.948c-.773-4.085-4.859-5.005-7.875-5.005h-9.52c-.775 0-1.404.63-1.404 1.405v13.315c0 .775.629 1.405 1.404 1.405h8.182c4.619 0 7.821-2.524 8.793-7.555.309-1.606.321-2.535.42-3.565zm-4.321 4.545c-.563 2.923-2.673 3.655-5.597 3.655H7.318V6.16h7.458c2.045 0 4.195.42 4.672 3.19.261 1.516.273 2.457.112 4.143zM16.592 11.23h1.365a1.82 1.82 0 1 1 0 3.64h-1.365V11.23z" />
+                </svg>
                 <span>Continue with Ko-fi</span>
                 <span>→</span>
               </a>
@@ -258,26 +308,34 @@ export function BuyMeCoffeePage() {
           {/* CARD 2: India Support */}
           <div className="bg-[#111111] border border-white/[0.08] text-[#F5F5F5] flex flex-col p-10 md:p-12 relative overflow-hidden rounded-[32px] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-left items-start w-full">
             
-            {/* QR Code Hero Element */}
-            <div className="bg-[#18181c] border border-white/[0.04] p-3.5 rounded-2xl flex items-center justify-center w-24 h-24 mb-6 shadow-xl select-none">
-              <div className="bg-white p-1 rounded-xl flex items-center justify-center">
-                <img 
-                  src={qrCodeImageUrl} 
-                  alt="UPI QR Code" 
-                  className="w-16 h-16 rounded pointer-events-none select-none"
-                />
+            {/* Top Row: Details on Left, QR Code on Right */}
+            <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-7">
+              <div className="flex-1 flex flex-col items-start text-left">
+                {/* Eyebrow Badge */}
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-full text-[9px] font-mono text-[#A1A1AA] uppercase tracking-wider font-semibold select-none mb-3">
+                  <span className="text-[10px]">🇮🇳</span>
+                  <span>LOCAL PAYMENT</span>
+                </div>
+
+                <h3 className="text-2xl font-medium text-[#F5F5F5] tracking-tight mb-2">India Support</h3>
+                
+                <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed max-w-[280px]">
+                  Support instantly using UPI, local cards, or net banking.
+                </p>
+              </div>
+
+              {/* QR Code Hero Element */}
+              <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-2xl flex flex-col items-center justify-center w-28 h-28 flex-shrink-0 shadow-xl select-none">
+                <div className="bg-white p-1 rounded-lg">
+                  <img 
+                    src={qrCodeImageUrl} 
+                    alt="UPI QR Code" 
+                    className="w-16 h-16 rounded pointer-events-none select-none"
+                  />
+                </div>
+                <span className="text-[7px] text-[#A1A1AA]/50 mt-1.5 font-mono uppercase tracking-wider">Scan to Pay</span>
               </div>
             </div>
-
-            <span className="text-[10px] tracking-[0.2em] font-mono text-[#A1A1AA]/50 uppercase font-bold block mb-1 select-none">
-              LOCAL PAYMENT
-              </span>
-            
-            <h3 className="text-2xl font-medium text-[#F5F5F5] tracking-tight mb-3">India Support</h3>
-            
-            <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed max-w-[320px] mb-4">
-              Support instantly using UPI, local cards, or net banking.
-            </p>
 
             {/* Copyable UPI ID row */}
             <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-2xl flex items-center justify-between w-full max-w-[320px] mb-7">
@@ -298,7 +356,7 @@ export function BuyMeCoffeePage() {
             <Button 
               onClick={handleRazorpayPayment}
               disabled={isProcessing}
-              className="w-full h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-sm flex items-center justify-center gap-1.5 transition-colors border-0"
+              className="w-full h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-sm flex items-center justify-center gap-1.5 transition-colors border-0 select-none"
             >
               {isProcessing ? (
                 <>
@@ -307,6 +365,7 @@ export function BuyMeCoffeePage() {
                 </>
               ) : (
                 <>
+                  <Send className="w-3.5 h-3.5" />
                   <span>Pay with UPI</span>
                   <span>→</span>
                 </>
