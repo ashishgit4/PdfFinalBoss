@@ -82,6 +82,39 @@ export function Features() {
           <p className="quote-text">“I needed to edit an old contract but forgot it was password protected. Unlocked it in seconds.”</p>
         </div>
       </section>
+
+      {/* Section 3: Security & Privacy */}
+      <section id="security" className="section-toolkit container reveal">
+        <span className="eyebrow">[ Security & Privacy ]</span>
+        <h2 className="section-title">Built with enterprise-grade privacy.</h2>
+        <p className="lead-text">Your document security is our highest priority. Here is how we guarantee your files and passwords remain 100% private.</p>
+
+        <div className="tools-grid">
+          <div className="tool-card">
+            <span className="tool-badge active">Privacy</span>
+            <h3 className="tool-title">In-Memory Processing</h3>
+            <p className="tool-desc">Submitted passwords reside strictly in volatile RAM memory during execution and are never saved to disk or logged.</p>
+          </div>
+
+          <div className="tool-card">
+            <span className="tool-badge active">Auto-Delete</span>
+            <h3 className="tool-title">60-Min Auto-Wipe</h3>
+            <p className="tool-desc">Uploaded PDFs and processed outputs are permanently purged from server disks automatically within 60 minutes.</p>
+          </div>
+
+          <div className="tool-card">
+            <span className="tool-badge active">Zero-Knowledge</span>
+            <h3 className="tool-title">Encrypted Local Vault</h3>
+            <p className="tool-desc">Vault passwords are encrypted directly inside your browser's localStorage and never leave your device.</p>
+          </div>
+
+          <div className="tool-card">
+            <span className="tool-badge active">Encryption</span>
+            <h3 className="tool-title">256-Bit SSL Transfer</h3>
+            <p className="tool-desc">All file transactions are protected via 256-bit SSL/TLS encrypted transport connections during upload and download.</p>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
