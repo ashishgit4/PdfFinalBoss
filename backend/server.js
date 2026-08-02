@@ -2,6 +2,8 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { execFile } from 'child_process';
@@ -14,6 +16,11 @@ import { getFileHash, encryptPassword, decryptPassword, hashUserPassword, verify
 
 // Load environment variables for local development
 dotenv.config();
+
+// Helper to sanitize filenames for HTTP headers to prevent CRLF injection
+function sanitizeFilename(filename) {
+  return filename.replace(/[^a-zA-Z0-9_.-]/g, '_');
+}
 
 // Global exception and promise rejection handlers to prevent crashes
 process.on('uncaughtException', (err) => {
@@ -48,9 +55,34 @@ const qpdfPath =
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Enable CORS and JSON parsing
+// Security Headers & Policy Middleware
+app.use(helmet({
+  contentSecurityPolicy: false, // Allows cross-origin static frontend assets
+  crossOriginEmbedderPolicy: false,
+}));
+
+// CORS Configuration (Allow origins cleanly)
 app.use(cors());
 app.use(express.json());
+
+// Rate Limiting Protection
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 API requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests from this IP, please try again in 15 minutes.' }
+});
+
+const uploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30, // Limit each IP to 30 file uploads per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Upload limit exceeded. Please wait a few minutes before trying again.' }
+});
+
+app.use('/api/', apiLimiter);
 
 // Setup storage folders
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -68,17 +100,18 @@ try {
   console.error('Error clearing uploads directory:', err);
 }
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ 
+  dest: 'uploads/',
+  limits: { fileSize: 100 * 1024 * 1024 } // Strict 100MB file limit
+});
 const filesDb = new Map(); // fileId -> { path, originalname, uploadTime, encrypted, pdfHash }
-// Local client-side local storage password vault system is active.
-// All backend authentication routes and db sessions are removed for zero-barrier utility.
 
 // ---------------------------------
 // 3. CORE UPLOAD & PROCESSING ENDPOINTS
 // ---------------------------------
 
 // API 1: Upload endpoint
-app.post('/api/upload', upload.single('file'), async (req, res) => {
+app.post('/api/upload', uploadLimiter, upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded.' });
   }
@@ -88,16 +121,22 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   const originalName = req.file.originalname;
 
   try {
-    // Read buffer and compute file hash
+    // Read buffer and validate binary magic bytes (%PDF-)
     const buffer = fs.readFileSync(filePath);
+
+    if (buffer.length < 5 || buffer.slice(0, 5).toString('utf-8') !== '%PDF-') {
+      try { fs.unlinkSync(filePath); } catch (e) {}
+      return res.status(400).json({ error: 'Invalid file content. Uploaded file is not a valid PDF document.' });
+    }
+
     const fileHash = getFileHash(buffer);
 
     let encrypted = false;
     let autoDecrypted = false;
 
     try {
-      // Run show-encryption to check if file is encrypted and password requirements
-      const { stdout } = await execFilePromise(qpdfPath, ['--show-encryption', filePath]);
+      // Run show-encryption safely using CLI delimiter --
+      const { stdout } = await execFilePromise(qpdfPath, ['--show-encryption', '--', filePath]);
       if (!stdout.includes('File is not encrypted')) {
         encrypted = true;
       }
@@ -116,7 +155,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       const tempDecryptedPath = filePath + '.decrypted';
       try {
         // Try decrypting with empty password (works for restricted/owner-password-only PDFs)
-        await execFilePromise(qpdfPath, ['--decrypt', filePath, tempDecryptedPath]);
+        await execFilePromise(qpdfPath, ['--decrypt', '--password=', '--', filePath, tempDecryptedPath]);
         fs.renameSync(tempDecryptedPath, filePath);
         actuallyLocked = false;
         autoDecrypted = true;
@@ -145,6 +184,9 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     });
   } catch (err) {
     console.error('Error processing uploaded file:', err);
+    if (fs.existsSync(filePath)) {
+      try { fs.unlinkSync(filePath); } catch (e) {}
+    }
     res.status(500).json({ error: 'Failed to parse file metrics.' });
   }
 });
@@ -169,7 +211,7 @@ app.post('/api/unlock', async (req, res) => {
   try {
     let encrypted = false;
     try {
-      const { stdout } = await execFilePromise(qpdfPath, ['--show-encryption', fileMeta.path]);
+      const { stdout } = await execFilePromise(qpdfPath, ['--show-encryption', '--', fileMeta.path]);
       if (!stdout.includes('File is not encrypted')) {
         encrypted = true;
       }
@@ -178,10 +220,11 @@ app.post('/api/unlock', async (req, res) => {
     }
 
     if (encrypted) {
-      // Perform decryption with the provided password
+      // Perform decryption with the provided password using CLI delimiter --
       await execFilePromise(qpdfPath, [
         '--decrypt',
-        `--password=${decryptPass}`,
+        '--password=' + decryptPass,
+        '--',
         fileMeta.path,
         tempOutputPath
       ]);
@@ -196,9 +239,10 @@ app.post('/api/unlock', async (req, res) => {
     // Clean up temporary output file
     try { fs.unlinkSync(tempOutputPath); } catch (e) {}
 
-    // Send binary PDF stream directly to browser
+    // Send binary PDF stream directly to browser with sanitized Content-Disposition header
+    const safeBaseName = sanitizeFilename(fileMeta.originalname.replace(/\.pdf$/i, ''));
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${fileMeta.originalname.replace('.pdf', '')}_unlocked.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${safeBaseName}_unlocked.pdf"`);
     res.send(decryptedBuffer);
   } catch (err) {
     console.error('PDF decryption error:', err);
@@ -251,8 +295,9 @@ app.post('/api/lock', async (req, res) => {
     const lockedBuffer = fs.readFileSync(fileMeta.path);
     const lockedHash = getFileHash(lockedBuffer);
 
+    const safeBaseName = sanitizeFilename(fileMeta.originalname.replace(/\.pdf$/i, ''));
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${fileMeta.originalname.replace('.pdf', '')}_locked.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${safeBaseName}_locked.pdf"`);
     res.setHeader('Access-Control-Expose-Headers', 'X-PDF-Hash, X-PDF-Hint');
     res.setHeader('X-PDF-Hash', lockedHash);
     if (hint) {
@@ -276,8 +321,9 @@ app.post('/api/lock', async (req, res) => {
 app.post('/api/payments/order', async (req, res) => {
   const { amount, currency } = req.body;
 
-  if (!amount) {
-    return res.status(400).json({ error: 'Amount is required' });
+  const numericAmount = Number(amount);
+  if (isNaN(numericAmount) || numericAmount <= 0 || numericAmount > 50000) {
+    return res.status(400).json({ error: 'Valid payment amount is required (₹1 - ₹50,000).' });
   }
 
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
@@ -286,7 +332,7 @@ app.post('/api/payments/order', async (req, res) => {
   }
 
   const options = {
-    amount: Math.round(amount * 100), // Amount in paise
+    amount: Math.round(numericAmount * 100), // Amount in paise
     currency: currency || 'INR',
     receipt: `receipt_${uuidv4().substring(0, 8)}`,
   };
