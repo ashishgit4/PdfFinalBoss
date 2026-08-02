@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Globe, CreditCard, ArrowLeft, Heart, ShieldCheck, 
-  Star, Copy 
+  ArrowLeft, Heart, ShieldCheck, 
+  Star, Copy, Check, Globe, CreditCard, Send 
 } from "lucide-react";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
@@ -14,13 +14,14 @@ export function BuyMeCoffeePage() {
   const [gitHubStars, setGitHubStars] = useState<number | null>(null);
   
   // Razorpay states
-  const [customAmount, setCustomAmount] = useState<string>("250");
+  const customAmount = "250";
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
   const [successDetails, setSuccessDetails] = useState<{
     paymentId: string;
     amount: number;
   } | null>(null);
+  const [copied, setCopied] = useState<boolean>(false);
 
   // Fetch GitHub Stars dynamically
   useEffect(() => {
@@ -168,7 +169,9 @@ export function BuyMeCoffeePage() {
 
   const handleCopyUpiId = () => {
     navigator.clipboard.writeText("ashishtawniya1@okaxis");
+    setCopied(true);
     toast.success("UPI ID copied to clipboard!");
+    setTimeout(() => setCopied(false), 2000);
   };
 
   // UPI deep-link URL config
@@ -177,10 +180,10 @@ export function BuyMeCoffeePage() {
   const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(upiUrl)}`;
 
   return (
-    <div className="min-h-screen bg-[#090909] text-[#F5F5F5] flex flex-col font-sans relative overflow-x-hidden selection:bg-white/10 selection:text-white">
+    <div className="min-h-screen w-full bg-[#090909] text-[#F5F5F5] flex flex-col items-center font-sans relative overflow-x-hidden selection:bg-white/10 selection:text-white">
       
       {/* Top Navbar */}
-      <header className="relative z-50 w-full max-w-[1100px] mx-auto px-6 py-6 md:py-8 flex items-center justify-between">
+      <header className="relative z-50 w-full max-w-[1280px] mx-auto px-10 py-6 md:py-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="font-sans font-bold text-xl tracking-tight text-[#F5F5F5]">PdfFinalBoss</span>
           <span className="text-[9px] tracking-[0.25em] uppercase text-[#A1A1AA] font-semibold select-none">/ SUPPORT</span>
@@ -197,183 +200,118 @@ export function BuyMeCoffeePage() {
       </header>
 
       {/* Main Content Area */}
-      <div className="flex-1 max-w-[1100px] mx-auto w-full px-6 py-12 md:py-20 flex flex-col items-center justify-center gap-16 md:gap-20 relative z-10">
+      <div className="flex-1 max-w-[1280px] mx-auto w-full px-10 py-12 md:py-20 flex flex-col items-center justify-center gap-16 md:gap-20 relative z-10">
         
         {/* Centered Title & Intro */}
         <div className="text-center max-w-2xl flex flex-col items-center gap-4">
-          <span className="text-[10px] tracking-[0.3em] uppercase text-[#A1A1AA] font-bold block select-none">
+          <span className="text-[10px] tracking-[0.25em] font-mono text-[#A1A1AA] uppercase block mb-2 select-none">
             SUPPORT OPEN SOURCE
           </span>
           
           <h1 className="font-sans text-4xl sm:text-5xl font-semibold tracking-tight text-[#F5F5F5] leading-[1.15]">
-            Buy Me a Coffee
+            Support PdfFinalBoss
           </h1>
 
-          <p className="text-sm sm:text-base text-[#A1A1AA] leading-relaxed font-sans max-w-md">
-            PdfFinalBoss is completely free and open source. If this tool has saved you time, consider supporting its active development.
+          <p className="text-sm sm:text-base text-[#A1A1AA] leading-relaxed font-sans max-w-lg text-center">
+            PdfFinalBoss is completely free and open source. Every contribution helps keep the project maintained, improved, and accessible for everyone.
           </p>
         </div>
 
-        {/* Raycast-inspired Two Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 w-full items-stretch">
+        {/* Symmetrical Two Premium Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 w-full max-w-[1100px] items-start">
           
           {/* CARD 1: International Support */}
-          <div className="bg-[#111111] border border-[rgba(255,255,255,0.08)] text-[#F5F5F5] flex flex-col justify-between p-8 md:p-10 relative overflow-hidden rounded-[32px] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+          <div className="bg-[#111111] border border-white/[0.08] text-[#F5F5F5] flex flex-col p-10 md:p-12 relative overflow-hidden rounded-[32px] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-left items-start w-full">
             
-            {/* Hero Illustration - Mock Mobile Screen */}
-            <div className="h-64 flex items-center justify-center select-none mb-8">
-              <div className="w-[180px] h-[220px] bg-[#161616] border border-white/[0.06] rounded-[24px] flex flex-col p-3 relative overflow-hidden shadow-2xl">
-                {/* Status bar mock */}
-                <div className="flex justify-between items-center text-[8px] text-[#A1A1AA]/40 mb-3 px-1 font-mono">
-                  <span>9:41</span>
-                  <div className="flex gap-1">
-                    <span className="w-2.5 h-1.5 bg-[#A1A1AA]/30 rounded-xs"></span>
-                    <span className="w-1.5 h-1.5 bg-[#A1A1AA]/30 rounded-xs"></span>
-                  </div>
-                </div>
-                
-                {/* Back button and title */}
-                <div className="flex items-center gap-1.5 text-[10px] text-[#F5F5F5] font-semibold mb-4 px-1">
-                  <ArrowLeft className="w-2.5 h-2.5 text-[#A1A1AA]" />
-                  <span>Ko-fi Support</span>
-                </div>
-
-                {/* Main Content inside mock */}
-                <div className="flex-1 flex flex-col items-center justify-center bg-[#1c1c1f]/40 border border-white/[0.03] rounded-xl p-3 text-center">
-                  <div className="w-10 h-10 bg-white/[0.02] border border-white/[0.06] rounded-full flex items-center justify-center mb-2">
-                    <svg className="w-5 h-5 text-[#FF5E5B]" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M11.351 2.715c-2.7 0-4.986.025-6.83.26C2.078 3.285 0 5.154 0 8.61c0 3.506.182 6.13 1.585 8.493 1.584 2.701 4.233 4.182 7.662 4.182h.83c4.209 0 6.494-2.234 7.637-4a9.5 9.5 0 0 0 1.091-2.338C21.792 14.688 24 12.22 24 9.208v-.415c0-3.247-2.13-5.507-5.792-5.87-1.558-.156-2.65-.208-6.857-.208m0 1.947c4.208 0 5.09.052 6.571.182 2.624.311 4.13 1.584 4.13 4v.39c0 2.156-1.792 3.844-3.87 3.844h-.935l-.156.649c-.208 1.013-.597 1.818-1.039 2.546-.909 1.428-2.545 3.064-5.922 3.064h-.805c-2.571 0-4.831-.883-6.078-3.195-1.09-2-1.298-4.155-1.298-7.506 0-2.181.857-3.402 3.012-3.714 1.533-.233 3.559-.26 6.39-.26m6.547 2.287c-.416 0-.65.234-.65.546v2.935c0 .311.234.545.65.545 1.324 0 2.051-.754 2.051-2s-.727-2.026-2.052-2.026m-10.39.182c-1.818 0-3.013 1.48-3.013 3.142 0 1.533.858 2.857 1.949 3.897.727.701 1.87 1.429 2.649 1.896a1.47 1.47 0 0 0 1.507 0c.78-.467 1.922-1.195 2.623-1.896 1.117-1.039 1.974-2.364 1.974-3.897 0-1.662-1.247-3.142-3.039-3.142-1.065 0-1.792.545-2.338 1.298-.493-.753-1.246-1.298-2.312-1.298"/>
-                    </svg>
-                  </div>
-                  <span className="text-[9px] font-bold text-[#F5F5F5] mb-0.5">Support Project</span>
-                  <span className="text-[6px] text-[#A1A1AA]">ko-fi.com/ashishsharma11</span>
-                  <div className="w-full h-4 bg-[#FF5E5B] rounded-md mt-2 flex items-center justify-center">
-                    <span className="text-[6px] font-bold text-white">Support</span>
-                  </div>
-                </div>
+            {/* Hero Illustration */}
+            <div className="w-24 h-24 bg-white/[0.02] border border-white/[0.04] rounded-2xl flex items-center justify-center relative mb-6 select-none">
+              <svg className="w-12 h-12 text-[#F5F5F5]/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+                <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+                <line x1="6" y1="2" x2="6" y2="4" />
+                <line x1="10" y1="2" x2="10" y2="4" />
+                <line x1="14" y1="2" x2="14" y2="4" />
+              </svg>
+              <div className="absolute -top-1 -right-1 bg-[#161616] border border-white/[0.08] text-[#A1A1AA] rounded-full p-1 shadow-sm">
+                <Heart className="w-3.5 h-3.5 fill-[#A1A1AA]" />
               </div>
             </div>
 
-            <div className="text-left mb-8 flex-1">
-              <span className="text-[10px] tracking-wider uppercase text-[#A1A1AA]/50 font-bold flex items-center gap-1.5 mb-2">
-                <Globe className="w-3.5 h-3.5" />
-                <span>Global Gateway</span>
-              </span>
-              <h3 className="text-xl font-semibold text-[#F5F5F5]">International Support</h3>
-              <p className="text-xs text-[#A1A1AA] mt-2 leading-relaxed">
-                Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
-              </p>
-            </div>
+            <span className="text-[10px] tracking-[0.2em] font-mono text-[#A1A1AA]/50 uppercase font-bold block mb-1 select-none">
+              GLOBAL
+            </span>
             
-            <div>
-              <Button asChild className="w-full h-[50px] bg-white/[0.04] border border-white/10 hover:bg-[#FF5E5B] hover:border-[#FF5E5B] text-[#F5F5F5] hover:text-white font-semibold rounded-full shadow-md cursor-pointer text-xs transition-all duration-200">
-                <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
-                  <span>Continue with Ko-fi</span>
-                  <span>→</span>
-                </a>
-              </Button>
-            </div>
+            <h3 className="text-2xl font-medium text-[#F5F5F5] tracking-tight mb-3">International Support</h3>
+            
+            <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed max-w-[320px] mb-7">
+              Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
+            </p>
+            
+            <Button asChild className="w-full h-12 rounded-full bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 text-[#F5F5F5] font-semibold flex items-center justify-center gap-1.5 transition-all text-sm cursor-pointer">
+              <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer">
+                <span>Continue with Ko-fi</span>
+                <span>→</span>
+              </a>
+            </Button>
           </div>
 
           {/* CARD 2: India Support */}
-          <div className="bg-[#111111] border border-[rgba(255,255,255,0.08)] text-[#F5F5F5] flex flex-col justify-between p-8 md:p-10 relative overflow-hidden rounded-[32px] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+          <div className="bg-[#111111] border border-white/[0.08] text-[#F5F5F5] flex flex-col p-10 md:p-12 relative overflow-hidden rounded-[32px] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-left items-start w-full">
             
-            {/* Hero Illustration - Mock Mobile Screen */}
-            <div className="h-64 flex items-center justify-center select-none mb-8">
-              <div className="w-[180px] h-[220px] bg-[#161616] border border-white/[0.06] rounded-[24px] flex flex-col p-3 relative overflow-hidden shadow-2xl">
-                {/* Status bar mock */}
-                <div className="flex justify-between items-center text-[8px] text-[#A1A1AA]/40 mb-3 px-1 font-mono">
-                  <span>9:41</span>
-                  <div className="flex gap-1">
-                    <span className="w-2.5 h-1.5 bg-[#A1A1AA]/30 rounded-xs"></span>
-                    <span className="w-1.5 h-1.5 bg-[#A1A1AA]/30 rounded-xs"></span>
-                  </div>
-                </div>
-                
-                {/* Back button and title */}
-                <div className="flex items-center gap-1.5 text-[10px] text-[#F5F5F5] font-semibold mb-4 px-1">
-                  <ArrowLeft className="w-2.5 h-2.5 text-[#A1A1AA]" />
-                  <span>UPI Payment</span>
-                </div>
-
-                {/* Main Content inside mock */}
-                <div className="flex-1 flex flex-col items-center justify-center bg-[#1c1c1f]/40 border border-white/[0.03] rounded-xl p-2.5 text-center">
-                  <div className="bg-white p-1.5 rounded-lg mb-2 shadow-md">
-                    <img 
-                      src={qrCodeImageUrl} 
-                      alt="UPI QR Code" 
-                      width="60" 
-                      height="60"
-                      className="rounded pointer-events-none select-none"
-                    />
-                  </div>
-                  <span className="text-[8px] font-bold text-[#F5F5F5]">Scan to Pay</span>
-                  <span className="text-[6px] text-[#A1A1AA]/70 mt-0.5">ashishtawniya1@okaxis</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4 flex-1 mb-8 text-center md:text-left">
-              <div>
-                <span className="text-[10px] tracking-wider uppercase text-[#A1A1AA]/50 font-bold flex items-center justify-center md:justify-start gap-1.5 mb-2">
-                  <CreditCard className="w-3.5 h-3.5" />
-                  <span>UPI scan & Pay</span>
-                </span>
-                <h3 className="text-xl font-medium text-[#F5F5F5]">India Support</h3>
-                <p className="text-xs text-[#A1A1AA] mt-2 leading-relaxed">
-                  Scan the QR code above or pay directly via local credit cards, netbanking, or UPI wallets.
-                </p>
-              </div>
-
-              {/* UPI ID Copy Field */}
-              <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-2xl flex items-center justify-between w-full">
-                <div className="flex flex-col text-left">
-                  <span className="text-[8px] font-bold uppercase tracking-wider text-[#A1A1AA]/50">UPI ID</span>
-                  <span className="text-xs font-mono font-medium text-[#F5F5F5]">{upiId}</span>
-                </div>
-                <button 
-                  onClick={handleCopyUpiId}
-                  className="h-7 px-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-xl text-[10px] text-[#F5F5F5] font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
-                  title="Copy UPI ID"
-                >
-                  <Copy className="size-3" />
-                  <span>Copy</span>
-                </button>
-              </div>
-
-              {/* Minimal Amount Input Field */}
-              <div className="relative w-full">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#A1A1AA]">₹</span>
-                <input
-                  type="number"
-                  value={customAmount}
-                  onChange={(e) => setCustomAmount(e.target.value)}
-                  placeholder="Amount"
-                  className="w-full h-11 bg-[#18181c] border border-white/[0.04] focus:border-white/10 rounded-2xl pl-8 pr-4 text-xs font-mono text-[#F5F5F5] placeholder:text-zinc-600 focus:outline-none transition-colors"
-                  min="1"
+            {/* QR Code Hero Element */}
+            <div className="bg-[#18181c] border border-white/[0.04] p-3.5 rounded-2xl flex items-center justify-center w-24 h-24 mb-6 shadow-xl select-none">
+              <div className="bg-white p-1 rounded-xl flex items-center justify-center">
+                <img 
+                  src={qrCodeImageUrl} 
+                  alt="UPI QR Code" 
+                  className="w-16 h-16 rounded pointer-events-none select-none"
                 />
               </div>
             </div>
 
-            <div>
-              <Button 
-                onClick={handleRazorpayPayment}
-                disabled={isProcessing}
-                className="w-full h-[50px] bg-[#F5F5F5] hover:bg-white text-zinc-950 font-bold rounded-full cursor-pointer text-xs flex items-center justify-center gap-1.5 transition-colors border-0"
+            <span className="text-[10px] tracking-[0.2em] font-mono text-[#A1A1AA]/50 uppercase font-bold block mb-1 select-none">
+              LOCAL PAYMENT
+              </span>
+            
+            <h3 className="text-2xl font-medium text-[#F5F5F5] tracking-tight mb-3">India Support</h3>
+            
+            <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed max-w-[320px] mb-4">
+              Support instantly using UPI, local cards, or net banking.
+            </p>
+
+            {/* Copyable UPI ID row */}
+            <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-2xl flex items-center justify-between w-full max-w-[320px] mb-7">
+              <div className="flex flex-col text-left">
+                <span className="text-[8px] font-bold uppercase tracking-wider text-[#A1A1AA]/50">UPI ID</span>
+                <span className="text-xs font-mono font-medium text-[#F5F5F5]">{upiId}</span>
+              </div>
+              <button 
+                onClick={handleCopyUpiId}
+                className="h-7 px-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-xl text-[10px] text-[#F5F5F5] font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
+                title="Copy UPI ID"
               >
-                {isProcessing ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin" />
-                    <span>Processing...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Pay with UPI</span>
-                    <span>→</span>
-                  </>
-                )}
-              </Button>
+                {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+                <span>{copied ? "Copied" : "Copy"}</span>
+              </button>
             </div>
+
+            <Button 
+              onClick={handleRazorpayPayment}
+              disabled={isProcessing}
+              className="w-full h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-sm flex items-center justify-center gap-1.5 transition-colors border-0"
+            >
+              {isProcessing ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin" />
+                  <span>Processing...</span>
+                </>
+              ) : (
+                <>
+                  <span>Pay with UPI</span>
+                  <span>→</span>
+                </>
+              )}
+            </Button>
           </div>
 
         </div>
@@ -387,7 +325,7 @@ export function BuyMeCoffeePage() {
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
             >
-              <div className="max-w-xs w-full bg-[#111111] border border-white/[0.08] p-8 rounded-[32px] text-center relative shadow-2xl">
+              <div className="max-w-xs w-full bg-[#111111] border border-white/[0.08] p-8 rounded-[32px] text-center relative shadow-2xl items-center flex flex-col">
                 <div className="w-12 h-12 bg-white/[0.02] border border-white/[0.06] rounded-[16px] flex items-center justify-center mx-auto mb-4">
                   <ShieldCheck className="w-6 h-6 text-[#A1A1AA]" />
                 </div>
@@ -397,7 +335,7 @@ export function BuyMeCoffeePage() {
                   Thank you for contributing <span className="text-white font-bold">₹{successDetails.amount}</span>. Your support keeps this project free.
                 </p>
 
-                <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-xl text-left text-[9px] mb-5 font-mono text-[#A1A1AA] select-all">
+                <div className="bg-[#18181c] border border-white/[0.04] p-3 rounded-xl text-left text-[9px] mb-5 font-mono text-[#A1A1AA] w-full select-all">
                   <div><span className="text-white/40">TXN:</span> {successDetails.paymentId}</div>
                   <div><span className="text-white/40">STATUS:</span> VERIFIED</div>
                 </div>
@@ -418,13 +356,13 @@ export function BuyMeCoffeePage() {
         </AnimatePresence>
 
         {/* Elegant minimalist footer */}
-        <footer className="w-full border-t border-white/[0.06] pt-8 flex flex-col items-center gap-4 text-center mt-8">
-          <div className="flex items-center gap-1.5 text-xs text-[#A1A1AA]">
+        <footer className="w-full border-t border-white/[0.06] pt-8 flex flex-col items-center gap-4 text-center">
+          <div className="flex items-center gap-1.5 text-xs text-[#A1A1AA] justify-center">
             <Heart className="w-3.5 h-3.5 text-[#A1A1AA]" />
             <span>Thank you for supporting open source development.</span>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 justify-center">
             <a 
               href="https://github.com/ashishgit4/PdfFinalBoss" 
               target="_blank" 
@@ -445,7 +383,6 @@ export function BuyMeCoffeePage() {
         </footer>
 
       </div>
-
     </div>
   );
 }
