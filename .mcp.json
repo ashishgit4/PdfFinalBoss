@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "vibedoctor-pdffinalboss": {
+      "type": "http",
+      "url": "https://vibedoctor.io/mcp/f9af0ae95ae8c3d5937988a6325d79e20ebdb8c9424c90383483b52109992372"
+    }
+  }
+}
