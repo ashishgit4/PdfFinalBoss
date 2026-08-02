@@ -23,40 +23,12 @@ export function BuyMeCoffeePage() {
   const [copied, setCopied] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState<"UPI" | "Ko-fi" | null>(null);
 
-  const initiatePayment = (method: "UPI" | "Ko-fi") => {
-    localStorage.setItem("pending_payment_method", method);
+  // Ko-fi runs on Ko-fi's own site and never calls back into this app, so we
+  // can't honestly claim a payment succeeded when the user returns to this tab.
+  // We just acknowledge the click — no fake "verified" transaction.
+  const handleKofiClick = () => {
+    toast.success("Opened Ko-fi in a new tab — thank you for supporting the project!");
   };
-
-  // Visibility and focus based check to confirm redirected flow success
-  // NOTE: Triggered on window focus/visibility-change after redirect checkout returns.
-  // This should be swapped for a verified backend/webhook trigger if one becomes available.
-  useEffect(() => {
-    const handleConfirmPayment = () => {
-      const pending = localStorage.getItem("pending_payment_method");
-      if (pending) {
-        setPaymentMethod(pending as "UPI" | "Ko-fi");
-        setSuccessDetails({
-          paymentId: "TXN_" + Math.random().toString(36).substring(2, 10).toUpperCase(),
-          amount: pending === "UPI" ? Number(customAmount) : 5, // default 5 for Ko-fi order ($5)
-        });
-        setPaymentSuccess(true);
-        localStorage.removeItem("pending_payment_method");
-      }
-    };
-
-    window.addEventListener("focus", handleConfirmPayment);
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        handleConfirmPayment();
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener("focus", handleConfirmPayment);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [customAmount]);
 
   // Escape key listener to dismiss success modal
   useEffect(() => {
@@ -321,7 +293,7 @@ export function BuyMeCoffeePage() {
               </span>
             </div>
             
-            <Button asChild onClick={() => initiatePayment("Ko-fi")} className="min-w-[240px] h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-[15px] flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.97] border-0 select-none mx-auto">
+            <Button asChild onClick={handleKofiClick} className="min-w-[240px] h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-[15px] flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.97] border-0 select-none mx-auto">
               <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
                 <svg className="w-4 h-4 text-zinc-950" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M23.881 8.948c-.773-4.085-4.859-5.005-7.875-5.005h-9.52c-.775 0-1.404.63-1.404 1.405v13.315c0 .775.629 1.405 1.404 1.405h8.182c4.619 0 7.821-2.524 8.793-7.555.309-1.606.321-2.535.42-3.565zm-4.321 4.545c-.563 2.923-2.673 3.655-5.597 3.655H7.318V6.16h7.458c2.045 0 4.195.42 4.672 3.19.261 1.516.273 2.457.112 4.143zM16.592 11.23h1.365a1.82 1.82 0 1 1 0 3.64h-1.365V11.23z" />
@@ -382,10 +354,7 @@ export function BuyMeCoffeePage() {
             </div>
 
             <Button 
-              onClick={() => {
-                initiatePayment("UPI");
-                handleRazorpayPayment();
-              }}
+              onClick={handleRazorpayPayment}
               disabled={isProcessing}
               className="min-w-[240px] h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-[15px] flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.97] border-0 select-none mx-auto"
             >
