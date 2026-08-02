@@ -180,29 +180,8 @@ export function BuyMeCoffeePage() {
   const upiUrl = `upi://pay?pa=${upiId}&pn=PdfFinalBoss&cu=INR`;
   const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(upiUrl)}`;
 
-  return (
-    <div className="min-h-screen bg-[#0d0b09] text-[#f3efe6] flex flex-col font-sans relative overflow-x-hidden selection:bg-[#FF5E5B]/20 selection:text-white">
+    <div className="min-h-screen bg-[#09090b] text-[#f3efe6] flex flex-col font-sans relative overflow-x-hidden selection:bg-[#FF5E5B]/20 selection:text-white">
       
-      {/* Cinematic Background Video - Matches first page */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="fixed inset-0 w-full h-full object-cover z-0 pointer-events-none"
-      >
-        <source src="https://zxdefgavgwfxastwmmjm.supabase.co/storage/v1/object/public/assets/prisma.mp4" type="video/mp4" />
-      </video>
-
-      {/* Matching Scrim and Vignette Overlays from homepage */}
-      <div className="scrim absolute inset-0 z-0 pointer-events-none" />
-      <div className="vignette absolute inset-0 z-0 pointer-events-none" />
-
-      {/* Dark overlay for text readability */}
-      <div 
-        className="absolute inset-0 pointer-events-none z-0 bg-[#0d0b09]/50"
-      />
-
       {/* Top Navbar */}
       <header className="relative z-50 px-6 md:px-12 py-4 md:py-6 flex items-center justify-between w-full">
         <div className="flex items-center gap-3">
@@ -246,7 +225,7 @@ export function BuyMeCoffeePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full items-stretch">
           
           {/* CARD 1: International Support */}
-          <Card className="bg-[#13110f]/40 backdrop-blur-xl border border-[rgba(243,239,230,0.08)] hover:border-[rgba(243,239,230,0.16)] text-[#f3efe6] shadow-2xl flex flex-col justify-between p-6 md:p-8 relative overflow-hidden rounded-3xl transition-all duration-300">
+          <Card className="bg-[#121214] border border-[#1f1f23] text-[#f3efe6] shadow-2xl flex flex-col justify-between p-6 md:p-8 relative overflow-hidden rounded-[28px] transition-all duration-300">
             <CardHeader className="p-0 mb-6 text-center md:text-left">
               <CardTitle className="text-base font-bold flex items-center justify-center md:justify-start gap-2">
                 <Globe className="w-4 h-4 text-[#FF5E5B]" />
@@ -260,8 +239,8 @@ export function BuyMeCoffeePage() {
             <CardContent className="p-0 mb-6 flex-1 flex flex-col items-center justify-center py-4">
               <div className="relative group mb-6">
                 {/* Glow Effect */}
-                <div className="absolute -inset-1.5 bg-gradient-to-r from-[#FF5E5B] to-[#ff8c8a] rounded-full blur-xl opacity-15 group-hover:opacity-30 transition duration-500"></div>
-                <div className="relative w-28 h-28 bg-white/5 border border-white/10 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-md">
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-[#FF5E5B] to-[#ff8c8a] rounded-full blur-xl opacity-5 group-hover:opacity-15 transition duration-500"></div>
+                <div className="relative w-28 h-28 bg-[#18181c] border border-zinc-800 rounded-full flex items-center justify-center shadow-2xl">
                   <svg className="w-14 h-14 text-[#FF5E5B]" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M11.351 2.715c-2.7 0-4.986.025-6.83.26C2.078 3.285 0 5.154 0 8.61c0 3.506.182 6.13 1.585 8.493 1.584 2.701 4.233 4.182 7.662 4.182h.83c4.209 0 6.494-2.234 7.637-4a9.5 9.5 0 0 0 1.091-2.338C21.792 14.688 24 12.22 24 9.208v-.415c0-3.247-2.13-5.507-5.792-5.87-1.558-.156-2.65-.208-6.857-.208m0 1.947c4.208 0 5.09.052 6.571.182 2.624.311 4.13 1.584 4.13 4v.39c0 2.156-1.792 3.844-3.87 3.844h-.935l-.156.649c-.208 1.013-.597 1.818-1.039 2.546-.909 1.428-2.545 3.064-5.922 3.064h-.805c-2.571 0-4.831-.883-6.078-3.195-1.09-2-1.298-4.155-1.298-7.506 0-2.181.857-3.402 3.012-3.714 1.533-.233 3.559-.26 6.39-.26m6.547 2.287c-.416 0-.65.234-.65.546v2.935c0 .311.234.545.65.545 1.324 0 2.051-.754 2.051-2s-.727-2.026-2.052-2.026m-10.39.182c-1.818 0-3.013 1.48-3.013 3.142 0 1.533.858 2.857 1.949 3.897.727.701 1.87 1.429 2.649 1.896a1.47 1.47 0 0 0 1.507 0c.78-.467 1.922-1.195 2.623-1.896 1.117-1.039 1.974-2.364 1.974-3.897 0-1.662-1.247-3.142-3.039-3.142-1.065 0-1.792.545-2.338 1.298-.493-.753-1.246-1.298-2.312-1.298"/>
                   </svg>
@@ -287,7 +266,7 @@ export function BuyMeCoffeePage() {
           </Card>
 
           {/* CARD 2: India Support */}
-          <Card className="bg-[#13110f]/40 backdrop-blur-xl border border-[rgba(243,239,230,0.08)] hover:border-[rgba(243,239,230,0.16)] text-[#f3efe6] shadow-2xl flex flex-col justify-between p-6 md:p-8 relative overflow-hidden rounded-3xl transition-all duration-300">
+          <Card className="bg-[#121214] border border-[#1f1f23] text-[#f3efe6] shadow-2xl flex flex-col justify-between p-6 md:p-8 relative overflow-hidden rounded-[28px] transition-all duration-300">
             <CardHeader className="p-0 mb-6 text-center md:text-left">
               <CardTitle className="text-base font-bold flex items-center justify-center md:justify-start gap-2">
                 <CreditCard className="w-4 h-4 text-[#FF5E5B]" />
@@ -300,7 +279,7 @@ export function BuyMeCoffeePage() {
             
             <CardContent className="p-0 flex flex-col gap-4 flex-1 justify-center">
               {/* UPI Copy Area */}
-              <div className="bg-white/5 border border-white/10 p-3 rounded-2xl flex items-center justify-between">
+              <div className="bg-[#18181c] border border-zinc-800 p-3 rounded-2xl flex items-center justify-between">
                 <div className="flex flex-col text-left">
                   <span className="text-[8px] font-bold uppercase tracking-wider text-[#FF5E5B]">UPI ID</span>
                   <span className="text-xs font-mono font-semibold text-[#f3efe6]">{upiId}</span>
@@ -316,21 +295,19 @@ export function BuyMeCoffeePage() {
                 </Button>
               </div>
 
-              {/* QR Code Container */}
-              <div className="flex flex-col items-center justify-center py-1">
-                <div className="relative group">
-                  <div className="absolute -inset-1.5 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-2xl blur-xl opacity-10 group-hover:opacity-20 transition duration-500"></div>
-                  <div className="relative bg-white p-2.5 rounded-2xl border border-white/5 shadow-2xl">
-                    <img 
-                      src={qrCodeImageUrl} 
-                      alt="UPI QR Code" 
-                      width="110" 
-                      height="110"
-                      className="rounded-lg pointer-events-none"
-                    />
-                  </div>
+              {/* QR Code Container styled exactly like the Ledger card image */}
+              <div className="flex flex-col items-center justify-center py-4 bg-[#18181c] border border-zinc-800 rounded-2xl p-4">
+                <div className="bg-white p-2.5 rounded-xl border border-white/5 shadow-2xl">
+                  <img 
+                    src={qrCodeImageUrl} 
+                    alt="UPI QR Code" 
+                    width="110" 
+                    height="110"
+                    className="rounded-lg pointer-events-none"
+                  />
                 </div>
-                <span className="text-[8px] text-[#f3efe6]/50 mt-2.5 font-bold tracking-wider uppercase">Scan with any UPI App</span>
+                <h4 className="text-sm font-semibold text-white mt-4">Scan with any UPI App</h4>
+                <p className="text-[10px] text-zinc-400 text-center mt-1 max-w-[200px]">Scan this QR code using GPay, PhonePe, Paytm, or BHIM to complete transaction.</p>
               </div>
 
               {/* Preset & Custom Payment Options */}
@@ -461,7 +438,6 @@ export function BuyMeCoffeePage() {
         </footer>
 
       </div>
-
     </div>
   );
 }
