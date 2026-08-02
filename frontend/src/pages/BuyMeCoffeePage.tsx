@@ -3,15 +3,13 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowLeft, Heart, 
-  Star, Copy, Check, Globe, Send 
+  Copy, Check, Globe, Send, CreditCard
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { loadRazorpayScript } from "@/lib/payment";
 
 export function BuyMeCoffeePage() {
-  const [gitHubStars, setGitHubStars] = useState<number | null>(null);
-  
   // Razorpay states
   const customAmount = "250";
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -23,9 +21,6 @@ export function BuyMeCoffeePage() {
   const [copied, setCopied] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState<"UPI" | "Ko-fi" | null>(null);
 
-  // Ko-fi runs on Ko-fi's own site and never calls back into this app, so we
-  // can't honestly claim a payment succeeded when the user returns to this tab.
-  // We just acknowledge the click — no fake "verified" transaction.
   const handleKofiClick = () => {
     toast.success("Opened Ko-fi in a new tab — thank you for supporting the project!");
   };
@@ -44,23 +39,6 @@ export function BuyMeCoffeePage() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [paymentSuccess]);
-
-  // Fetch GitHub Stars dynamically
-  useEffect(() => {
-    fetch("https://api.github.com/repos/ashishgit4/PdfFinalBoss")
-      .then((res) => {
-        if (!res.ok) throw new Error("Rate limit or error");
-        return res.json();
-      })
-      .then((data) => {
-        if (data && data.stargazers_count !== undefined) {
-          setGitHubStars(data.stargazers_count);
-        }
-      })
-      .catch((err) => {
-        console.warn("Could not fetch GitHub stars dynamically:", err);
-      });
-  }, []);
 
   const handleRazorpayPayment = async () => {
     const finalAmount = parseFloat(customAmount);
@@ -180,10 +158,10 @@ export function BuyMeCoffeePage() {
   const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(upiUrl)}`;
 
   return (
-    <div className="min-h-screen w-full bg-[#090909] text-[#F5F5F5] flex flex-col items-center relative overflow-x-hidden selection:bg-white/10 selection:text-white" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+    <div className="min-h-screen w-full bg-[#050608] text-[#F5F5F5] flex flex-col justify-between relative overflow-x-hidden selection:bg-white/10 selection:text-white" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif' }}>
       
       {/* Top Navbar */}
-      <header className="relative z-50 w-full max-w-[1200px] mx-auto px-6 md:px-10 py-6 md:py-8 flex items-center justify-between">
+      <header className="relative z-50 w-full max-w-[1240px] mx-auto px-6 md:px-12 py-6 md:py-8 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
@@ -192,107 +170,135 @@ export function BuyMeCoffeePage() {
           <span className="font-sans font-bold text-lg tracking-tight text-[#F5F5F5]">PdfFinalBoss</span>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" className="rounded-full px-4 py-2 text-xs font-medium text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-white/[0.04] border border-white/[0.06] transition-all duration-200 cursor-pointer bg-white/[0.02] flex items-center gap-1.5">
-            <a 
-              href="https://github.com/ashishgit4/PdfFinalBoss" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5"
-            >
-              <Star className="w-3.5 h-3.5 text-[#A1A1AA]" />
-              <span>Star the Repo</span>
-              <span className="px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] font-mono text-[9px] text-[#A1A1AA]/70">
-                {gitHubStars !== null ? gitHubStars : "50+"}
-              </span>
-            </a>
-          </Button>
-
-          <Button asChild variant="ghost" className="rounded-full px-5 py-2 text-xs font-medium text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-white/[0.04] border border-white/[0.06] transition-all duration-200 cursor-pointer bg-white/[0.02]">
-            <Link to="/" className="flex items-center gap-2">
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Home</span>
-            </Link>
-          </Button>
-        </div>
+        <Button asChild variant="ghost" className="rounded-full px-4 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.08] border border-white/10 bg-white/[0.03] transition-all duration-200 cursor-pointer flex items-center gap-2 backdrop-blur-md">
+          <Link to="/">
+            <ArrowLeft className="w-3.5 h-3.5 text-zinc-300" />
+            <span>Back to Home</span>
+          </Link>
+        </Button>
       </header>
 
       {/* Main Content Area */}
-      <div className="flex-1 max-w-[1200px] mx-auto w-full px-6 md:px-10 py-12 md:py-16 flex flex-col items-center justify-center gap-12 md:gap-16 relative z-10">
+      <div className="flex-1 max-w-[1240px] mx-auto w-full px-6 md:px-12 py-8 md:py-12 flex flex-col items-center justify-center gap-10 md:gap-14 relative z-10">
         
         {/* Centered Title & Intro */}
         <div className="text-center max-w-2xl flex flex-col items-center gap-4">
-          <div className="flex items-center gap-2 px-3.5 py-1.5 bg-white/[0.02] border border-white/[0.06] rounded-full text-[10px] font-mono text-[#A1A1AA] uppercase tracking-wider font-semibold select-none">
-            <Heart className="w-3 h-3 text-[#A1A1AA] fill-[#A1A1AA]/20" />
+          <div className="flex items-center gap-2 px-4 py-1 bg-white/[0.03] border border-white/10 rounded-full text-[11px] font-medium text-zinc-300 uppercase tracking-widest select-none backdrop-blur-md">
+            <Heart className="w-3.5 h-3.5 text-white fill-white" />
             <span>SUPPORT OPEN SOURCE</span>
           </div>
           
-          <h1 className="font-sans text-4xl sm:text-5xl font-semibold tracking-tight text-[#F5F5F5] leading-[1.15]">
+          <h1 className="font-sans text-4xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
             Support PdfFinalBoss
           </h1>
 
-          <p className="text-[15px] sm:text-base text-[#A1A1AA] leading-relaxed font-sans max-w-lg text-center">
+          <p className="text-sm sm:text-base text-zinc-400 leading-relaxed font-sans max-w-xl text-center">
             PdfFinalBoss is completely free and open source. Every contribution helps keep the project maintained, improved, and accessible for everyone.
           </p>
         </div>
 
-        {/* Symmetrical Two Premium Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 w-full max-w-[1100px] items-start justify-center justify-items-center">
+        {/* Symmetrical Two Cards Layout matching Image 2 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 w-full max-w-[1040px] items-stretch justify-center">
           
           {/* CARD 1: International Support */}
-          <div className="bg-[#141416] border border-white/[0.08] text-[#F5F5F5] flex flex-col items-center text-center p-10 md:p-12 rounded-[28px] md:rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.35)] transition-all duration-200 ease-out hover:-translate-y-[2px] active:translate-y-0 hover:border-white/20 hover:shadow-[0_12px_40px_rgba(0,0,0,0.55)] w-full max-w-[520px]">
+          <div className="bg-[#0B0C0E]/90 border border-white/10 text-white flex flex-col justify-between p-8 md:p-9 rounded-[28px] shadow-2xl relative overflow-hidden backdrop-blur-xl group hover:border-white/20 transition-all duration-300">
             
-            {/* Eyebrow Badge */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-[10px] text-[11px] font-mono text-[#A1A1AA] uppercase tracking-[0.06em] font-medium select-none mb-6">
-              <Globe className="size-3.5 text-[#A1A1AA]" />
-              <span>GLOBAL</span>
-            </div>
+            <div>
+              {/* Eyebrow Badge */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-[11px] font-medium text-zinc-300 uppercase tracking-wider select-none mb-6">
+                <Globe className="w-3.5 h-3.5 text-zinc-400" />
+                <span>GLOBAL</span>
+              </div>
 
-            {/* Mug Graphic Hero */}
-            <div className="relative w-32 h-32 flex items-center justify-center flex-shrink-0 select-none mb-8">
-              <div className="absolute w-14 h-14 rounded-full bg-[#ff4d4f]/15 blur-xl opacity-90" />
-              <svg className="w-24 h-24 relative z-10 animate-[pulse_3s_ease-in-out_infinite]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="45" cy="80" rx="20" ry="6" fill="black" fillOpacity="0.3" />
-                <path d="M60 40C68 40 76 45 76 55C76 65 68 70 60 70" stroke="url(#mugGradient)" strokeWidth="8" strokeLinecap="round" />
-                <rect x="25" y="32" width="36" height="42" rx="6" fill="url(#mugGradient)" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-                <ellipse cx="43" cy="32" rx="18" ry="4" fill="url(#mugRimGradient)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-                <ellipse cx="43" cy="33" rx="16" ry="3" fill="#2d1f1e" />
-                <path d="M43 46C41 43 36 43 36 47C36 51 43 56 43 56C43 56 50 51 50 47C50 43 45 43 43 46Z" fill="#ff4d4f" />
-                <defs>
-                  <linearGradient id="mugGradient" x1="25" y1="32" x2="61" y2="74" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#2c2c30" />
-                    <stop offset="50%" stopColor="#1e1e21" />
-                    <stop offset="100%" stopColor="#12121444" />
-                  </linearGradient>
-                  <linearGradient id="mugRimGradient" x1="25" y1="32" x2="61" y2="32" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#44444a" />
-                    <stop offset="50%" stopColor="#2c2c30" />
-                    <stop offset="100%" stopColor="#18181a" />
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
+              {/* Body Content Row */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-semibold text-white tracking-tight mb-2">International Support</h3>
+                  
+                  <p className="text-sm text-zinc-400 leading-relaxed max-w-[280px] mb-6">
+                    Support the project securely using Ko-fi with Card, PayPal, Apple Pay, or Google Pay.
+                  </p>
 
-            <h3 className="text-[22px] font-semibold text-[#F5F5F5] tracking-tight leading-tight mb-3">International Support</h3>
+                  {/* Payment Pills */}
+                  <div className="flex items-center gap-2 flex-wrap select-none">
+                    <span className="flex items-center gap-1.5 px-3 py-1 bg-white/[0.03] border border-white/10 rounded-full text-xs font-medium text-zinc-300">
+                      <span className="text-sm"></span> Apple Pay
+                    </span>
+                    <span className="flex items-center gap-1.5 px-3 py-1 bg-white/[0.03] border border-white/10 rounded-full text-xs font-medium text-zinc-300">
+                      <svg className="w-3 h-3 text-zinc-300" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .761-.645h6.417c2.423 0 4.319.53 5.485 1.534 1.166 1.004 1.58 2.457 1.272 4.417-.464 2.955-2.28 4.793-5.253 5.318l.582 3.652a.641.641 0 0 1-.633.741H10.15a.77.77 0 0 1-.76-.645l-.47-2.956H7.076z"/>
+                      </svg>
+                      PayPal
+                    </span>
+                    <span className="flex items-center gap-1.5 px-3 py-1 bg-white/[0.03] border border-white/10 rounded-full text-xs font-medium text-zinc-300">
+                      <CreditCard className="w-3 h-3 text-zinc-300" />
+                      Card
+                    </span>
+                  </div>
+                </div>
+
+                {/* 3D Glass Coffee Mug Graphic */}
+                <div className="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center flex-shrink-0 select-none self-center sm:self-auto">
+                  <div className="absolute w-20 h-20 rounded-full bg-red-500/20 blur-2xl opacity-75" />
+                  
+                  {/* Styled 3D Mug SVG */}
+                  <svg className="w-28 h-28 relative z-10 drop-shadow-[0_10px_25px_rgba(255,77,79,0.3)]" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Shadow under mug */}
+                    <ellipse cx="55" cy="100" rx="30" ry="8" fill="black" fillOpacity="0.5" />
+                    
+                    {/* Mug Handle */}
+                    <path d="M75 48C88 48 98 55 98 68C98 81 88 88 75 88" stroke="url(#mugHandleGrad)" strokeWidth="10" strokeLinecap="round" />
+                    
+                    {/* Mug Body */}
+                    <rect x="25" y="38" width="52" height="54" rx="10" fill="url(#mugBodyGrad)" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+                    
+                    {/* Rim Outer */}
+                    <ellipse cx="51" cy="38" rx="26" ry="7" fill="url(#mugRimGrad)" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                    
+                    {/* Rim Inner Liquid */}
+                    <ellipse cx="51" cy="39" rx="23" ry="5.5" fill="#1C1414" />
+                    
+                    {/* 3D Glowing Red Heart */}
+                    <g filter="url(#heartGlow)">
+                      <path d="M51 60C48.5 56 42 56 42 61.5C42 67 51 73.5 51 73.5C51 73.5 60 67 60 61.5C60 56 53.5 56 51 60Z" fill="url(#heartGrad)" />
+                    </g>
+
+                    <defs>
+                      <linearGradient id="mugBodyGrad" x1="25" y1="38" x2="77" y2="92" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stopColor="#2A2A30" stopOpacity="0.9" />
+                        <stop offset="50%" stopColor="#1A1A1E" stopOpacity="0.85" />
+                        <stop offset="100%" stopColor="#0F0F12" stopOpacity="0.95" />
+                      </linearGradient>
+
+                      <linearGradient id="mugRimGrad" x1="25" y1="38" x2="77" y2="38" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stopColor="#4A4A52" />
+                        <stop offset="50%" stopColor="#2A2A30" />
+                        <stop offset="100%" stopColor="#1A1A1E" />
+                      </linearGradient>
+
+                      <linearGradient id="mugHandleGrad" x1="75" y1="48" x2="98" y2="88" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stopColor="#3A3A42" />
+                        <stop offset="100%" stopColor="#1A1A1E" />
+                      </linearGradient>
+
+                      <linearGradient id="heartGrad" x1="42" y1="56" x2="60" y2="73.5" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stopColor="#FF6B6B" />
+                        <stop offset="100%" stopColor="#E63946" />
+                      </linearGradient>
+
+                      <filter id="heartGlow" x="35" y="50" filterUnits="userSpaceOnUse">
+                        <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#FF4D4F" floodOpacity="0.8" />
+                      </filter>
+                    </defs>
+                  </svg>
+                </div>
+              </div>
+            </div>
             
-            <p className="text-[15px] font-normal leading-[1.5] text-[#A1A1AA] max-w-[340px] mb-6">
-              Support the project securely via Ko-fi, powered by PayPal.
-            </p>
-
-            {/* Payment Pills */}
-            <div className="flex items-center justify-center gap-2 mb-8 flex-wrap select-none">
-              <span className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.02] border border-white/[0.04] rounded-full text-[10px] font-medium text-[#A1A1AA]/80">
-                <svg className="w-2.5 h-2.5 text-[#A1A1AA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="5" width="20" height="14" rx="3" />
-                  <path d="M2 10h20" />
-                </svg>
-                PayPal
-              </span>
-            </div>
-            
-            <Button asChild onClick={handleKofiClick} className="min-w-[240px] h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-[15px] flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.97] border-0 select-none mx-auto">
-              <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
-                <svg className="w-4 h-4 text-zinc-950" viewBox="0 0 24 24" fill="currentColor">
+            {/* Bottom Button */}
+            <Button asChild onClick={handleKofiClick} className="w-full h-12 bg-white/[0.06] hover:bg-white/[0.12] text-white font-medium rounded-full cursor-pointer text-sm flex items-center justify-center gap-2 border border-white/10 transition-all duration-200 active:scale-[0.98] select-none">
+              <a href="https://ko-fi.com/ashishsharma11" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full">
+                <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M23.881 8.948c-.773-4.085-4.859-5.005-7.875-5.005h-9.52c-.775 0-1.404.63-1.404 1.405v13.315c0 .775.629 1.405 1.404 1.405h8.182c4.619 0 7.821-2.524 8.793-7.555.309-1.606.321-2.535.42-3.565zm-4.321 4.545c-.563 2.923-2.673 3.655-5.597 3.655H7.318V6.16h7.458c2.045 0 4.195.42 4.672 3.19.261 1.516.273 2.457.112 4.143zM16.592 11.23h1.365a1.82 1.82 0 1 1 0 3.64h-1.365V11.23z" />
                 </svg>
                 <span>Continue with Ko-fi</span>
@@ -302,72 +308,85 @@ export function BuyMeCoffeePage() {
           </div>
 
           {/* CARD 2: India Support */}
-          <div className="bg-[#141416] border border-white/[0.08] text-[#F5F5F5] flex flex-col items-center text-center p-10 md:p-12 rounded-[28px] md:rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.35)] transition-all duration-200 ease-out hover:-translate-y-[2px] active:translate-y-0 hover:border-white/20 hover:shadow-[0_12px_40px_rgba(0,0,0,0.55)] w-full max-w-[520px]">
+          <div className="bg-[#0B0C0E]/90 border border-white/10 text-white flex flex-col justify-between p-8 md:p-9 rounded-[28px] shadow-2xl relative overflow-hidden backdrop-blur-xl group hover:border-white/20 transition-all duration-300">
             
-            {/* Eyebrow Badge */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.03] border border-white/[0.06] rounded-[10px] text-[11px] font-mono text-[#A1A1AA] uppercase tracking-[0.06em] font-medium select-none mb-6">
-              <span className="text-[10px]">🇮🇳</span>
-              <span>LOCAL PAYMENT</span>
-            </div>
-
-            {/* QR Code Hero */}
-            <div className="bg-white p-5 rounded-[20px] flex items-center justify-center w-32 h-32 flex-shrink-0 shadow-lg select-none mb-8">
-              <img 
-                src={qrCodeImageUrl} 
-                alt="UPI QR Code" 
-                className="w-22 h-22 rounded-[8px] pointer-events-none select-none"
-              />
-            </div>
-
-            <h3 className="text-[22px] font-semibold text-[#F5F5F5] tracking-tight leading-tight mb-3">India Support</h3>
-            
-            <p className="text-[15px] font-normal leading-[1.5] text-[#A1A1AA] max-w-[340px] mb-6">
-              Support instantly using UPI, local cards, or net banking.
-            </p>
-
-            {/* Copyable UPI ID row */}
-            <div className="bg-white/[0.04] border border-white/[0.06] p-3 pl-4 rounded-[16px] flex items-center justify-between w-full h-14 mb-8">
-              <div className="flex flex-col text-left justify-center">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-[#A1A1AA]/50">UPI ID</span>
-                <span className="text-sm font-mono font-medium text-[#F5F5F5]">{upiId}</span>
+            <div>
+              {/* Eyebrow Badge */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-[11px] font-medium text-zinc-300 uppercase tracking-wider select-none mb-6">
+                <span className="text-xs">🇮🇳</span>
+                <span>LOCAL PAYMENT</span>
               </div>
-              <button 
-                onClick={handleCopyUpiId}
-                className="h-10 min-w-[76px] px-3 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-[10px] text-xs text-[#F5F5F5] font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 select-none"
-                title="Copy UPI ID"
+
+              {/* Body Content Row */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-semibold text-white tracking-tight mb-2">India Support</h3>
+                  
+                  <p className="text-sm text-zinc-400 leading-relaxed max-w-[260px]">
+                    Support instantly using UPI, local cards, or net banking.
+                  </p>
+                </div>
+
+                {/* Dark Recessed QR Code Container matching Image 2 */}
+                <div className="bg-[#060708]/90 border border-white/10 p-3.5 rounded-2xl flex flex-col items-center justify-center flex-shrink-0 select-none self-center sm:self-auto shadow-inner">
+                  <div className="bg-white p-2 rounded-xl">
+                    <img 
+                      src={qrCodeImageUrl} 
+                      alt="UPI QR Code" 
+                      className="w-24 h-24 rounded-lg pointer-events-none select-none"
+                    />
+                  </div>
+                  <span className="text-[11px] text-zinc-400 font-medium mt-2">Scan to pay</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              {/* Copyable UPI ID row */}
+              <div className="bg-black/50 border border-white/10 p-3 pl-4 rounded-xl flex items-center justify-between w-full mb-4">
+                <div className="flex flex-col text-left justify-center">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 font-mono">UPI ID</span>
+                  <span className="text-sm font-mono font-medium text-zinc-200">{upiId}</span>
+                </div>
+                <button 
+                  onClick={handleCopyUpiId}
+                  className="h-8 px-3 bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 rounded-lg text-xs text-zinc-200 font-medium transition-colors cursor-pointer flex items-center gap-1.5 select-none"
+                  title="Copy UPI ID"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-emerald-400 font-medium">Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-zinc-300" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Bottom Main Button */}
+              <Button 
+                onClick={handleRazorpayPayment}
+                disabled={isProcessing}
+                className="w-full h-12 bg-white hover:bg-zinc-100 text-zinc-950 font-semibold rounded-full cursor-pointer text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] border-0 select-none shadow-md"
               >
-                {copied ? (
+                {isProcessing ? (
                   <>
-                    <Check className="size-3.5 text-emerald-400" />
-                    <span className="text-emerald-400 font-medium">Copied ✓</span>
+                    <div className="w-4 h-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin" />
+                    <span>Processing...</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="size-3.5" />
-                    <span>Copy</span>
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Pay with UPI</span>
+                    <span>→</span>
                   </>
                 )}
-              </button>
+              </Button>
             </div>
-
-            <Button 
-              onClick={handleRazorpayPayment}
-              disabled={isProcessing}
-              className="min-w-[240px] h-12 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-[15px] flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.97] border-0 select-none mx-auto"
-            >
-              {isProcessing ? (
-                <>
-                  <div className="w-3.5 h-3.5 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin" />
-                  <span>Processing...</span>
-                </>
-              ) : (
-                <>
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Pay with UPI</span>
-                  <span>→</span>
-                </>
-              )}
-            </Button>
           </div>
 
         </div>
@@ -395,7 +414,6 @@ export function BuyMeCoffeePage() {
                 onClick={(e) => e.stopPropagation()}
                 className="max-w-[340px] w-full bg-[#161618] border border-white/[0.08] p-8 rounded-[22px] text-center shadow-2xl items-center flex flex-col cursor-default"
               >
-                {/* Drawn-in Checkmark Animation */}
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -416,11 +434,11 @@ export function BuyMeCoffeePage() {
                 
                 <h3 className="text-xl font-semibold text-white mb-2 font-sans tracking-tight">Support Confirmed</h3>
                 
-                <p className="text-[#A1A1AA] text-[15px] leading-[1.5] font-normal mb-6 max-w-[260px]">
+                <p className="text-zinc-400 text-sm leading-relaxed font-normal mb-6 max-w-[260px]">
                   Thank you for contributing {successDetails.amount ? `₹${successDetails.amount}` : ""} via {paymentMethod === "Ko-fi" ? "Ko-fi" : "UPI"}. Your support keeps this project free.
                 </p>
 
-                <div className="bg-white/[0.02] border border-white/[0.04] p-3 rounded-[12px] text-left text-[10px] mb-6 font-mono text-[#A1A1AA] w-full select-all">
+                <div className="bg-white/[0.02] border border-white/[0.04] p-3 rounded-[12px] text-left text-[10px] mb-6 font-mono text-zinc-400 w-full select-all">
                   <div><span className="text-white/40">TXN:</span> {successDetails.paymentId}</div>
                   <div><span className="text-white/40">STATUS:</span> VERIFIED</div>
                 </div>
@@ -432,7 +450,7 @@ export function BuyMeCoffeePage() {
                     setPaymentMethod(null);
                     setIsProcessing(false);
                   }}
-                  className="w-full h-11 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-[14px] cursor-pointer text-sm border-0 transition-transform active:scale-[0.97]"
+                  className="w-full h-11 bg-white hover:bg-zinc-100 text-zinc-950 font-semibold rounded-xl cursor-pointer text-sm border-0 transition-transform active:scale-[0.97]"
                 >
                   Done
                 </Button>
@@ -441,30 +459,11 @@ export function BuyMeCoffeePage() {
           )}
         </AnimatePresence>
 
-        {/* Elegant minimalist footer */}
-        <footer className="w-full border-t border-white/[0.06] pt-8 flex flex-col items-center gap-4 text-center">
-          <div className="flex items-center gap-1.5 text-xs text-[#A1A1AA] justify-center">
-            <Heart className="w-3.5 h-3.5 text-[#A1A1AA]" />
-            <span>Thank you for supporting open source development.</span>
-          </div>
-          
-          <div className="flex items-center gap-4 justify-center">
-            <a 
-              href="https://github.com/ashishgit4/PdfFinalBoss" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-xs text-[#A1A1AA]/60 hover:text-[#F5F5F5] flex items-center gap-1.5 transition-colors"
-            >
-              <Star className="size-3.5 fill-current text-[#A1A1AA]" />
-              <span>GitHub Repository</span>
-              <span className="px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] font-mono text-[9px]">
-                {gitHubStars !== null ? gitHubStars : "50+ stars"}
-              </span>
-            </a>
-          </div>
-
-          <div className="text-[9px] text-[#A1A1AA]/30 tracking-[0.18em] uppercase select-none font-semibold mt-2">
-            © 2026 PdfFinalBoss — Licensed under GPL.
+        {/* Minimalist Footer matching Image 2 */}
+        <footer className="w-full py-6 flex items-center justify-center text-center">
+          <div className="flex items-center gap-2 text-xs text-zinc-400">
+            <Heart className="w-3.5 h-3.5 text-zinc-400 fill-zinc-400" />
+            <span>Thank you for being part of the open source journey.</span>
           </div>
         </footer>
 
