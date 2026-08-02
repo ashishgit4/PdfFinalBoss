@@ -180,6 +180,7 @@ export function BuyMeCoffeePage() {
   const upiUrl = `upi://pay?pa=${upiId}&pn=PdfFinalBoss&cu=INR`;
   const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(upiUrl)}`;
 
+  return (
     <div className="min-h-screen bg-[#09090b] text-[#f3efe6] flex flex-col font-sans relative overflow-x-hidden selection:bg-[#FF5E5B]/20 selection:text-white">
       
       {/* Top Navbar */}
