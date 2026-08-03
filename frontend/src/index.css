@@ -171,6 +171,89 @@
       color: var(--text-primary);
     }
 
+    /* Tech GitHub Badge Buttons (Screenshot Style) */
+    .tech-btn-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tech-star-btn {
+      display: inline-flex;
+      align-items: center;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 4px;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.5);
+      color: #818cf8;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.12);
+    }
+
+    .tech-star-btn:hover {
+      background: rgba(99, 102, 241, 0.16);
+      border-color: rgba(99, 102, 241, 0.85);
+      color: #a5b4fc;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.28);
+      transform: translateY(-1px);
+    }
+
+    .tech-star-btn .star-icon-blue {
+      color: #6366f1;
+      fill: #6366f1;
+      width: 14px;
+      height: 14px;
+      margin-right: 8px;
+    }
+
+    .tech-star-btn .tech-divider {
+      width: 1px;
+      height: 16px;
+      background: rgba(99, 102, 241, 0.45);
+      margin: 0 10px;
+      display: inline-block;
+    }
+
+    .tech-star-btn .tech-count {
+      color: #a5b4fc;
+      font-size: 12px;
+    }
+
+    .tech-follow-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .tech-follow-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .tech-follow-btn .github-icon {
+      width: 15px;
+      height: 15px;
+      fill: currentColor;
+    }
+
     .navbar-right {
       display: flex;
       align-items: center;
@@ -184,7 +267,7 @@
       gap: 8px;
       height: 36px;
       padding: 0 14px;
-      border-radius: 6px;
+      border-radius: 4px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border-hairline);
       color: var(--text-primary);
