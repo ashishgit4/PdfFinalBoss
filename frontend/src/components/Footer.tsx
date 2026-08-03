@@ -4,12 +4,8 @@ export function Footer() {
       <div className="footer-content">
         <div className="footer-grid">
           <div className="footer-left">
-            <span className="footer-logo">PdfFinalBoss<sup>*</sup></span>
-            <div className="footer-copyright-group">
-              <span className="copyright">© 2026 PdfFinalBoss. All rights reserved.</span>
-              <span className="footer-dot">•</span>
-              <span className="open-source-tag">© 2026 · open source mix</span>
-            </div>
+            <span className="footer-logo">PdfFinalBoss</span>
+            <span className="copyright">© 2026 PdfFinalBoss . open source.</span>
           </div>
           
           <div className="footer-center">
@@ -31,10 +27,6 @@ export function Footer() {
             <li><a href="#faq">FAQ</a></li>
             <li><a href="https://github.com/ashishgit4/PdfFinalBoss" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           </ul>
-        </div>
-
-        <div className="footer-bottom">
-          <span>Made with 💖 and code</span>
         </div>
       </div>
     </footer>

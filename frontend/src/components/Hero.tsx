@@ -6,7 +6,7 @@ export function Hero() {
       <div className="hero-grid">
         <div className="hero-left">
           <h1 className="rise" style={{ animationDelay: "400ms" }}>
-            PdfFinalBoss<sup>*</sup>
+            PdfFinalBoss
           </h1>
         </div>
         <div className="hero-right">
