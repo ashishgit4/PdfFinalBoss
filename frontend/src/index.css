@@ -1616,7 +1616,7 @@
       }
     }
 
-    /* Floating Buy Me a Ko-fi Button (Option 1) */
+    /* Floating Buy Me a Ko-fi Button (Vibrant & Attention-Grabbing) */
     .kofi-btn {
       position: fixed;
       bottom: 28px;
@@ -1625,19 +1625,18 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 20px;
+      padding: 11px 22px;
       border-radius: 9999px;
-      background: rgba(18, 18, 20, 0.82);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      color: var(--text-primary);
+      background: linear-gradient(135deg, #ff5e5b 0%, #d93835 100%);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
       font-family: var(--font-body);
       font-size: 13.5px;
       font-weight: 600;
       letter-spacing: 0.01em;
       text-decoration: none;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+      animation: kofiPulse 3.5s ease-in-out infinite;
       transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
       cursor: pointer;
     }
@@ -1645,20 +1644,28 @@
     .kofi-btn .kofi-icon {
       width: 18px;
       height: 18px;
-      fill: currentColor;
+      fill: #ffffff;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
       transition: transform 0.3s ease;
     }
 
     .kofi-btn:hover {
-      background: rgba(239, 68, 68, 0.95);
-      border-color: rgba(239, 68, 68, 1);
-      color: #ffffff;
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 12px 35px rgba(239, 68, 68, 0.45);
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 12px 35px rgba(239, 68, 68, 0.6), 0 0 20px rgba(255, 94, 91, 0.6);
+      filter: brightness(1.08);
     }
 
     .kofi-btn:hover .kofi-icon {
-      transform: scale(1.15) rotate(-8deg);
+      transform: scale(1.2) rotate(-8deg);
+    }
+
+    @keyframes kofiPulse {
+      0%, 100% {
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+      }
+      50% {
+        box-shadow: 0 8px 30px rgba(239, 68, 68, 0.7), 0 0 20px rgba(255, 94, 91, 0.5);
+      }
     }
 
     @media (max-width: 640px) {
