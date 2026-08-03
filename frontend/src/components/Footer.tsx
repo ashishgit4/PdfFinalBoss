@@ -5,7 +5,7 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-left">
             <span className="footer-logo">PdfFinalBoss</span>
-            <span className="copyright">© 2026 PdfFinalBoss . open source.</span>
+            <span className="copyright">© 2026 PdfFinalBoss. Open Source • Privacy First.</span>
           </div>
           
           <div className="footer-center">
