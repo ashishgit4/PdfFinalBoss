@@ -1615,4 +1615,58 @@
         background-image: none !important;
       }
     }
+
+    /* Floating Buy Me a Ko-fi Button (Option 1) */
+    .kofi-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 50;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      background: rgba(18, 18, 20, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .kofi-btn .kofi-icon {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+      transition: transform 0.3s ease;
+    }
+
+    .kofi-btn:hover {
+      background: rgba(239, 68, 68, 0.95);
+      border-color: rgba(239, 68, 68, 1);
+      color: #ffffff;
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 35px rgba(239, 68, 68, 0.45);
+    }
+
+    .kofi-btn:hover .kofi-icon {
+      transform: scale(1.15) rotate(-8deg);
+    }
+
+    @media (max-width: 640px) {
+      .kofi-btn {
+        bottom: 20px;
+        right: 20px;
+        padding: 9px 16px;
+        font-size: 12.5px;
+      }
+    }
   
