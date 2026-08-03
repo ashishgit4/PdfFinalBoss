@@ -95,95 +95,102 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 100px;
+      height: 90px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       z-index: 20;
     }
 
-    .navbar-brand {
+    .navbar-left {
       display: flex;
       align-items: center;
-      gap: 16px;
     }
 
     .nav-logo {
-      font-family: var(--font-display);
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--text-primary);
-      text-decoration: none;
       display: flex;
-      align-items: flex-start;
-      transition: opacity 0.2s ease;
-    }
-
-    .nav-logo:hover {
-      opacity: 0.85;
-    }
-
-    .logo-asterisk {
-      font-size: 11px;
-      margin-left: 1px;
-      top: -0.2em;
-    }
-
-    .star-repo-badge {
-      display: inline-flex;
       align-items: center;
-      gap: 7px;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      background: rgba(243, 239, 230, 0.07);
-      border: 1px solid var(--border-hairline);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      color: var(--text-primary);
+      gap: 10px;
       text-decoration: none;
-      font-size: 12px;
-      font-weight: 500;
-      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
     }
 
-    .star-repo-badge:hover {
-      background: rgba(243, 239, 230, 0.14);
-      border-color: rgba(255, 215, 0, 0.45);
-      transform: translateY(-1.5px);
-      box-shadow: 0 4px 18px rgba(255, 215, 0, 0.2);
+    .nav-logo-box {
+      width: 13px;
+      height: 13px;
+      background-color: #6366f1;
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
+      display: inline-block;
     }
 
-    .star-repo-badge .github-icon {
-      width: 15px;
-      height: 15px;
+    .nav-logo .logo-text {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
     }
 
-    .star-repo-badge .star-icon {
-      width: 14px;
-      height: 14px;
-      transition: transform 0.3s ease;
-    }
-
-    .star-repo-badge:hover .star-icon {
-      transform: scale(1.25) rotate(15deg);
-    }
-
-    .star-repo-badge .star-text {
-      letter-spacing: 0.01em;
-    }
-
-    .nav-links {
+    .navbar-center .nav-links {
       display: flex;
-      gap: 32px;
+      gap: 28px;
       list-style: none;
       align-items: center;
     }
 
-    .nav-links li {
+    .navbar-center .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      transition: color 0.2s ease;
+    }
+
+    .navbar-center .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .navbar-right {
       display: flex;
       align-items: center;
+      gap: 10px;
+    }
+
+    .nav-action-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-action-box:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(243, 239, 230, 0.3);
+      color: #ffffff;
+    }
+
+    .nav-action-box.theme-toggle-box,
+    .nav-action-box.kofi-box {
+      width: 36px;
+      padding: 0;
+    }
+
+    .nav-action-box .github-icon {
+      width: 16px;
+      height: 16px;
     }
 
     .nav-links a {
