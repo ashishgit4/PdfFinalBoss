@@ -108,27 +108,47 @@
     }
 
     .nav-logo {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 10px;
       text-decoration: none;
+      line-height: 1;
+      transition: opacity 0.2s ease;
     }
 
-    .nav-logo-box {
-      width: 13px;
-      height: 13px;
-      background-color: #6366f1;
-      border-radius: 2px;
-      box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
-      display: inline-block;
+    .nav-logo:hover {
+      opacity: 0.88;
+    }
+
+    .nav-logo-badge {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.45);
+      flex-shrink: 0;
+    }
+
+    .nav-logo-badge svg {
+      width: 14px;
+      height: 14px;
     }
 
     .nav-logo .logo-text {
       font-family: var(--font-display);
-      font-size: 17px;
+      font-size: 19px;
       font-weight: 700;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.03em;
       color: var(--text-primary);
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      margin: 0;
+      padding: 0;
     }
 
     .navbar-center .nav-links {
