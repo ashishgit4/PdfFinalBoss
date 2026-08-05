@@ -1385,7 +1385,7 @@
       }
       
       .hero {
-        padding-top: 104px;
+        padding-top: 140px;
         padding-bottom: 60px;
         min-height: auto;
         justify-content: flex-start;
@@ -1405,7 +1405,7 @@
         justify-self: stretch;
         align-items: flex-start;
         max-width: 100%;
-        margin-top: 0;
+        margin-top: 20px;
         width: 100%;
       }
 
