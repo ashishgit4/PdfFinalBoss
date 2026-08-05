@@ -1542,14 +1542,13 @@
         font-size: 17px;
       }
 
-      .mode-tabs {
+      .ios-liquid-pill {
         width: 100%;
         display: flex;
       }
 
-      .mode-tab {
+      .liquid-tab {
         flex: 1;
-        text-align: center;
         padding: 10px 12px;
         font-size: 13px;
       }
@@ -1580,33 +1579,94 @@
       }
     }
 
-    /* Mode Tabs & Vault & Lock Style Additions */
-    .mode-tabs {
+    /* iOS 26 Liquid Glass Floating Segmented Control */
+    .mode-tabs-container {
       display: flex;
-      background: rgba(243, 239, 230, 0.03);
-      border: 1px solid var(--border-hairline);
-      padding: 4px;
-      border-radius: 9999px;
-      margin-bottom: 18px;
-      width: fit-content;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      justify-content: center;
+      width: 100%;
+      margin: 0 auto 24px auto;
     }
-    .mode-tab {
+
+    .ios-liquid-pill {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 5px;
+      border-radius: 9999px;
+      backdrop-filter: blur(28px) saturate(200%);
+      -webkit-backdrop-filter: blur(28px) saturate(200%);
+      box-shadow: 
+        inset 0 1px 1.5px rgba(255, 255, 255, 0.35),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.5),
+        0 14px 36px rgba(0, 0, 0, 0.45);
+      gap: 4px;
+    }
+
+    .liquid-tab {
+      position: relative;
       background: transparent;
       border: none;
       color: var(--text-secondary);
-      font-size: 13px;
+      font-family: var(--font-display);
+      font-size: 13.5px;
       font-weight: 600;
-      padding: 8px 20px;
+      letter-spacing: -0.01em;
+      padding: 10px 22px;
       border-radius: 9999px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+      outline: none;
+      user-select: none;
+      transition: color 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .mode-tab.active {
-      background: var(--text-primary);
-      color: var(--bg-color);
+
+    .liquid-tab:hover {
+      color: var(--text-primary);
     }
+
+    .liquid-tab.active {
+      color: var(--text-primary);
+    }
+
+    .tab-content {
+      position: relative;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-icon {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .liquid-tab.active .tab-icon {
+      transform: scale(1.1);
+      color: var(--text-primary);
+    }
+
+    .active-glass-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: 9999px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.08) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.6),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.35),
+        0 6px 22px rgba(0, 0, 0, 0.45),
+        0 0 20px rgba(255, 255, 255, 0.15);
+    }
+
     .lock-fields {
       display: flex;
       flex-direction: column;

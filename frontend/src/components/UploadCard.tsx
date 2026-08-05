@@ -245,21 +245,52 @@ export function UploadCard() {
     <div style={{ width: "100%" }}>
       {/* Mode Selector Tabs (only shown when in idle state) */}
       {flowState === "idle" && (
-        <div className="mode-tabs rise" style={{ animationDelay: "640ms", margin: "0 auto 18px auto" }}>
-          <button 
-            onClick={() => setMode("unlock")} 
-            className={`mode-tab cursor-pointer ${mode === "unlock" ? "active" : ""}`}
-            id="mode-unlock-btn"
-          >
-            Unlock PDF
-          </button>
-          <button 
-            onClick={() => setMode("lock")} 
-            className={`mode-tab cursor-pointer ${mode === "lock" ? "active" : ""}`}
-            id="mode-lock-btn"
-          >
-            Lock PDF
-          </button>
+        <div className="mode-tabs-container rise" style={{ animationDelay: "640ms" }}>
+          <div className="ios-liquid-pill">
+            <button 
+              type="button"
+              onClick={() => setMode("unlock")} 
+              className={`liquid-tab ${mode === "unlock" ? "active" : ""}`}
+              id="mode-unlock-btn"
+            >
+              {mode === "unlock" && (
+                <motion.div
+                  layoutId="active-glass-bubble"
+                  className="active-glass-bg"
+                  transition={{ type: "spring", stiffness: 420, damping: 32 }}
+                />
+              )}
+              <span className="tab-content">
+                <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                </svg>
+                <span>Unlock PDF</span>
+              </span>
+            </button>
+
+            <button 
+              type="button"
+              onClick={() => setMode("lock")} 
+              className={`liquid-tab ${mode === "lock" ? "active" : ""}`}
+              id="mode-lock-btn"
+            >
+              {mode === "lock" && (
+                <motion.div
+                  layoutId="active-glass-bubble"
+                  className="active-glass-bg"
+                  transition={{ type: "spring", stiffness: 420, damping: 32 }}
+                />
+              )}
+              <span className="tab-content">
+                <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Lock PDF</span>
+              </span>
+            </button>
+          </div>
         </div>
       )}
 
