@@ -1278,30 +1278,163 @@
       transform: translateY(0);
     }
 
+    /* Mobile Menu Drawer Toggle & Overlay Styles */
+    .mobile-menu-toggle {
+      display: none;
+    }
+
+    .mobile-menu-overlay {
+      position: fixed;
+      inset: 0;
+      top: 72px;
+      z-index: 90;
+      background: rgba(var(--bg-color-rgb), 0.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex;
+      flex-direction: column;
+      padding: 16px 20px;
+      animation: fadeInDrawer 0.25s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    }
+
+    @keyframes fadeInDrawer {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .mobile-menu-drawer {
+      background: rgba(243, 239, 230, 0.05);
+      border: 1px solid var(--border-hairline);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .mobile-nav-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .mobile-nav-links a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      display: block;
+      transition: color 0.2s;
+    }
+
+    .mobile-nav-links a:hover {
+      color: #FFDD00;
+    }
+
+    .mobile-menu-divider {
+      height: 1px;
+      background: var(--border-hairline);
+      width: 100%;
+    }
+
+    .mobile-menu-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mobile-action-btn {
+      width: 100%;
+      justify-content: center;
+      height: 42px;
+    }
+
     /* Responsive Queries */
     @media (max-width: 900px) {
-      .navbar {
-        justify-content: flex-end;
-        padding-right: 24px;
+      .container {
+        padding: 0 20px;
       }
-      .nav-links {
+
+      .navbar {
+        justify-content: space-between;
+        padding: 0 20px;
+        height: 72px;
+      }
+
+      .navbar-center {
         display: none;
+      }
+
+      .tech-btn-group {
+        display: none;
+      }
+
+      .mobile-menu-toggle {
+        display: inline-flex;
       }
       
       .hero {
-        padding-top: 80px;
-        padding-bottom: 60px;
+        padding-top: 130px;
+        padding-bottom: 40px;
+        min-height: auto;
+        justify-content: flex-start;
+      }
+
+      .hero-left {
+        display: none;
       }
 
       .hero-grid {
         grid-template-columns: 1fr;
-        gap: 40px;
-        align-items: flex-start;
+        gap: 24px;
+        align-items: center;
       }
 
       .hero-right {
-        justify-self: start;
+        justify-self: center;
+        align-items: center;
         max-width: 100%;
+        margin-top: 80px;
+      }
+
+      .sub-line {
+        font-size: 14px;
+        line-height: 1.55;
+        text-align: center;
+      }
+
+      .trust-indicator-row {
+        justify-content: center;
+      }
+
+      .section-grid {
+        padding: 60px 0;
+      }
+
+      .section-toolkit {
+        padding: 60px 0;
+      }
+
+      .section-quote {
+        padding: 60px 0;
+      }
+
+      .section-faq {
+        padding: 60px 0;
+      }
+
+      .section-closing {
+        padding: 80px 0;
       }
 
       .cards-wrapper {
@@ -1309,14 +1442,22 @@
         gap: 16px;
       }
 
+      .card {
+        padding: 28px 24px;
+      }
+
       .tools-grid {
         grid-template-columns: 1fr;
         gap: 16px;
       }
 
+      .tool-card {
+        padding: 24px 20px;
+      }
+
       .faq-layout {
         grid-template-columns: 1fr;
-        gap: 40px;
+        gap: 32px;
       }
 
       .faq-left {
@@ -1335,12 +1476,43 @@
       }
       
       .kofi-btn {
-        bottom: 24px;
-        right: 24px;
+        bottom: 20px;
+        right: 20px;
         padding: 10px 14px;
       }
+
       .kofi-btn span {
         display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 0 16px;
+      }
+
+      .navbar {
+        padding: 0 16px;
+      }
+
+      .nav-logo .logo-text {
+        font-size: 17px;
+      }
+
+      .mode-tabs {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .mode-tab {
+        flex: 1;
+        text-align: center;
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      .card-state {
+        padding: 28px 16px;
       }
     }
 
