@@ -61,7 +61,7 @@ export function FAQ() {
                 </button>
                 <div 
                   className="accordion-content" 
-                  style={{ maxHeight: activeIndex === index ? "200px" : "0px" }}
+                  style={{ maxHeight: activeIndex === index ? "400px" : "0px" }}
                 >
                   <div className="accordion-content-inner">
                     {item.a}

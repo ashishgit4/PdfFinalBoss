@@ -636,7 +636,7 @@
 
     /* Card Grid Section */
     .section-grid {
-      padding: 140px 0;
+      padding: 100px 0;
       border-top: 1px solid var(--border-hairline);
     }
 
@@ -646,7 +646,7 @@
       letter-spacing: 0.1em;
       color: var(--text-dim);
       text-transform: uppercase;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       display: block;
     }
 
@@ -719,7 +719,7 @@
 
     /* Section: Centralized Toolkit (Coming Soon options) */
     .section-toolkit {
-      padding: 140px 0;
+      padding: 100px 0;
       border-top: 1px solid var(--border-hairline);
     }
 
@@ -802,7 +802,8 @@
 
     /* FAQ Section Accordion */
     .section-faq {
-      padding: 140px 0;
+      padding: 100px 0;
+      border-top: 1px solid var(--border-hairline);
       border-bottom: 1px solid var(--border-hairline);
     }
 
@@ -1417,24 +1418,31 @@
         justify-content: center;
       }
 
-      .section-grid {
-        padding: 60px 0;
-      }
-
-      .section-toolkit {
-        padding: 60px 0;
-      }
-
-      .section-quote {
-        padding: 60px 0;
-      }
-
+      .section-grid,
+      .section-toolkit,
+      .section-quote,
       .section-faq {
-        padding: 60px 0;
+        padding: 52px 0;
       }
 
       .section-closing {
-        padding: 80px 0;
+        padding: 64px 0;
+      }
+
+      .eyebrow {
+        margin-bottom: 12px;
+      }
+
+      .section-title {
+        font-size: clamp(24px, 6vw, 36px);
+        margin-bottom: 12px;
+        line-height: 1.18;
+      }
+
+      .lead-text {
+        font-size: 15px;
+        line-height: 1.55;
+        margin-bottom: 28px;
       }
 
       .cards-wrapper {
@@ -1443,7 +1451,8 @@
       }
 
       .card {
-        padding: 28px 24px;
+        padding: 24px 20px;
+        gap: 20px;
       }
 
       .tools-grid {
@@ -1452,16 +1461,28 @@
       }
 
       .tool-card {
-        padding: 24px 20px;
+        padding: 22px 18px;
+        gap: 14px;
       }
 
       .faq-layout {
         grid-template-columns: 1fr;
-        gap: 32px;
+        gap: 16px;
       }
 
       .faq-left {
         max-width: 100%;
+      }
+
+      .accordion-trigger {
+        padding: 16px 0;
+        font-size: 15px;
+      }
+
+      .accordion-content-inner {
+        padding-bottom: 20px;
+        font-size: 13.5px;
+        line-height: 1.55;
       }
 
       .footer-grid {
