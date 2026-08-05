@@ -39,36 +39,38 @@ export function FAQ() {
   ];
 
   return (
-    <section id="faq" className="section-faq container reveal">
-      <div className="faq-layout">
-        <div className="faq-left">
-          <span className="eyebrow">[ FAQ ]</span>
-          <h2 className="section-title">Frequently Asked Questions</h2>
-        </div>
-        
-        <div className="faq-right">
-          <div className="accordion">
-            {faqItems.map((item, index) => (
-              <div 
-                key={index} 
-                className={`accordion-item ${activeIndex === index ? "active" : ""}`}
-              >
-                <button className="accordion-trigger" onClick={() => toggleAccordion(index)}>
-                  <span>{item.q}</span>
-                  <svg className="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </button>
+    <section id="faq" className="section-faq reveal">
+      <div className="container">
+        <div className="faq-layout">
+          <div className="faq-left">
+            <span className="eyebrow">[ FAQ ]</span>
+            <h2 className="section-title">Frequently Asked Questions</h2>
+          </div>
+          
+          <div className="faq-right">
+            <div className="accordion">
+              {faqItems.map((item, index) => (
                 <div 
-                  className="accordion-content" 
-                  style={{ maxHeight: activeIndex === index ? "400px" : "0px" }}
+                  key={index} 
+                  className={`accordion-item ${activeIndex === index ? "active" : ""}`}
                 >
-                  <div className="accordion-content-inner">
-                    {item.a}
+                  <button className="accordion-trigger" onClick={() => toggleAccordion(index)}>
+                    <span>{item.q}</span>
+                    <svg className="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div 
+                    className="accordion-content" 
+                    style={{ maxHeight: activeIndex === index ? "400px" : "0px" }}
+                  >
+                    <div className="accordion-content-inner">
+                      {item.a}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
