@@ -1640,21 +1640,37 @@
       gap: 8px;
     }
 
+    .tab-icon-badge {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
     .tab-icon {
-      width: 16px;
-      height: 16px;
-      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      width: 15px;
+      height: 15px;
+    }
+
+    .liquid-tab.active .tab-icon-badge {
+      background: #D97706;
+      color: #ffffff;
+      border: none;
+      box-shadow: none;
     }
 
     .liquid-tab.active .tab-icon {
-      transform: scale(1.1);
-      color: #38bdf8;
-      filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+      color: #ffffff;
     }
 
     .liquid-tab.active {
       color: #ffffff;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     }
 
     .active-glass-bg {
@@ -1662,15 +1678,11 @@
       inset: 0;
       z-index: 1;
       border-radius: 9999px;
-      background: linear-gradient(135deg, rgba(14, 116, 244, 0.45) 0%, rgba(3, 80, 180, 0.3) 100%);
-      border: 1px solid rgba(125, 200, 255, 0.55);
-      backdrop-filter: blur(18px) saturate(180%);
-      -webkit-backdrop-filter: blur(18px) saturate(180%);
-      box-shadow: 
-        inset 0 1px 2px rgba(210, 240, 255, 0.8),
-        inset 0 -1px 2px rgba(0, 50, 130, 0.5),
-        0 6px 24px rgba(14, 116, 244, 0.4),
-        0 0 24px rgba(14, 116, 244, 0.28);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: none;
     }
 
     .lock-fields {
