@@ -1385,7 +1385,8 @@
       }
       
       .hero {
-        padding-top: 140px;
+        margin-top: 80px;
+        padding-top: 0;
         padding-bottom: 60px;
         min-height: auto;
         justify-content: flex-start;
