@@ -1385,8 +1385,8 @@
       }
       
       .hero {
-        padding-top: 130px;
-        padding-bottom: 40px;
+        padding-top: 104px;
+        padding-bottom: 60px;
         min-height: auto;
         justify-content: flex-start;
       }
@@ -1398,76 +1398,89 @@
       .hero-grid {
         grid-template-columns: 1fr;
         gap: 24px;
-        align-items: center;
+        width: 100%;
       }
 
       .hero-right {
-        justify-self: center;
-        align-items: center;
+        justify-self: stretch;
+        align-items: flex-start;
         max-width: 100%;
-        margin-top: 80px;
+        margin-top: 0;
+        width: 100%;
       }
 
       .sub-line {
-        font-size: 14px;
-        line-height: 1.55;
-        text-align: center;
+        font-size: 15px;
+        line-height: 1.6;
+        text-align: left;
+        color: var(--text-secondary);
+        width: 100%;
       }
 
       .trust-indicator-row {
-        justify-content: center;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px 16px;
+        justify-content: flex-start;
+        margin-top: 20px;
       }
 
       .section-grid,
       .section-toolkit,
       .section-quote,
       .section-faq {
-        padding: 52px 0;
+        padding: 84px 0;
       }
 
       .section-closing {
-        padding: 64px 0;
+        padding: 96px 0;
       }
 
       .eyebrow {
-        margin-bottom: 12px;
+        margin-bottom: 14px;
       }
 
       .section-title {
-        font-size: clamp(24px, 6vw, 36px);
-        margin-bottom: 12px;
+        font-size: clamp(26px, 6vw, 40px);
+        margin-bottom: 14px;
         line-height: 1.18;
       }
 
       .lead-text {
         font-size: 15px;
-        line-height: 1.55;
-        margin-bottom: 28px;
+        line-height: 1.6;
+        margin-bottom: 36px;
       }
 
       .cards-wrapper {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 20px;
+        width: 100%;
       }
 
       .card {
-        padding: 24px 20px;
-        gap: 20px;
+        padding: 28px 24px;
+        gap: 24px;
+        width: 100%;
       }
 
       .tools-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 20px;
+        width: 100%;
       }
 
       .tool-card {
-        padding: 22px 18px;
-        gap: 14px;
+        padding: 24px 20px;
+        gap: 16px;
+        width: 100%;
       }
 
       .faq-layout {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 28px;
+        width: 100%;
       }
 
       .faq-left {
@@ -1475,30 +1488,38 @@
       }
 
       .accordion-trigger {
-        padding: 16px 0;
-        font-size: 15px;
+        padding: 18px 0;
+        font-size: 16px;
       }
 
       .accordion-content-inner {
-        padding-bottom: 20px;
-        font-size: 13.5px;
-        line-height: 1.55;
+        padding-bottom: 24px;
+        font-size: 14px;
+        line-height: 1.6;
       }
 
       .footer-grid {
         flex-direction: column;
         align-items: flex-start;
+        gap: 24px;
+        width: 100%;
       }
       
       .footer-center {
         width: 100%;
-        justify-content: center;
-        margin: 12px 0;
+        justify-content: flex-start;
+        margin: 8px 0;
+      }
+
+      .footer-bottom {
+        width: 100%;
+        justify-content: flex-start;
+        text-align: left;
       }
       
       .kofi-btn {
-        bottom: 20px;
-        right: 20px;
+        bottom: 24px;
+        right: 24px;
         padding: 10px 14px;
       }
 
@@ -1509,11 +1530,11 @@
 
     @media (max-width: 640px) {
       .container {
-        padding: 0 16px;
+        padding: 0 20px;
       }
 
       .navbar {
-        padding: 0 16px;
+        padding: 0 20px;
       }
 
       .nav-logo .logo-text {
@@ -1522,18 +1543,18 @@
 
       .mode-tabs {
         width: 100%;
-        justify-content: center;
+        display: flex;
       }
 
       .mode-tab {
         flex: 1;
         text-align: center;
-        padding: 8px 12px;
-        font-size: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
       }
 
       .card-state {
-        padding: 28px 16px;
+        padding: 32px 20px;
       }
     }
 
