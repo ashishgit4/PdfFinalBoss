@@ -3,6 +3,17 @@ import type { UploadResponse } from "../types";
 const API_URL = import.meta.env.VITE_API_URL || "https://pdffinalboss-1.onrender.com";
 
 /**
+ * Pre-warms backend instance on initial page load to eliminate cold-start delay.
+ */
+export async function warmUpBackend(): Promise<void> {
+  try {
+    await fetch(`${API_URL}/api/health`, { method: "GET" });
+  } catch (e) {
+    // Silent pre-warm call failure ignore
+  }
+}
+
+/**
  * Uploads a PDF file to the backend, tracking progress with a callback.
  */
 export function uploadPDF(

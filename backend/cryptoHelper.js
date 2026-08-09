@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import fs from 'fs';
 
 // Secret key used to encrypt the password vault. In production, load this from environment variables.
 const VAULT_SECRET = process.env.VAULT_SECRET || 'pdf-final-boss-super-secret-key-32chars!'; // Must be 32 bytes
@@ -6,6 +7,17 @@ const VAULT_SECRET = process.env.VAULT_SECRET || 'pdf-final-boss-super-secret-ke
 // 1. Generate SHA-256 hash of a file buffer
 export function getFileHash(buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex');
+}
+
+// 1b. Asynchronously stream file hash to avoid event-loop blocking on large PDFs
+export function getFileHashStream(filePath) {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash('sha256');
+    const stream = fs.createReadStream(filePath);
+    stream.on('data', (data) => hash.update(data));
+    stream.on('end', () => resolve(hash.digest('hex')));
+    stream.on('error', (err) => reject(err));
+  });
 }
 
 // 2. Encrypt plaintext password for the vault (AES-256-GCM)

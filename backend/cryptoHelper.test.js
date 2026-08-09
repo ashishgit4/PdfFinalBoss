@@ -1,12 +1,26 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getFileHash, encryptPassword, decryptPassword, hashUserPassword, verifyUserPassword } from './cryptoHelper.js';
+import fs from 'fs';
+import { getFileHash, getFileHashStream, encryptPassword, decryptPassword, hashUserPassword, verifyUserPassword } from './cryptoHelper.js';
 
 test('getFileHash returns valid SHA-256 hash', () => {
   const buffer = Buffer.from('test pdf content');
   const hash = getFileHash(buffer);
   assert.equal(typeof hash, 'string');
   assert.equal(hash.length, 64);
+});
+
+test('getFileHashStream matches getFileHash output', async () => {
+  const tempPath = './temp_test_hash.txt';
+  const content = Buffer.from('streaming hash test content');
+  fs.writeFileSync(tempPath, content);
+  try {
+    const hashStream = await getFileHashStream(tempPath);
+    const hashSync = getFileHash(content);
+    assert.equal(hashStream, hashSync);
+  } finally {
+    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+  }
 });
 
 test('encryptPassword and decryptPassword round-trip successfully', () => {

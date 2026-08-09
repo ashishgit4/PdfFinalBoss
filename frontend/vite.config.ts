@@ -11,6 +11,23 @@
         "@": path.resolve(__dirname, "./src"),
       },
     },
+    build: {
+      target: "esnext",
+      minify: "esbuild",
+      cssMinify: true,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules/react") || id.includes("node_modules/react-dom") || id.includes("node_modules/react-router-dom")) {
+              return "vendor-react";
+            }
+            if (id.includes("node_modules/framer-motion") || id.includes("node_modules/lucide-react") || id.includes("node_modules/sonner")) {
+              return "vendor-ui";
+            }
+          },
+        },
+      },
+    },
     server: {
       proxy: {
         "/api": {

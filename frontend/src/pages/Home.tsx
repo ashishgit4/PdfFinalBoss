@@ -58,6 +58,7 @@ export function Home() {
               muted 
               loop 
               playsInline
+              preload="metadata"
             />
             {/* Scrim Overlay */}
             <div className="scrim absolute inset-0" style={{ zIndex: 1 }} />

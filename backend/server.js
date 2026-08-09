@@ -13,7 +13,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
-import { getFileHash, encryptPassword, decryptPassword, hashUserPassword, verifyUserPassword } from './cryptoHelper.js';
+import { getFileHash, getFileHashStream, encryptPassword, decryptPassword, hashUserPassword, verifyUserPassword } from './cryptoHelper.js';
 
 // Load environment variables for local development
 dotenv.config();
@@ -86,6 +86,11 @@ const uploadLimiter = rateLimit({
 
 app.use('/api/', apiLimiter);
 
+// Healthcheck & Pre-Warm endpoint to wake up cold-started cloud instances instantly
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: Date.now() });
+});
+
 // Setup storage folders
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -134,8 +139,7 @@ app.post('/api/upload', uploadLimiter, upload.single('file'), async (req, res) =
       return res.status(400).json({ error: 'Invalid file content. Uploaded file is not a valid PDF document.' });
     }
 
-    const buffer = fs.readFileSync(filePath);
-    const fileHash = getFileHash(buffer);
+    const fileHash = await getFileHashStream(filePath);
 
     let encrypted = false;
     let autoDecrypted = false;
@@ -214,15 +218,7 @@ app.post('/api/unlock', async (req, res) => {
   const tempOutputPath = fileMeta.path + '.unlocked';
 
   try {
-    let encrypted = false;
-    try {
-      const { stdout } = await execFilePromise(qpdfPath, ['--show-encryption', '--', fileMeta.path]);
-      if (!stdout.includes('File is not encrypted')) {
-        encrypted = true;
-      }
-    } catch (err) {
-      encrypted = true;
-    }
+    const encrypted = fileMeta.encrypted;
 
     if (encrypted) {
       // Perform decryption with provided password
@@ -298,8 +294,7 @@ app.post('/api/lock', async (req, res) => {
     fileMeta.encrypted = true;
     filesDb.set(id, fileMeta);
 
-    const lockedBuffer = fs.readFileSync(fileMeta.path);
-    const lockedHash = getFileHash(lockedBuffer);
+    const lockedHash = await getFileHashStream(fileMeta.path);
 
     const safeBaseName = sanitizeFilename(fileMeta.originalname.replace(/\.pdf$/i, ''));
     res.setHeader('Content-Type', 'application/pdf');
@@ -387,11 +382,18 @@ app.post('/api/payments/verify', (req, res) => {
   }
 });
 
-// Serve frontend build/files statically
+// Serve frontend build/files statically with high-performance cache options
 const distPath = path.join(__dirname, '../frontend/dist');
 const rawPath = path.join(__dirname, '../frontend');
 const frontendPath = fs.existsSync(distPath) ? distPath : rawPath;
-app.use(express.static(frontendPath));
+app.use(express.static(frontendPath, {
+  maxAge: '1d',
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js') || filePath.endsWith('.css') || filePath.endsWith('.woff2') || filePath.endsWith('.png') || filePath.endsWith('.svg')) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  }
+}));
 
 // Fallback to index.html for SPA routing
 app.get('*', (req, res) => {
