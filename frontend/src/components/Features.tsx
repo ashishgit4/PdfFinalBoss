@@ -59,22 +59,22 @@ export function Features() {
             {/* Tool 3: Active */}
             <div className="tool-card">
               <span className="tool-badge active">Active</span>
-              <h3 className="tool-title">Local Vault</h3>
-              <p className="tool-desc">Securely save PDF passwords in your browser for automatic, one-click unlocking next time.</p>
+              <h3 className="tool-title">Convert to PDF</h3>
+              <p className="tool-desc">Convert Word, Excel, PowerPoint, Images, TXT, CSV, HTML, and Markdown directly to PDF.</p>
             </div>
 
-            {/* Tool 4: Coming Soon */}
+            {/* Tool 4: Active */}
             <div className="tool-card">
-              <span className="tool-badge soon">Coming Soon</span>
-              <h3 className="tool-title">Merge PDF</h3>
-              <p className="tool-desc">Combine multiple documents into a single optimized file.</p>
+              <span className="tool-badge active">Active</span>
+              <h3 className="tool-title">Local Vault</h3>
+              <p className="tool-desc">Securely save PDF passwords in your browser for automatic, one-click unlocking next time.</p>
             </div>
 
             {/* Tool 5: Coming Soon */}
             <div className="tool-card">
               <span className="tool-badge soon">Coming Soon</span>
-              <h3 className="tool-title">Compress PDF</h3>
-              <p className="tool-desc">Reduce file size without losing text or image resolution.</p>
+              <h3 className="tool-title">Merge PDF</h3>
+              <p className="tool-desc">Combine multiple documents into a single optimized file.</p>
             </div>
           </div>
         </div>

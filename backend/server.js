@@ -13,6 +13,8 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
+import { PDFDocument } from 'pdf-lib';
+import { marked } from 'marked';
 import { getFileHash, getFileHashStream, encryptPassword, decryptPassword, hashUserPassword, verifyUserPassword } from './cryptoHelper.js';
 
 // Load environment variables for local development
@@ -52,6 +54,110 @@ const qpdfPath =
         "qpdf.exe"
       )
     : "qpdf";
+
+function getSofficePath() {
+  if (process.platform === 'win32') {
+    const commonPaths = [
+      'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
+      'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe'
+    ];
+    for (const p of commonPaths) {
+      if (fs.existsSync(p)) return p;
+    }
+    return 'soffice';
+  }
+  return 'soffice';
+}
+
+const sofficePath = getSofficePath();
+
+// Conversion Helper for Images (JPG, JPEG, PNG)
+async function convertImageToPDF(inputPath, outputPath, ext) {
+  const pdfDoc = await PDFDocument.create();
+  const imgBytes = fs.readFileSync(inputPath);
+  let image;
+  if (ext === '.png') {
+    image = await pdfDoc.embedPng(imgBytes);
+  } else {
+    image = await pdfDoc.embedJpg(imgBytes);
+  }
+  
+  const page = pdfDoc.addPage([image.width, image.height]);
+  page.drawImage(image, {
+    x: 0,
+    y: 0,
+    width: image.width,
+    height: image.height,
+  });
+
+  const pdfBytes = await pdfDoc.save();
+  fs.writeFileSync(outputPath, pdfBytes);
+}
+
+// Conversion Helper for Plain Text (.txt)
+async function convertTextToPDF(inputPath, outputPath) {
+  const text = fs.readFileSync(inputPath, 'utf-8');
+  const pdfDoc = await PDFDocument.create();
+  const pageMargin = 50;
+  const fontSize = 12;
+  const lineHeight = 16;
+  const pageWidth = 595.28; // A4 width
+  const pageHeight = 841.89; // A4 height
+  const printableWidth = pageWidth - pageMargin * 2;
+
+  const lines = text.split(/\r?\n/);
+  let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+  let currentY = pageHeight - pageMargin;
+
+  for (let line of lines) {
+    const maxCharsPerLine = Math.floor(printableWidth / 6.8);
+    const subLines = line.match(new RegExp(`.{1,${maxCharsPerLine}}`, 'g')) || [''];
+
+    for (let subLine of subLines) {
+      if (currentY - lineHeight < pageMargin) {
+        currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+        currentY = pageHeight - pageMargin;
+      }
+      currentPage.drawText(subLine, {
+        x: pageMargin,
+        y: currentY - fontSize,
+        size: fontSize,
+      });
+      currentY -= lineHeight;
+    }
+  }
+
+  const pdfBytes = await pdfDoc.save();
+  fs.writeFileSync(outputPath, pdfBytes);
+}
+
+// Conversion Helper for Markdown (.md)
+async function convertMarkdownToHTMLFile(inputPath) {
+  const mdContent = fs.readFileSync(inputPath, 'utf-8');
+  const htmlBody = await marked.parse(mdContent);
+  const fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: sans-serif; padding: 40px; line-height: 1.6; color: #111; max-width: 800px; margin: 0 auto; }
+    h1, h2, h3, h4 { margin-top: 1.5em; margin-bottom: 0.5em; border-bottom: 1px solid #eaeaea; padding-bottom: 0.3em; }
+    code { background: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
+    pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    blockquote { border-left: 4px solid #ddd; margin: 0; padding-left: 15px; color: #666; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+    th { background: #f8f9fa; }
+  </style>
+</head>
+<body>
+  ${htmlBody}
+</body>
+</html>`;
+  const tempHtmlPath = inputPath + '.html';
+  fs.writeFileSync(tempHtmlPath, fullHtml, 'utf-8');
+  return tempHtmlPath;
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -314,6 +420,128 @@ app.post('/api/lock', async (req, res) => {
     }
     res.status(500).json({ error: 'Failed to encrypt document.' });
   }
+});
+
+// API 3.5: Multi-Format Document to PDF Conversion
+const ALLOWED_CONVERT_EXTENSIONS = [
+  '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+  '.jpg', '.jpeg', '.png', '.txt', '.csv', '.html', '.htm', '.md'
+];
+
+app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded.' });
+  }
+
+  const fileId = uuidv4();
+  const inputFilePath = req.file.path;
+  const originalName = req.file.originalname;
+  const ext = path.extname(originalName).toLowerCase();
+
+  if (!ALLOWED_CONVERT_EXTENSIONS.includes(ext)) {
+    try { fs.unlinkSync(inputFilePath); } catch (e) {}
+    return res.status(400).json({
+      error: `Unsupported file format '${ext}'. Supported formats: Word (.doc, .docx), Excel (.xls, .xlsx), PowerPoint (.ppt, .pptx), Images (.jpg, .jpeg, .png), Text (.txt, .csv), Web (.html, .md)`
+    });
+  }
+
+  const outputPdfPath = path.join(uploadsDir, `${fileId}.pdf`);
+
+  try {
+    if (ext === '.jpg' || ext === '.jpeg' || ext === '.png') {
+      await convertImageToPDF(inputFilePath, outputPdfPath, ext);
+    } else if (ext === '.txt') {
+      try {
+        await convertTextToPDF(inputFilePath, outputPdfPath);
+      } catch (txtErr) {
+        await execFilePromise(sofficePath, ['--headless', '--convert-to', 'pdf', '--outdir', uploadsDir, '--', inputFilePath]);
+        const generatedPdf = path.join(uploadsDir, path.basename(inputFilePath, ext) + '.pdf');
+        fs.renameSync(generatedPdf, outputPdfPath);
+      }
+    } else {
+      let fileToConvertPath = inputFilePath;
+      let cleanTempHtml = false;
+
+      if (ext === '.md') {
+        fileToConvertPath = await convertMarkdownToHTMLFile(inputFilePath);
+        cleanTempHtml = true;
+      }
+
+      try {
+        await execFilePromise(sofficePath, ['--headless', '--convert-to', 'pdf', '--outdir', uploadsDir, '--', fileToConvertPath]);
+        
+        const baseNameNoExt = path.basename(fileToConvertPath, path.extname(fileToConvertPath));
+        const generatedPdf = path.join(uploadsDir, `${baseNameNoExt}.pdf`);
+
+        if (fs.existsSync(generatedPdf)) {
+          fs.renameSync(generatedPdf, outputPdfPath);
+        } else {
+          throw new Error('Converted PDF file was not generated.');
+        }
+      } catch (execErr) {
+        if (cleanTempHtml && fs.existsSync(fileToConvertPath)) {
+          try { fs.unlinkSync(fileToConvertPath); } catch (e) {}
+        }
+        
+        if (execErr.code === 'ENOENT' || execErr.message.includes('ENOENT')) {
+          throw new Error('LibreOffice is required on server for Office document conversion. Cloud environment installs it automatically.');
+        }
+        throw execErr;
+      }
+
+      if (cleanTempHtml && fs.existsSync(fileToConvertPath)) {
+        try { fs.unlinkSync(fileToConvertPath); } catch (e) {}
+      }
+    }
+
+    try { fs.unlinkSync(inputFilePath); } catch (e) {}
+
+    const fileHash = await getFileHashStream(outputPdfPath);
+    const convertedName = originalName.substring(0, originalName.lastIndexOf('.')) + '.pdf';
+
+    filesDb.set(fileId, {
+      path: outputPdfPath,
+      originalname: convertedName,
+      uploadTime: Date.now(),
+      encrypted: false,
+      pdfHash: fileHash
+    });
+
+    res.json({
+      id: fileId,
+      originalname: convertedName,
+      pdfHash: fileHash
+    });
+  } catch (err) {
+    console.error('Error converting file to PDF:', err);
+    if (fs.existsSync(inputFilePath)) {
+      try { fs.unlinkSync(inputFilePath); } catch (e) {}
+    }
+    if (fs.existsSync(outputPdfPath)) {
+      try { fs.unlinkSync(outputPdfPath); } catch (e) {}
+    }
+    res.status(500).json({ error: err.message || 'Failed to convert file to PDF.' });
+  }
+});
+
+// API 3.6: Download Converted PDF endpoint
+app.post('/api/download-converted', async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.status(400).json({ error: 'Missing document identity parameters.' });
+  }
+
+  const fileMeta = filesDb.get(id);
+  if (!fileMeta || !fs.existsSync(fileMeta.path)) {
+    return res.status(404).json({ error: 'Document expired or not found. Please upload again.' });
+  }
+
+  const safeBaseName = sanitizeFilename(fileMeta.originalname);
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="${safeBaseName}"`);
+
+  const readStream = fs.createReadStream(fileMeta.path);
+  readStream.pipe(res);
 });
 
 // ---------------------------------

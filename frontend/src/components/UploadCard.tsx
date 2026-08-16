@@ -1,17 +1,18 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { uploadPDF, unlockPDF, lockPDF } from "@/services/api";
+import { uploadPDF, unlockPDF, lockPDF, convertFileToPDF, downloadConvertedPDF } from "@/services/api";
 import type { UnlockFlowState } from "@/types";
 import { LoadingState } from "@/components/LoadingState";
 import { SuccessState } from "@/components/SuccessState";
 import { PasswordDialog } from "@/components/PasswordDialog";
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+const CONVERT_EXTENSIONS = [".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".jpg", ".jpeg", ".png", ".txt", ".csv", ".html", ".htm", ".md"];
 
 export function UploadCard() {
-  // Mode selection: "unlock" or "lock"
-  const [mode, setMode] = useState<"unlock" | "lock">("unlock");
+  // Mode selection: "unlock", "lock", or "convert"
+  const [mode, setMode] = useState<"unlock" | "lock" | "convert">("unlock");
 
   // Flow State
   const [file, setFile] = useState<File | null>(null);
@@ -19,6 +20,7 @@ export function UploadCard() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [fileId, setFileId] = useState<string | null>(null);
   const [unlockedBlob, setUnlockedBlob] = useState<Blob | null>(null);
+  const [convertedFileName, setConvertedFileName] = useState<string>("");
   const [isDragging, setIsDragging] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -71,10 +73,20 @@ export function UploadCard() {
   };
 
   const handleFile = (selectedFile: File) => {
-    // Validate file type
-    if (selectedFile.type !== "application/pdf" && !selectedFile.name.toLowerCase().endsWith(".pdf")) {
-      toast.error("Unsupported file format. Please upload a PDF.");
-      return;
+    const fileName = selectedFile.name.toLowerCase();
+    const ext = "." + fileName.split(".").pop();
+
+    if (mode === "convert") {
+      if (!CONVERT_EXTENSIONS.includes(ext)) {
+        toast.error("Unsupported format. Supported: Word, Excel, PPT, Images (JPG, PNG), TXT, CSV, HTML, MD.");
+        return;
+      }
+    } else {
+      // Validate PDF for unlock / lock
+      if (selectedFile.type !== "application/pdf" && !fileName.endsWith(".pdf")) {
+        toast.error("Unsupported file format. Please upload a PDF.");
+        return;
+      }
     }
 
     // Validate file size
@@ -88,6 +100,30 @@ export function UploadCard() {
   };
 
   const startUpload = async (fileToUpload: File) => {
+    if (mode === "convert") {
+      setFlowState("converting");
+      setUploadProgress(0);
+
+      try {
+        const response = await convertFileToPDF(fileToUpload, (progress) => {
+          setUploadProgress(progress);
+        });
+
+        setFileId(response.id);
+        setConvertedFileName(response.originalname);
+
+        // Retrieve converted PDF binary blob
+        const blob = await downloadConvertedPDF(response.id);
+        setUnlockedBlob(blob);
+        setFlowState("success");
+        toast.success("Document converted to PDF successfully!");
+      } catch (error: any) {
+        toast.error(error.message || "Conversion failed.");
+        resetState();
+      }
+      return;
+    }
+
     setFlowState("uploading");
     setUploadProgress(0);
 
@@ -188,12 +224,17 @@ export function UploadCard() {
     const link = document.createElement("a");
     link.href = url;
     
-    const originalName = file.name;
-    const isLockMode = mode === "lock";
-    const suffix = isLockMode ? "_locked.pdf" : "_unlocked.pdf";
-    const downloadName = originalName.toLowerCase().endsWith(".pdf")
-      ? `${originalName.substring(0, originalName.length - 4)}${suffix}`
-      : `${originalName}${suffix}`;
+    let downloadName = "";
+    if (mode === "convert") {
+      downloadName = convertedFileName || `${file.name.substring(0, file.name.lastIndexOf('.'))}.pdf`;
+    } else {
+      const originalName = file.name;
+      const isLockMode = mode === "lock";
+      const suffix = isLockMode ? "_locked.pdf" : "_unlocked.pdf";
+      downloadName = originalName.toLowerCase().endsWith(".pdf")
+        ? `${originalName.substring(0, originalName.length - 4)}${suffix}`
+        : `${originalName}${suffix}`;
+    }
 
     link.setAttribute("download", downloadName);
     document.body.appendChild(link);
@@ -209,6 +250,7 @@ export function UploadCard() {
     setUploadProgress(0);
     setFileId(null);
     setUnlockedBlob(null);
+    setConvertedFileName("");
     setIsDialogOpen(false);
     setLockPassword("");
     setLockHint("");
@@ -294,6 +336,32 @@ export function UploadCard() {
                 <span>Lock PDF</span>
               </span>
             </button>
+
+            <button 
+              type="button"
+              onClick={() => setMode("convert")} 
+              className={`liquid-tab ${mode === "convert" ? "active" : ""}`}
+              id="mode-convert-btn"
+            >
+              {mode === "convert" && (
+                <motion.div
+                  layoutId="active-glass-bubble"
+                  className="active-glass-bg"
+                  transition={{ type: "spring", stiffness: 420, damping: 32 }}
+                />
+              )}
+              <span className="tab-content">
+                <span className="tab-icon-badge">
+                  <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                  </svg>
+                </span>
+                <span>Convert to PDF</span>
+              </span>
+            </button>
           </div>
         </div>
       )}
@@ -322,7 +390,7 @@ export function UploadCard() {
                 type="file"
                 ref={fileInputRef}
                 className="hidden"
-                accept=".pdf,application/pdf"
+                accept={mode === "convert" ? ".doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt,.csv,.html,.htm,.md" : ".pdf,application/pdf"}
                 onChange={(e) => {
                   if (e.target.files && e.target.files.length > 0) {
                     handleFile(e.target.files[0]);
@@ -331,22 +399,30 @@ export function UploadCard() {
               />
               
               <div className="upload-icon-container">
-                <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                   <polyline points="17 8 12 3 7 8"></polyline>
                   <line x1="12" y1="3" x2="12" y2="15"></line>
                 </svg>
               </div>
 
-              <h3 className="card-state-title">Drop your PDF here</h3>
+              <h3 className="card-state-title">
+                {mode === "convert" ? "Drop files to convert to PDF" : mode === "lock" ? "Drop PDF to encrypt" : "Drop your PDF here"}
+              </h3>
               <p className="card-state-subtitle">
                 or <span className="browse-link">Browse Files</span>
               </p>
 
               <div className="card-state-footer">
-                <span>PDF only</span>
-                <span>•</span>
-                <span>Max 100 MB</span>
+                {mode === "convert" ? (
+                  <span>Word • Excel • PPT • Images • TXT • CSV • HTML • MD</span>
+                ) : (
+                  <>
+                    <span>PDF only</span>
+                    <span>•</span>
+                    <span>Max 100 MB</span>
+                  </>
+                )}
               </div>
             </motion.div>
           )}
@@ -362,6 +438,22 @@ export function UploadCard() {
               <LoadingState
                 progress={uploadProgress}
                 label="Uploading..."
+                fileName={file?.name}
+              />
+            </motion.div>
+          )}
+
+          {/* STATE 2.5: Converting */}
+          {flowState === "converting" && (
+            <motion.div
+              key="converting"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <LoadingState
+                progress={uploadProgress}
+                label="Converting document to PDF..."
                 fileName={file?.name}
               />
             </motion.div>
@@ -591,11 +683,13 @@ export function UploadCard() {
             >
               <SuccessState
                 fileName={
-                  file?.name 
-                    ? file.name.toLowerCase().endsWith(".pdf")
-                      ? `${file.name.substring(0, file.name.length - 4)}${mode === "lock" ? "_locked.pdf" : "_unlocked.pdf"}`
-                      : `${file.name}${mode === "lock" ? "_locked.pdf" : "_unlocked.pdf"}`
-                    : mode === "lock" ? "locked.pdf" : "unlocked.pdf"
+                  mode === "convert"
+                    ? (convertedFileName || (file?.name ? `${file.name.substring(0, file.name.lastIndexOf('.'))}.pdf` : "converted.pdf"))
+                    : file?.name 
+                      ? file.name.toLowerCase().endsWith(".pdf")
+                        ? `${file.name.substring(0, file.name.length - 4)}${mode === "lock" ? "_locked.pdf" : "_unlocked.pdf"}`
+                        : `${file.name}${mode === "lock" ? "_locked.pdf" : "_unlocked.pdf"}`
+                      : mode === "lock" ? "locked.pdf" : "unlocked.pdf"
                 }
                 onDownload={handleDownload}
                 onReset={resetState}

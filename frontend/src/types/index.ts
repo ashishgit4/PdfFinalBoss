@@ -5,9 +5,16 @@ export interface UploadResponse {
   autoDecrypted?: boolean;
 }
 
+export interface ConvertResponse {
+  id: string;
+  originalname: string;
+  pdfHash?: string;
+}
+
 export type UnlockFlowState =
   | "idle"
   | "uploading"
+  | "converting"
   | "password_required"
   | "unlocking"
   | "success"
@@ -19,4 +26,5 @@ export interface FileData {
   name: string;
   size: number;
 }
+
 

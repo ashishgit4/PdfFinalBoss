@@ -1,7 +1,7 @@
 FROM node:20-bookworm
 
-# Install qpdf
-RUN apt-get update && apt-get install -y qpdf && rm -rf /var/lib/apt/lists/*
+# Install qpdf and libreoffice for document conversion
+RUN apt-get update && apt-get install -y qpdf libreoffice fontconfig fonts-dejavu && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

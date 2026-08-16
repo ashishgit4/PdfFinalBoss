@@ -1,4 +1,4 @@
-import type { UploadResponse } from "../types";
+import type { UploadResponse, ConvertResponse } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://pdffinalboss-1.onrender.com";
 
@@ -73,6 +73,94 @@ export function uploadPDF(
 
     xhr.send(formData);
   });
+}
+
+/**
+ * Converts non-PDF document/image/text file to PDF, tracking progress with a callback.
+ */
+export function convertFileToPDF(
+  file: File,
+  onProgress?: (percent: number) => void
+): Promise<ConvertResponse> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open("POST", `${API_URL}/api/convert`);
+
+    if (onProgress) {
+      xhr.upload.addEventListener("progress", (event) => {
+        if (event.lengthComputable) {
+          const percentComplete = Math.round(
+            (event.loaded / event.total) * 100
+          );
+          onProgress(percentComplete);
+        }
+      });
+    }
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const response = JSON.parse(xhr.responseText) as ConvertResponse;
+          resolve(response);
+        } catch {
+          reject(new Error("Failed to parse server response."));
+        }
+      } else {
+        try {
+          const errorData = JSON.parse(xhr.responseText);
+          reject(
+            new Error(
+              errorData.error || errorData.message || `Conversion failed with status ${xhr.status}`
+            )
+          );
+        } catch {
+          reject(new Error(`Conversion failed with status ${xhr.status}`));
+        }
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("Network error. Please check your internet connection."));
+    };
+
+    xhr.ontimeout = () => {
+      reject(new Error("Request timed out. Please try again."));
+    };
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    xhr.send(formData);
+  });
+}
+
+/**
+ * Downloads a converted PDF file from the server by file ID.
+ */
+export async function downloadConvertedPDF(id: string): Promise<Blob> {
+  const response = await fetch(`${API_URL}/api/download-converted`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id }),
+  });
+
+  if (!response.ok) {
+    let errorMessage = "Downloading converted PDF failed.";
+    try {
+      const errorJson = await response.json();
+      if (errorJson?.error) {
+        errorMessage = errorJson.error;
+      }
+    } catch {
+      errorMessage = `Download failed with status ${response.status}`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  return response.blob();
 }
 
 /**
