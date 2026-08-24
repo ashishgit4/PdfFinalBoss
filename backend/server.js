@@ -672,21 +672,22 @@ app.post('/api/payments/verify', (req, res) => {
   }
 });
 
-// Serve frontend build/files statically with high-performance cache options
+// Serve frontend build/files statically
 const distPath = path.join(__dirname, '../frontend/dist');
 const rawPath = path.join(__dirname, '../frontend');
 const frontendPath = fs.existsSync(distPath) ? distPath : rawPath;
 app.use(express.static(frontendPath, {
-  maxAge: '1d',
+  maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
   setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.js') || filePath.endsWith('.css') || filePath.endsWith('.woff2') || filePath.endsWith('.png') || filePath.endsWith('.svg')) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     }
   }
 }));
 
 // Fallback to index.html for SPA routing
 app.get('*', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
