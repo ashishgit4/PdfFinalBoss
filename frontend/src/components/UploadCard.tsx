@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { uploadPDF, unlockPDF, lockPDF, convertFileToPDF, downloadConvertedPDF } from "@/services/api";
+import { convertDocxToPdfBlob } from "@/services/docxConverter";
 import type { UnlockFlowState } from "@/types";
 import { LoadingState } from "@/components/LoadingState";
 import { SuccessState } from "@/components/SuccessState";
@@ -76,7 +77,12 @@ export function UploadCard() {
     const fileName = selectedFile.name.toLowerCase();
     const ext = "." + fileName.split(".").pop();
 
-    if (mode === "convert") {
+    if (mode === "docx") {
+      if (![".docx", ".doc"].includes(ext)) {
+        toast.error("Unsupported format. Please upload a Word document (.docx or .doc).");
+        return;
+      }
+    } else if (mode === "convert") {
       if (!CONVERT_EXTENSIONS.includes(ext)) {
         toast.error("Unsupported format. Supported: Word, Excel, PPT, Images (JPG, PNG), TXT, CSV, HTML, MD.");
         return;
@@ -100,6 +106,46 @@ export function UploadCard() {
   };
 
   const startUpload = async (fileToUpload: File) => {
+    if (mode === "docx" || (mode === "convert" && (fileToUpload.name.toLowerCase().endsWith(".docx") || fileToUpload.name.toLowerCase().endsWith(".doc")))) {
+      setFlowState("converting");
+      setUploadProgress(0);
+
+      // Attempt high-speed client-side conversion
+      try {
+        const blob = await convertDocxToPdfBlob(fileToUpload, (progress) => {
+          setUploadProgress(progress);
+        });
+
+        const targetName = fileToUpload.name.replace(/\.docx?$/i, "") + ".pdf";
+        setConvertedFileName(targetName);
+        setUnlockedBlob(blob);
+        setFlowState("success");
+        toast.success("Word document converted to PDF successfully!");
+        return;
+      } catch (clientErr) {
+        console.warn("Client-side DOCX conversion fallback to server API:", clientErr);
+      }
+
+      // Fallback to server API conversion
+      try {
+        const response = await convertFileToPDF(fileToUpload, (progress) => {
+          setUploadProgress(progress);
+        });
+
+        setFileId(response.id);
+        setConvertedFileName(response.originalname);
+
+        const blob = await downloadConvertedPDF(response.id);
+        setUnlockedBlob(blob);
+        setFlowState("success");
+        toast.success("Word document converted to PDF successfully!");
+      } catch (error: any) {
+        toast.error(error.message || "DOCX conversion failed.");
+        resetState();
+      }
+      return;
+    }
+
     if (mode === "convert") {
       setFlowState("converting");
       setUploadProgress(0);
@@ -225,7 +271,7 @@ export function UploadCard() {
     link.href = url;
     
     let downloadName = "";
-    if (mode === "convert") {
+    if (mode === "convert" || mode === "docx") {
       downloadName = convertedFileName || `${file.name.substring(0, file.name.lastIndexOf('.'))}.pdf`;
     } else {
       const originalName = file.name;
@@ -339,6 +385,32 @@ export function UploadCard() {
 
             <button 
               type="button"
+              onClick={() => setMode("docx")} 
+              className={`liquid-tab ${mode === "docx" ? "active" : ""}`}
+              id="mode-docx-btn"
+            >
+              {mode === "docx" && (
+                <motion.div
+                  layoutId="active-glass-bubble"
+                  className="active-glass-bg"
+                  transition={{ type: "spring", stiffness: 420, damping: 32 }}
+                />
+              )}
+              <span className="tab-content">
+                <span className="tab-icon-badge">
+                  <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <path d="M9 13h6"></path>
+                    <path d="M9 17h6"></path>
+                  </svg>
+                </span>
+                <span>DOCX to PDF</span>
+              </span>
+            </button>
+
+            <button 
+              type="button"
               onClick={() => setMode("convert")} 
               className={`liquid-tab ${mode === "convert" ? "active" : ""}`}
               id="mode-convert-btn"
@@ -390,7 +462,7 @@ export function UploadCard() {
                 type="file"
                 ref={fileInputRef}
                 className="hidden"
-                accept={mode === "convert" ? ".doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt,.csv,.html,.htm,.md" : ".pdf,application/pdf"}
+                accept={mode === "docx" ? ".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" : mode === "convert" ? ".doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt,.csv,.html,.htm,.md" : ".pdf,application/pdf"}
                 onChange={(e) => {
                   if (e.target.files && e.target.files.length > 0) {
                     handleFile(e.target.files[0]);
@@ -407,14 +479,16 @@ export function UploadCard() {
               </div>
 
               <h3 className="card-state-title">
-                {mode === "convert" ? "Drop files to convert to PDF" : mode === "lock" ? "Drop PDF to encrypt" : "Drop your PDF here"}
+                {mode === "docx" ? "Drop your Word document (.docx, .doc) here" : mode === "convert" ? "Drop files to convert to PDF" : mode === "lock" ? "Drop PDF to encrypt" : "Drop your PDF here"}
               </h3>
               <p className="card-state-subtitle">
                 or <span className="browse-link">Browse Files</span>
               </p>
 
               <div className="card-state-footer">
-                {mode === "convert" ? (
+                {mode === "docx" ? (
+                  <span>Word (.docx, .doc) • Converts Instantly • Max 100 MB</span>
+                ) : mode === "convert" ? (
                   <span>Word • Excel • PPT • Images • TXT • CSV • HTML • MD</span>
                 ) : (
                   <>
@@ -683,7 +757,7 @@ export function UploadCard() {
             >
               <SuccessState
                 fileName={
-                  mode === "convert"
+                  mode === "convert" || mode === "docx"
                     ? (convertedFileName || (file?.name ? `${file.name.substring(0, file.name.lastIndexOf('.'))}.pdf` : "converted.pdf"))
                     : file?.name 
                       ? file.name.toLowerCase().endsWith(".pdf")

@@ -15,6 +15,7 @@ import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { PDFDocument } from 'pdf-lib';
 import { marked } from 'marked';
+import mammoth from 'mammoth';
 import { getFileHash, getFileHashStream, encryptPassword, decryptPassword, hashUserPassword, verifyUserPassword } from './cryptoHelper.js';
 
 // Load environment variables for local development
@@ -112,6 +113,53 @@ async function convertTextToPDF(inputPath, outputPath) {
   for (let line of lines) {
     const maxCharsPerLine = Math.floor(printableWidth / 6.8);
     const subLines = line.match(new RegExp(`.{1,${maxCharsPerLine}}`, 'g')) || [''];
+
+    for (let subLine of subLines) {
+      if (currentY - lineHeight < pageMargin) {
+        currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+        currentY = pageHeight - pageMargin;
+      }
+      currentPage.drawText(subLine, {
+        x: pageMargin,
+        y: currentY - fontSize,
+        size: fontSize,
+      });
+      currentY -= lineHeight;
+    }
+  }
+
+  const pdfBytes = await pdfDoc.save();
+  fs.writeFileSync(outputPath, pdfBytes);
+}
+
+// Conversion Helper for Word (.docx) Server Fallback
+async function convertDocxToPDFServer(inputPath, outputPath) {
+  const result = await mammoth.convertToHtml({ path: inputPath });
+  const plainText = (result.value || '')
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, '\n')
+    .replace(/\n\s*\n/g, '\n')
+    .trim();
+
+  const pdfDoc = await PDFDocument.create();
+  const pageMargin = 50;
+  const fontSize = 11;
+  const lineHeight = 15;
+  const pageWidth = 595.28; // A4 width
+  const pageHeight = 841.89; // A4 height
+  const printableWidth = pageWidth - pageMargin * 2;
+
+  const lines = plainText.split(/\r?\n/);
+  let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+  let currentY = pageHeight - pageMargin;
+
+  for (let line of lines) {
+    if (!line.trim()) {
+      currentY -= lineHeight / 2;
+      continue;
+    }
+    const maxCharsPerLine = Math.floor(printableWidth / 6.5);
+    const subLines = line.match(new RegExp(`.{1,${maxCharsPerLine}}`, 'g')) || [line];
 
     for (let subLine of subLines) {
       if (currentY - lineHeight < pageMargin) {
@@ -457,6 +505,20 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
         await execFilePromise(sofficePath, ['--headless', '--convert-to', 'pdf', '--outdir', uploadsDir, '--', inputFilePath]);
         const generatedPdf = path.join(uploadsDir, path.basename(inputFilePath, ext) + '.pdf');
         fs.renameSync(generatedPdf, outputPdfPath);
+      }
+    } else if (ext === '.docx' || ext === '.doc') {
+      try {
+        await execFilePromise(sofficePath, ['--headless', '--convert-to', 'pdf', '--outdir', uploadsDir, '--', inputFilePath]);
+        const baseNameNoExt = path.basename(inputFilePath, path.extname(inputFilePath));
+        const generatedPdf = path.join(uploadsDir, `${baseNameNoExt}.pdf`);
+        if (fs.existsSync(generatedPdf)) {
+          fs.renameSync(generatedPdf, outputPdfPath);
+        } else {
+          throw new Error('Converted PDF file was not generated.');
+        }
+      } catch (docErr) {
+        console.log('LibreOffice binary unavailable for DOCX. Using pure JavaScript mammoth conversion fallback.');
+        await convertDocxToPDFServer(inputFilePath, outputPdfPath);
       }
     } else {
       let fileToConvertPath = inputFilePath;
