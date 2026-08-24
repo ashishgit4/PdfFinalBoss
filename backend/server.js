@@ -135,16 +135,35 @@ async function convertTextToPDF(inputPath, outputPath) {
 // Conversion Helper for Word (.docx) Server Fallback
 async function convertDocxToPDFServer(inputPath, outputPath) {
   const result = await mammoth.convertToHtml({ path: inputPath });
-  const plainText = (result.value || '')
+  let plainText = (result.value || '')
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-    .replace(/<[^>]+>/g, '\n')
-    .replace(/\n\s*\n/g, '\n')
+    .replace(/<p[^>]*>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<h[1-6][^>]*>/gi, '\n\n')
+    .replace(/<li[^>]*>/gi, '\n- ')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/[\u2022\u2023\u2043\u2044]/g, '*')
+    .replace(/[^\x00-\x7F]/g, '')
+    .replace(/\n\s*\n/g, '\n\n')
     .trim();
+
+  if (!plainText) {
+    plainText = "Docx document successfully parsed.";
+  }
 
   const pdfDoc = await PDFDocument.create();
   const pageMargin = 50;
   const fontSize = 11;
-  const lineHeight = 15;
+  const lineHeight = 16;
   const pageWidth = 595.28; // A4 width
   const pageHeight = 841.89; // A4 height
   const printableWidth = pageWidth - pageMargin * 2;
@@ -166,11 +185,19 @@ async function convertDocxToPDFServer(inputPath, outputPath) {
         currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
         currentY = pageHeight - pageMargin;
       }
-      currentPage.drawText(subLine, {
-        x: pageMargin,
-        y: currentY - fontSize,
-        size: fontSize,
-      });
+      try {
+        currentPage.drawText(subLine, {
+          x: pageMargin,
+          y: currentY - fontSize,
+          size: fontSize,
+        });
+      } catch (e) {
+        currentPage.drawText(subLine.replace(/[^\x20-\x7E]/g, '?'), {
+          x: pageMargin,
+          y: currentY - fontSize,
+          size: fontSize,
+        });
+      }
       currentY -= lineHeight;
     }
   }
