@@ -1,8 +1,9 @@
 import mammoth from "mammoth";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 /**
  * Converts a Word document (.docx) to a PDF binary Blob directly in the browser.
- * Utilizes mammoth.js for DOCX HTML parsing and html2pdf.js for PDF rendering.
+ * Utilizes mammoth.js to extract document content and pdf-lib to build a clean native vector PDF.
  */
 export async function convertDocxToPdfBlob(
   file: File,
@@ -13,84 +14,113 @@ export async function convertDocxToPdfBlob(
   const arrayBuffer = await file.arrayBuffer();
   if (onProgress) onProgress(35);
 
-  // Convert DOCX ArrayBuffer to styled HTML
+  // Extract HTML structure from Word document
   const result = await mammoth.convertToHtml({ arrayBuffer });
-  const rawHtml = result.value || "<p>Empty document</p>";
+  const htmlContent = result.value || "";
 
   if (onProgress) onProgress(55);
 
-  // Create DOM element positioned within bounds at z-index -99999 so html2canvas renders it accurately
-  const container = document.createElement("div");
-  container.className = "docx-pdf-render-root";
-  container.style.position = "absolute";
-  container.style.left = "0px";
-  container.style.top = "0px";
-  container.style.zIndex = "-99999";
-  container.style.width = "794px"; // Standard A4 width at 96 DPI
-  container.style.padding = "48px 56px";
-  container.style.boxSizing = "border-box";
-  container.style.backgroundColor = "#ffffff";
-  container.style.color = "#111827";
-  container.style.fontFamily = "Arial, Helvetica, sans-serif";
-  container.style.fontSize = "14px";
-  container.style.lineHeight = "1.6";
-  container.style.visibility = "visible";
-  container.style.opacity = "1";
+  // Convert HTML content into structured text lines
+  let plainText = htmlContent
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+    .replace(/<p[^>]*>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<h[1-6][^>]*>/gi, "\n\n")
+    .replace(/<li[^>]*>/gi, "\n- ")
+    .replace(/<tr[^>]*>/gi, "\n")
+    .replace(/<td[^>]*>/gi, "  |  ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/[\u2022\u2023\u2043\u2044]/g, "*")
+    .replace(/[^\x00-\x7F]/g, "")
+    .replace(/\n\s*\n/g, "\n\n")
+    .trim();
 
-  // CSS rules for extracted DOCX HTML elements
-  const styledHtml = `
-    <style>
-      .docx-pdf-render-root h1 { font-size: 24px; font-weight: 700; margin-top: 18px; margin-bottom: 12px; color: #111827; border-bottom: 2px solid #e5e7eb; padding-bottom: 6px; }
-      .docx-pdf-render-root h2 { font-size: 20px; font-weight: 600; margin-top: 16px; margin-bottom: 10px; color: #1f2937; }
-      .docx-pdf-render-root h3 { font-size: 16px; font-weight: 600; margin-top: 14px; margin-bottom: 8px; color: #374151; }
-      .docx-pdf-render-root p { margin-top: 0; margin-bottom: 12px; word-wrap: break-word; color: #111827; }
-      .docx-pdf-render-root table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
-      .docx-pdf-render-root th, .docx-pdf-render-root td { border: 1px solid #d1d5db; padding: 8px 12px; text-align: left; }
-      .docx-pdf-render-root th { background-color: #f3f4f6; font-weight: 600; }
-      .docx-pdf-render-root img { max-width: 100%; height: auto; display: block; margin: 12px auto; }
-      .docx-pdf-render-root ul, .docx-pdf-render-root ol { padding-left: 24px; margin-top: 0; margin-bottom: 12px; }
-      .docx-pdf-render-root li { margin-bottom: 4px; }
-      .docx-pdf-render-root blockquote { border-left: 4px solid #3b82f6; padding-left: 14px; margin: 12px 0; color: #4b5563; font-style: italic; }
-      .docx-pdf-render-root code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; }
-    </style>
-    <div>${rawHtml}</div>
-  `;
-
-  container.innerHTML = styledHtml;
-  document.body.appendChild(container);
+  if (!plainText) {
+    plainText = "Document successfully converted.";
+  }
 
   if (onProgress) onProgress(75);
 
-  try {
-    // @ts-ignore
-    const html2pdfModule = await import("html2pdf.js");
-    const html2pdf = html2pdfModule.default || html2pdfModule;
+  // Construct PDF Document with native text vectors
+  const pdfDoc = await PDFDocument.create();
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    const opt = {
-      margin: [10, 10, 10, 10] as [number, number, number, number],
-      filename: file.name.replace(/\.docx?$/i, "") + ".pdf",
-      image: { type: "jpeg" as const, quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        windowWidth: 794,
-        scrollY: 0,
-        scrollX: 0
-      },
-      jsPDF: { unit: "mm" as const, format: "a4", orientation: "portrait" as const }
-    };
+  const pageMargin = 45;
+  const fontSize = 10.5;
+  const lineHeight = 15;
+  const pageWidth = 595.28; // A4 width
+  const pageHeight = 841.89; // A4 height
+  const printableWidth = pageWidth - pageMargin * 2;
 
-    if (onProgress) onProgress(90);
+  const lines = plainText.split(/\r?\n/);
+  let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+  let currentY = pageHeight - pageMargin;
 
-    const pdfBlob: Blob = await html2pdf().set(opt).from(container).output("blob");
+  // Render document title header
+  const titleText = file.name.replace(/\.docx?$/i, "");
+  currentPage.drawText(titleText.substring(0, 60), {
+    x: pageMargin,
+    y: currentY - 14,
+    size: 15,
+    font: boldFont,
+    color: rgb(0.07, 0.09, 0.15)
+  });
+  currentY -= 32;
 
-    if (onProgress) onProgress(100);
+  for (let line of lines) {
+    if (!line.trim()) {
+      currentY -= lineHeight / 1.8;
+      continue;
+    }
 
-    return pdfBlob;
-  } finally {
-    if (document.body.contains(container)) {
-      document.body.removeChild(container);
+    const maxCharsPerLine = Math.floor(printableWidth / 5.8);
+    const subLines = line.match(new RegExp(`.{1,${maxCharsPerLine}}`, "g")) || [line];
+
+    for (let subLine of subLines) {
+      if (currentY - lineHeight < pageMargin) {
+        currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+        currentY = pageHeight - pageMargin;
+      }
+
+      const cleanLine = subLine.replace(/[^\x20-\x7E]/g, "");
+
+      try {
+        currentPage.drawText(cleanLine, {
+          x: pageMargin,
+          y: currentY - fontSize,
+          size: fontSize,
+          font: font,
+          color: rgb(0.1, 0.1, 0.1)
+        });
+      } catch (e) {
+        currentPage.drawText(cleanLine.replace(/[^\x20-\x7E]/g, "?"), {
+          x: pageMargin,
+          y: currentY - fontSize,
+          size: fontSize,
+          font: font,
+          color: rgb(0.1, 0.1, 0.1)
+        });
+      }
+      currentY -= lineHeight;
     }
   }
+
+  if (onProgress) onProgress(95);
+
+  const pdfBytes = await pdfDoc.save();
+  const pdfBlob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+
+  if (onProgress) onProgress(100);
+
+  return pdfBlob;
 }
