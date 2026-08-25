@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { uploadPDF, unlockPDF, lockPDF, convertFileToPDF, downloadConvertedPDF } from "@/services/api";
 import { 
   convertDocxToPdfBlob,
+  convertPptxToPdfBlob,
   convertCsvToPdfBlob,
   convertTxtToPdfBlob,
   convertHtmlToPdfBlob,
@@ -133,6 +134,9 @@ export function UploadCard() {
         } else if (ext.endsWith(".jpg") || ext.endsWith(".jpeg") || ext.endsWith(".png")) {
           blob = await convertImageToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
           extPattern = /\.(jpg|jpeg|png)$/i;
+        } else if (ext.endsWith(".pptx") || ext.endsWith(".ppt")) {
+           blob = await convertPptxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
+           extPattern = /\.pptx?$/i;
         }
 
         if (blob) {
@@ -165,6 +169,23 @@ export function UploadCard() {
         setFlowState("success");
         toast.success("Document converted to PDF successfully!");
       } catch (error: any) {
+        // Intelligent fallback: if PPTX server conversion fails, use high-speed client vector engine
+        if (ext.endsWith(".pptx") || ext.endsWith(".ppt")) {
+          try {
+            console.warn("Server presentation conversion fallback to client vector engine:", error);
+            const blob = await convertPptxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
+            setUploadProgress(100);
+            const targetName = fileToUpload.name.replace(/\.pptx?$/i, "") + ".pdf";
+            setConvertedFileName(targetName);
+            setUnlockedBlob(blob);
+            setFlowState("success");
+            toast.success("Presentation converted to PDF successfully!");
+            return;
+          } catch (clientFallbackErr) {
+            console.error("Client PPTX fallback failed:", clientFallbackErr);
+          }
+        }
+        
         toast.error(error.message || "Conversion failed.");
         resetState();
       }

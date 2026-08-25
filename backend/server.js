@@ -576,12 +576,32 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
         cleanTempHtml = true;
       }
 
+      const absInputPath = path.resolve(fileToConvertPath);
+      const absOutputDir = path.resolve(uploadsDir);
+      const tempUserEnvDir = path.join('/tmp', `soffice_env_${fileId}`);
+
+      const sofficeArgs = [
+        '--headless',
+        '--invisible',
+        '--nocrashreport',
+        '--nodefault',
+        '--nofirststartwizard',
+        '--norestore',
+        `-env:UserInstallation=file://${tempUserEnvDir}`,
+        '--convert-to', 'pdf',
+        '--outdir', absOutputDir,
+        absInputPath
+      ];
+
       try {
-        // LibreOffice headless conversion for PPTX, PPT, DOCX, DOC, XLSX, XLS, HTML, MD
-        await execFilePromise(sofficePath, ['--headless', '--convert-to', 'pdf', '--outdir', uploadsDir, '--', fileToConvertPath]);
+        await execFilePromise(sofficePath, sofficeArgs, {
+          cwd: absOutputDir,
+          timeout: 45000,
+          maxBuffer: 25 * 1024 * 1024
+        });
         
-        const baseNameNoExt = path.basename(fileToConvertPath, path.extname(fileToConvertPath));
-        const generatedPdf = path.join(uploadsDir, `${baseNameNoExt}.pdf`);
+        const baseNameNoExt = path.basename(absInputPath, path.extname(absInputPath));
+        const generatedPdf = path.join(absOutputDir, `${baseNameNoExt}.pdf`);
 
         if (fs.existsSync(generatedPdf)) {
           if (generatedPdf !== outputPdfPath) {
@@ -601,8 +621,12 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
           console.log('LibreOffice fallback for DOCX. Using mammoth JS conversion.');
           await convertDocxToPDFServer(inputFilePath, outputPdfPath);
         } else {
-          console.error('LibreOffice conversion failed:', execErr);
-          throw new Error(`Presentation conversion failed: ${execErr.message || 'Format processing error'}`);
+          console.error('LibreOffice conversion failed:', execErr.message || execErr);
+          throw new Error('Document conversion failed. Unable to render format.');
+        }
+      } finally {
+        if (fs.existsSync(tempUserEnvDir)) {
+          try { fs.rmSync(tempUserEnvDir, { recursive: true, force: true }); } catch (e) {}
         }
       }
 
