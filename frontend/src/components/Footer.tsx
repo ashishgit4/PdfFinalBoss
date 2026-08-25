@@ -7,7 +7,7 @@ export function Footer() {
             <div className="footer-left">
               <div className="footer-brand-row">
                 <span className="footer-logo">PdfFinalBoss</span>
-                <span className="version-badge">v1.0.3</span>
+                <span className="version-badge">v1.0.4</span>
               </div>
               <span className="copyright">© 2026 PdfFinalBoss. Open Source • Privacy First.</span>
             </div>
