@@ -532,15 +532,23 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
   }
 
   const fileId = uuidv4();
-  const inputFilePath = req.file.path;
+  const rawInputPath = req.file.path;
   const originalName = req.file.originalname;
   const ext = path.extname(originalName).toLowerCase();
 
   if (!ALLOWED_CONVERT_EXTENSIONS.includes(ext)) {
-    try { fs.unlinkSync(inputFilePath); } catch (e) {}
+    try { fs.unlinkSync(rawInputPath); } catch (e) {}
     return res.status(400).json({
       error: `Unsupported file format '${ext}'. Supported formats: Word (.doc, .docx), Excel (.xls, .xlsx), PowerPoint (.ppt, .pptx), Images (.jpg, .jpeg, .png), Text (.txt, .csv), Web (.html, .md)`
     });
+  }
+
+  // Rename raw upload file to include proper extension on disk so LibreOffice auto-detects filter format
+  const inputFilePath = `${rawInputPath}${ext}`;
+  try {
+    fs.renameSync(rawInputPath, inputFilePath);
+  } catch (renameErr) {
+    // If rename fails, fallback to rawInputPath
   }
 
   const outputPdfPath = path.join(uploadsDir, `${fileId}.pdf`);
@@ -553,22 +561,11 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
         await convertTextToPDF(inputFilePath, outputPdfPath);
       } catch (txtErr) {
         await execFilePromise(sofficePath, ['--headless', '--convert-to', 'pdf', '--outdir', uploadsDir, '--', inputFilePath]);
-        const generatedPdf = path.join(uploadsDir, path.basename(inputFilePath, ext) + '.pdf');
-        fs.renameSync(generatedPdf, outputPdfPath);
-      }
-    } else if (ext === '.docx' || ext === '.doc') {
-      try {
-        await execFilePromise(sofficePath, ['--headless', '--convert-to', 'pdf', '--outdir', uploadsDir, '--', inputFilePath]);
         const baseNameNoExt = path.basename(inputFilePath, path.extname(inputFilePath));
         const generatedPdf = path.join(uploadsDir, `${baseNameNoExt}.pdf`);
-        if (fs.existsSync(generatedPdf)) {
+        if (fs.existsSync(generatedPdf) && generatedPdf !== outputPdfPath) {
           fs.renameSync(generatedPdf, outputPdfPath);
-        } else {
-          throw new Error('Converted PDF file was not generated.');
         }
-      } catch (docErr) {
-        console.log('LibreOffice binary unavailable for DOCX. Using pure JavaScript mammoth conversion fallback.');
-        await convertDocxToPDFServer(inputFilePath, outputPdfPath);
       }
     } else {
       let fileToConvertPath = inputFilePath;
@@ -580,25 +577,33 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
       }
 
       try {
+        // LibreOffice headless conversion for PPTX, PPT, DOCX, DOC, XLSX, XLS, HTML, MD
         await execFilePromise(sofficePath, ['--headless', '--convert-to', 'pdf', '--outdir', uploadsDir, '--', fileToConvertPath]);
         
         const baseNameNoExt = path.basename(fileToConvertPath, path.extname(fileToConvertPath));
         const generatedPdf = path.join(uploadsDir, `${baseNameNoExt}.pdf`);
 
         if (fs.existsSync(generatedPdf)) {
-          fs.renameSync(generatedPdf, outputPdfPath);
+          if (generatedPdf !== outputPdfPath) {
+            fs.renameSync(generatedPdf, outputPdfPath);
+          }
         } else {
-          throw new Error('Converted PDF file was not generated.');
+          if (!fs.existsSync(outputPdfPath)) {
+            throw new Error('Converted PDF file was not generated.');
+          }
         }
       } catch (execErr) {
         if (cleanTempHtml && fs.existsSync(fileToConvertPath)) {
           try { fs.unlinkSync(fileToConvertPath); } catch (e) {}
         }
         
-        if (execErr.code === 'ENOENT' || execErr.message.includes('ENOENT')) {
-          throw new Error('LibreOffice is required on server for Office document conversion. Cloud environment installs it automatically.');
+        if (ext === '.docx' || ext === '.doc') {
+          console.log('LibreOffice fallback for DOCX. Using mammoth JS conversion.');
+          await convertDocxToPDFServer(inputFilePath, outputPdfPath);
+        } else {
+          console.error('LibreOffice conversion failed:', execErr);
+          throw new Error(`Presentation conversion failed: ${execErr.message || 'Format processing error'}`);
         }
-        throw execErr;
       }
 
       if (cleanTempHtml && fs.existsSync(fileToConvertPath)) {
@@ -606,7 +611,13 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
       }
     }
 
-    try { fs.unlinkSync(inputFilePath); } catch (e) {}
+    // Clean up input files
+    if (fs.existsSync(inputFilePath)) {
+      try { fs.unlinkSync(inputFilePath); } catch (e) {}
+    }
+    if (fs.existsSync(rawInputPath)) {
+      try { fs.unlinkSync(rawInputPath); } catch (e) {}
+    }
 
     const fileHash = await getFileHashStream(outputPdfPath);
     const convertedName = originalName.substring(0, originalName.lastIndexOf('.')) + '.pdf';
@@ -622,12 +633,16 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
     res.json({
       id: fileId,
       originalname: convertedName,
+      message: 'File converted to PDF successfully.',
       pdfHash: fileHash
     });
   } catch (err) {
     console.error('Error converting file to PDF:', err);
     if (fs.existsSync(inputFilePath)) {
       try { fs.unlinkSync(inputFilePath); } catch (e) {}
+    }
+    if (fs.existsSync(rawInputPath)) {
+      try { fs.unlinkSync(rawInputPath); } catch (e) {}
     }
     if (fs.existsSync(outputPdfPath)) {
       try { fs.unlinkSync(outputPdfPath); } catch (e) {}
