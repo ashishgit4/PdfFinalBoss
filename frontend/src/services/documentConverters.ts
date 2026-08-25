@@ -1,6 +1,7 @@
 import html2pdf from "html2pdf.js";
 import { PDFDocument } from "pdf-lib";
 export { convertDocxToPdfBlob } from "./docxConverter";
+export { convertPptxToPdfBlob } from "./pptxConverter";
 
 function escapeHtml(str: string): string {
   return str

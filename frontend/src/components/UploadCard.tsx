@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { uploadPDF, unlockPDF, lockPDF, convertFileToPDF, downloadConvertedPDF } from "@/services/api";
 import { 
   convertDocxToPdfBlob,
+  convertPptxToPdfBlob,
   convertCsvToPdfBlob,
   convertTxtToPdfBlob,
   convertHtmlToPdfBlob,
@@ -121,6 +122,9 @@ export function UploadCard() {
         if (ext.endsWith(".docx") || ext.endsWith(".doc")) {
           blob = await convertDocxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
           extPattern = /\.docx?$/i;
+        } else if (ext.endsWith(".pptx") || ext.endsWith(".ppt")) {
+          blob = await convertPptxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
+          extPattern = /\.pptx?$/i;
         } else if (ext.endsWith(".csv")) {
           blob = await convertCsvToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
           extPattern = /\.csv$/i;
