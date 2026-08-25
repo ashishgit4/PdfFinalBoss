@@ -158,7 +158,7 @@ export async function convertCsvToPdfBlob(
       filename: `${titleText}.pdf`,
       image: { type: "jpeg" as const, quality: 0.98 },
       html2canvas: { scale: 1.5, logging: false, useCORS: false, allowTaint: true },
-      jsPDF: { unit: "mm", format: "a4", orientation: (isLandscape ? "landscape" : "portrait") as const },
+      jsPDF: { unit: "mm", format: "a4", orientation: isLandscape ? ("landscape" as const) : ("portrait" as const) },
       pagebreak: { mode: ["avoid-all", "css", "legacy"] }
     };
 

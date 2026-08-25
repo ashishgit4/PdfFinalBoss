@@ -2,7 +2,13 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { uploadPDF, unlockPDF, lockPDF, convertFileToPDF, downloadConvertedPDF } from "@/services/api";
-import { convertDocxToPdfBlob } from "@/services/docxConverter";
+import { 
+  convertDocxToPdfBlob,
+  convertCsvToPdfBlob,
+  convertTxtToPdfBlob,
+  convertHtmlToPdfBlob,
+  convertImageToPdfBlob
+} from "@/services/documentConverters";
 import type { UnlockFlowState } from "@/types";
 import { LoadingState } from "@/components/LoadingState";
 import { SuccessState } from "@/components/SuccessState";
@@ -105,25 +111,41 @@ export function UploadCard() {
       setFlowState("converting");
       setUploadProgress(0);
 
-      const isDocx = fileToUpload.name.toLowerCase().endsWith(".docx") || fileToUpload.name.toLowerCase().endsWith(".doc");
+      const ext = fileToUpload.name.toLowerCase();
 
-      if (isDocx) {
-        // Attempt high-speed client-side conversion for Word documents
-        try {
-          const blob = await convertDocxToPdfBlob(fileToUpload, (progress) => {
-            setUploadProgress(progress);
-          });
+      // High-speed browser client-side conversion for supported formats
+      try {
+        let blob: Blob | null = null;
+        let extPattern = /\.[^.]+$/;
 
+        if (ext.endsWith(".docx") || ext.endsWith(".doc")) {
+          blob = await convertDocxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
+          extPattern = /\.docx?$/i;
+        } else if (ext.endsWith(".csv")) {
+          blob = await convertCsvToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
+          extPattern = /\.csv$/i;
+        } else if (ext.endsWith(".txt") || ext.endsWith(".text") || ext.endsWith(".log")) {
+          blob = await convertTxtToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
+          extPattern = /\.(txt|text|log)$/i;
+        } else if (ext.endsWith(".html") || ext.endsWith(".htm") || ext.endsWith(".md")) {
+          blob = await convertHtmlToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
+          extPattern = /\.(html|htm|md)$/i;
+        } else if (ext.endsWith(".jpg") || ext.endsWith(".jpeg") || ext.endsWith(".png")) {
+          blob = await convertImageToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
+          extPattern = /\.(jpg|jpeg|png)$/i;
+        }
+
+        if (blob) {
           setUploadProgress(100);
-          const targetName = fileToUpload.name.replace(/\.docx?$/i, "") + ".pdf";
+          const targetName = fileToUpload.name.replace(extPattern, "") + ".pdf";
           setConvertedFileName(targetName);
           setUnlockedBlob(blob);
           setFlowState("success");
-          toast.success("Word document converted to PDF successfully!");
+          toast.success("Document converted to PDF successfully!");
           return;
-        } catch (clientErr) {
-          console.warn("Client-side DOCX conversion fallback to server API:", clientErr);
         }
+      } catch (clientErr) {
+        console.warn("Client-side conversion fallback to server API:", clientErr);
       }
 
       // Fallback to server API conversion
