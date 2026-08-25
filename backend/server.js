@@ -135,12 +135,28 @@ async function convertTextToPDF(inputPath, outputPath) {
 // Conversion Helper for Word (.docx) Server Fallback
 async function convertDocxToPDFServer(inputPath, outputPath) {
   const result = await mammoth.convertToHtml({ path: inputPath });
-  let plainText = (result.value || '')
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-    .replace(/<p[^>]*>/gi, '\n')
+  const htmlContent = result.value || '';
+
+  const pdfDoc = await PDFDocument.create();
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const pageMargin = 50;
+  const pageWidth = 595.28; // A4 width
+  const pageHeight = 841.89; // A4 height
+  const printableWidth = pageWidth - pageMargin * 2;
+
+  let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+  let currentY = pageHeight - pageMargin;
+
+  // Convert HTML structure to formatted blocks preserving headings, lists, paragraphs
+  const formattedBlocks = htmlContent
+    .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '\n# H1: $1\n')
+    .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '\n# H2: $1\n')
+    .replace(/<h[3-6][^>]*>(.*?)<\/h[3-6]>/gi, '\n# H3: $1\n')
+    .replace(/<li[^>]*>(.*?)<\/li>/gi, '\n# LI: $1\n')
+    .replace(/<p[^>]*>(.*?)<\/p>/gi, '\n# P: $1\n')
     .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<h[1-6][^>]*>/gi, '\n\n')
-    .replace(/<li[^>]*>/gi, '\n- ')
     .replace(/<[^>]+>/g, '')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
@@ -148,37 +164,40 @@ async function convertDocxToPDFServer(inputPath, outputPath) {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
-    .replace(/[\u201C\u201D]/g, '"')
-    .replace(/[\u2018\u2019]/g, "'")
-    .replace(/[\u2013\u2014]/g, '-')
-    .replace(/[\u2022\u2023\u2043\u2044]/g, '*')
-    .replace(/[^\x00-\x7F]/g, '')
-    .replace(/\n\s*\n/g, '\n\n')
-    .trim();
+    .split(/\r?\n/);
 
-  if (!plainText) {
-    plainText = "Docx document successfully parsed.";
-  }
-
-  const pdfDoc = await PDFDocument.create();
-  const pageMargin = 50;
-  const fontSize = 11;
-  const lineHeight = 16;
-  const pageWidth = 595.28; // A4 width
-  const pageHeight = 841.89; // A4 height
-  const printableWidth = pageWidth - pageMargin * 2;
-
-  const lines = plainText.split(/\r?\n/);
-  let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
-  let currentY = pageHeight - pageMargin;
-
-  for (let line of lines) {
-    if (!line.trim()) {
-      currentY -= lineHeight / 2;
+  for (let line of formattedBlocks) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      currentY -= 6;
       continue;
     }
-    const maxCharsPerLine = Math.floor(printableWidth / 6.5);
-    const subLines = line.match(new RegExp(`.{1,${maxCharsPerLine}}`, 'g')) || [line];
+
+    let isH1 = trimmed.startsWith('# H1:');
+    let isH2 = trimmed.startsWith('# H2:');
+    let isH3 = trimmed.startsWith('# H3:');
+    let isLI = trimmed.startsWith('# LI:');
+
+    let textContent = trimmed
+      .replace(/^# H1:\s*/, '')
+      .replace(/^# H2:\s*/, '')
+      .replace(/^# H3:\s*/, '')
+      .replace(/^# LI:\s*/, '')
+      .replace(/^# P:\s*/, '');
+
+    if (!textContent) continue;
+
+    let useFont = (isH1 || isH2 || isH3) ? boldFont : font;
+    let fontSize = isH1 ? 18 : isH2 ? 15 : isH3 ? 13 : 10.5;
+    let lineHeight = isH1 ? 24 : isH2 ? 20 : isH3 ? 17 : 15;
+    let indent = isLI ? 15 : 0;
+
+    if (isLI) {
+      textContent = `•  ${textContent}`;
+    }
+
+    const maxCharsPerLine = Math.floor((printableWidth - indent) / (fontSize > 12 ? 7.2 : 6.2));
+    const subLines = textContent.match(new RegExp(`.{1,${maxCharsPerLine}}`, 'g')) || [textContent];
 
     for (let subLine of subLines) {
       if (currentY - lineHeight < pageMargin) {
@@ -187,15 +206,19 @@ async function convertDocxToPDFServer(inputPath, outputPath) {
       }
       try {
         currentPage.drawText(subLine, {
-          x: pageMargin,
+          x: pageMargin + indent,
           y: currentY - fontSize,
           size: fontSize,
+          font: useFont,
+          color: (isH1 || isH2) ? rgb(0.06, 0.09, 0.16) : rgb(0.12, 0.12, 0.12)
         });
       } catch (e) {
         currentPage.drawText(subLine.replace(/[^\x20-\x7E]/g, '?'), {
-          x: pageMargin,
+          x: pageMargin + indent,
           y: currentY - fontSize,
           size: fontSize,
+          font: useFont,
+          color: rgb(0.12, 0.12, 0.12)
         });
       }
       currentY -= lineHeight;
