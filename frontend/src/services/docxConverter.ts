@@ -42,12 +42,14 @@ export async function convertDocxToPdfBlob(
     return createSimpleFallbackPdf(file.name);
   }
 
-  // Create temporary container off-screen to render formatted HTML document
+  // Create temporary container for high-fidelity DOM rendering
   const wrapper = document.createElement("div");
-  wrapper.style.position = "fixed";
-  wrapper.style.left = "-9999px";
-  wrapper.style.top = "-9999px";
+  wrapper.style.position = "absolute";
+  wrapper.style.left = "0";
+  wrapper.style.top = "0";
   wrapper.style.width = "794px"; // Standard A4 width at 96 DPI
+  wrapper.style.opacity = "0.001";
+  wrapper.style.pointerEvents = "none";
   wrapper.style.zIndex = "-9999";
 
   wrapper.innerHTML = `
@@ -199,21 +201,28 @@ export async function convertDocxToPdfBlob(
     const opt = {
       margin: [10, 10, 10, 10] as [number, number, number, number],
       filename: `${titleText}.pdf`,
-      image: { type: "jpeg" as const, quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
+      image: { type: "jpeg" as const, quality: 0.95 },
+      html2canvas: { scale: 1.5, useCORS: false, allowTaint: true, logging: false },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" as const },
       pagebreak: { mode: ["avoid-all", "css", "legacy"] }
     };
 
     if (onProgress) onProgress(85);
 
-    const pdfBlob: Blob = await html2pdf().from(targetElement).set(opt).outputPdf("blob");
+    // 3.5s timeout race to guarantee fast performance
+    const renderPromise: Promise<Blob> = html2pdf().from(targetElement).set(opt).outputPdf("blob");
+    const timeoutPromise = new Promise<Blob>((_, reject) =>
+      setTimeout(() => reject(new Error("Render timeout")), 3500)
+    );
+
+    const pdfBlob: Blob = await Promise.race([renderPromise, timeoutPromise]);
 
     if (onProgress) onProgress(100);
 
     return pdfBlob;
   } catch (err) {
-    console.warn("html2pdf conversion warning, using vector fallback:", err);
+    console.warn("Fast vector fallback activated:", err);
+    if (onProgress) onProgress(100);
     return createSimpleFallbackPdf(file.name, htmlContent);
   } finally {
     if (document.body.contains(wrapper)) {

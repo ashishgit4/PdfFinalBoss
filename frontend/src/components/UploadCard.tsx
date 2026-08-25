@@ -114,6 +114,7 @@ export function UploadCard() {
             setUploadProgress(progress);
           });
 
+          setUploadProgress(100);
           const targetName = fileToUpload.name.replace(/\.docx?$/i, "") + ".pdf";
           setConvertedFileName(targetName);
           setUnlockedBlob(blob);
@@ -131,11 +132,13 @@ export function UploadCard() {
           setUploadProgress(progress);
         });
 
+        setUploadProgress(90);
         setFileId(response.id);
         setConvertedFileName(response.originalname);
 
         // Retrieve converted PDF binary blob
         const blob = await downloadConvertedPDF(response.id);
+        setUploadProgress(100);
         setUnlockedBlob(blob);
         setFlowState("success");
         toast.success("Document converted to PDF successfully!");
