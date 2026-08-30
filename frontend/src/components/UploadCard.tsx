@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { uploadPDF, unlockPDF, lockPDF, convertFileToPDF, downloadConvertedPDF } from "@/services/api";
 import { 
+  convertDocxToPdfBlob,
   convertPptxToPdfBlob,
   convertCsvToPdfBlob,
   convertTxtToPdfBlob,
@@ -118,7 +119,10 @@ export function UploadCard() {
         let blob: Blob | null = null;
         let extPattern = /\.[^.]+$/;
 
-        if (ext.endsWith(".csv")) {
+        if (ext.endsWith(".docx") || ext.endsWith(".doc")) {
+          blob = await convertDocxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
+          extPattern = /\.docx?$/i;
+        } else if (ext.endsWith(".csv")) {
           blob = await convertCsvToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
           extPattern = /\.csv$/i;
         } else if (ext.endsWith(".txt") || ext.endsWith(".text") || ext.endsWith(".log")) {
@@ -165,8 +169,22 @@ export function UploadCard() {
         setFlowState("success");
         toast.success("Document converted to PDF successfully!");
       } catch (error: any) {
-        // Intelligent fallback: if PPTX server conversion fails, use high-speed client vector engine
-        if (ext.endsWith(".pptx") || ext.endsWith(".ppt")) {
+        // Intelligent fallback: if DOCX or PPTX server conversion fails, use client rendering engine
+        if (ext.endsWith(".docx") || ext.endsWith(".doc")) {
+          try {
+            console.warn("Server DOCX conversion fallback to client engine:", error);
+            const blob = await convertDocxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
+            setUploadProgress(100);
+            const targetName = fileToUpload.name.replace(/\.docx?$/i, "") + ".pdf";
+            setConvertedFileName(targetName);
+            setUnlockedBlob(blob);
+            setFlowState("success");
+            toast.success("Document converted to PDF successfully!");
+            return;
+          } catch (clientFallbackErr) {
+            console.error("Client DOCX fallback failed:", clientFallbackErr);
+          }
+        } else if (ext.endsWith(".pptx") || ext.endsWith(".ppt")) {
           try {
             console.warn("Server presentation conversion fallback to client vector engine:", error);
             const blob = await convertPptxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));

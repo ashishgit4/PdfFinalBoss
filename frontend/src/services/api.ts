@@ -91,10 +91,13 @@ export function convertFileToPDF(
       xhr.upload.addEventListener("progress", (event) => {
         if (event.lengthComputable) {
           const percentComplete = Math.round(
-            (event.loaded / event.total) * 100
+            (event.loaded / event.total) * 80
           );
           onProgress(percentComplete);
         }
+      });
+      xhr.upload.addEventListener("load", () => {
+        onProgress(85);
       });
     }
 
