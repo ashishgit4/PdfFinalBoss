@@ -15,7 +15,6 @@ import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { PDFDocument } from 'pdf-lib';
 import { marked } from 'marked';
-import mammoth from 'mammoth';
 import { getFileHash, getFileHashStream, encryptPassword, decryptPassword, hashUserPassword, verifyUserPassword } from './cryptoHelper.js';
 
 // Load environment variables for local development
@@ -60,7 +59,10 @@ function getSofficePath() {
   if (process.platform === 'win32') {
     const commonPaths = [
       'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
-      'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe'
+      'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe',
+      'C:\\Program Files\\LibreOffice 7\\program\\soffice.exe',
+      'C:\\Program Files\\LibreOffice 24\\program\\soffice.exe',
+      path.join(process.env.LOCALAPPDATA || '', 'Programs', 'LibreOffice', 'program', 'soffice.exe')
     ];
     for (const p of commonPaths) {
       if (fs.existsSync(p)) return p;
@@ -132,101 +134,29 @@ async function convertTextToPDF(inputPath, outputPath) {
   fs.writeFileSync(outputPath, pdfBytes);
 }
 
-// Conversion Helper for Word (.docx) Server Fallback
-async function convertDocxToPDFServer(inputPath, outputPath) {
-  const result = await mammoth.convertToHtml({ path: inputPath });
-  const htmlContent = result.value || '';
-
-  const pdfDoc = await PDFDocument.create();
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-
-  const pageMargin = 50;
-  const pageWidth = 595.28; // A4 width
-  const pageHeight = 841.89; // A4 height
-  const printableWidth = pageWidth - pageMargin * 2;
-
-  let currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
-  let currentY = pageHeight - pageMargin;
-
-  // Convert HTML structure to formatted blocks preserving headings, lists, paragraphs
-  const formattedBlocks = htmlContent
-    .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '\n# H1: $1\n')
-    .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '\n# H2: $1\n')
-    .replace(/<h[3-6][^>]*>(.*?)<\/h[3-6]>/gi, '\n# H3: $1\n')
-    .replace(/<li[^>]*>(.*?)<\/li>/gi, '\n# LI: $1\n')
-    .replace(/<p[^>]*>(.*?)<\/p>/gi, '\n# P: $1\n')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .split(/\r?\n/);
-
-  for (let line of formattedBlocks) {
-    const trimmed = line.trim();
-    if (!trimmed) {
-      currentY -= 6;
-      continue;
-    }
-
-    let isH1 = trimmed.startsWith('# H1:');
-    let isH2 = trimmed.startsWith('# H2:');
-    let isH3 = trimmed.startsWith('# H3:');
-    let isLI = trimmed.startsWith('# LI:');
-
-    let textContent = trimmed
-      .replace(/^# H1:\s*/, '')
-      .replace(/^# H2:\s*/, '')
-      .replace(/^# H3:\s*/, '')
-      .replace(/^# LI:\s*/, '')
-      .replace(/^# P:\s*/, '');
-
-    if (!textContent) continue;
-
-    let useFont = (isH1 || isH2 || isH3) ? boldFont : font;
-    let fontSize = isH1 ? 18 : isH2 ? 15 : isH3 ? 13 : 10.5;
-    let lineHeight = isH1 ? 24 : isH2 ? 20 : isH3 ? 17 : 15;
-    let indent = isLI ? 15 : 0;
-
-    if (isLI) {
-      textContent = `•  ${textContent}`;
-    }
-
-    const maxCharsPerLine = Math.floor((printableWidth - indent) / (fontSize > 12 ? 7.2 : 6.2));
-    const subLines = textContent.match(new RegExp(`.{1,${maxCharsPerLine}}`, 'g')) || [textContent];
-
-    for (let subLine of subLines) {
-      if (currentY - lineHeight < pageMargin) {
-        currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
-        currentY = pageHeight - pageMargin;
-      }
-      try {
-        currentPage.drawText(subLine, {
-          x: pageMargin + indent,
-          y: currentY - fontSize,
-          size: fontSize,
-          font: useFont,
-          color: (isH1 || isH2) ? rgb(0.06, 0.09, 0.16) : rgb(0.12, 0.12, 0.12)
-        });
-      } catch (e) {
-        currentPage.drawText(subLine.replace(/[^\x20-\x7E]/g, '?'), {
-          x: pageMargin + indent,
-          y: currentY - fontSize,
-          size: fontSize,
-          font: useFont,
-          color: rgb(0.12, 0.12, 0.12)
-        });
-      }
-      currentY -= lineHeight;
-    }
+// High-Fidelity Remote LibreOffice DOCX Rendering Service Fallback
+async function convertDocxViaRemoteService(inputPath, outputPath) {
+  const remoteServiceUrl = process.env.GOTENBERG_URL || process.env.DOCX_CONVERTER_API_URL;
+  if (!remoteServiceUrl) {
+    throw new Error('High-fidelity DOCX rendering requires local LibreOffice Writer or a remote LibreOffice rendering service (set GOTENBERG_URL).');
   }
 
-  const pdfBytes = await pdfDoc.save();
-  fs.writeFileSync(outputPath, pdfBytes);
+  const formData = new FormData();
+  const fileBuffer = fs.readFileSync(inputPath);
+  const blob = new Blob([fileBuffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+  formData.append('files', blob, path.basename(inputPath));
+
+  const response = await fetch(`${remoteServiceUrl}/forms/libreoffice/convert`, {
+    method: 'POST',
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error(`Remote DOCX rendering service error (${response.status}): ${response.statusText}`);
+  }
+
+  const arrayBuffer = await response.arrayBuffer();
+  fs.writeFileSync(outputPath, Buffer.from(arrayBuffer));
 }
 
 // Conversion Helper for Markdown (.md)
@@ -618,8 +548,8 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
         }
         
         if (ext === '.docx' || ext === '.doc') {
-          console.log('LibreOffice fallback for DOCX. Using mammoth JS conversion.');
-          await convertDocxToPDFServer(inputFilePath, outputPdfPath);
+          console.log('Local LibreOffice process unavailable. Invoking high-fidelity remote DOCX rendering service...');
+          await convertDocxViaRemoteService(inputFilePath, outputPdfPath);
         } else {
           console.error('LibreOffice conversion failed:', execErr.message || execErr);
           throw new Error('Document conversion failed. Unable to render format.');

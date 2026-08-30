@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { uploadPDF, unlockPDF, lockPDF, convertFileToPDF, downloadConvertedPDF } from "@/services/api";
 import { 
-  convertDocxToPdfBlob,
   convertPptxToPdfBlob,
   convertCsvToPdfBlob,
   convertTxtToPdfBlob,
@@ -119,10 +118,7 @@ export function UploadCard() {
         let blob: Blob | null = null;
         let extPattern = /\.[^.]+$/;
 
-        if (ext.endsWith(".docx") || ext.endsWith(".doc")) {
-          blob = await convertDocxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
-          extPattern = /\.docx?$/i;
-        } else if (ext.endsWith(".csv")) {
+        if (ext.endsWith(".csv")) {
           blob = await convertCsvToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
           extPattern = /\.csv$/i;
         } else if (ext.endsWith(".txt") || ext.endsWith(".text") || ext.endsWith(".log")) {
