@@ -1,166 +1,187 @@
-# PdfFinalBoss 🛡️ (100% Free & Private PDF Lock, Unlock & Vault Utility)
+﻿# PDF Final Boss
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![React](https://img.shields.io/badge/Frontend-React_19_|_Vite_|_TypeScript-61DAFB?logo=react)](https://react.dev/)
-[![Node.js](https://img.shields.io/badge/Backend-Node.js_|_Express_|_qpdf-339933?logo=node.js)](https://nodejs.org/)
-[![Vercel](https://img.shields.io/badge/Deployment-Vercel_|_Render-000000?logo=vercel)](https://vercel.com/)
-[![GitHub Stars](https://img.shields.io/github/stars/ashishgit4/PdfFinalBoss?style=social)](https://github.com/ashishgit4/PdfFinalBoss)
+PDF Final Boss is a web app for unlocking and locking PDFs and converting common document formats to PDF. It has a React and Vite frontend and an Express API that uses qpdf for PDF encryption operations.
 
-**PdfFinalBoss** is a premium, cinematic web utility designed to unlock password-protected PDFs or encrypt documents with AES-256 secure locks. Built with zero ads, zero watermarks, no account requirements, and enterprise-grade privacy engineering.
+## What it can do
 
-🌐 **Live Application**: [https://pdf-final-boss.vercel.app](https://pdf-final-boss.vercel.app)  
-💻 **GitHub Repository**: [https://github.com/ashishgit4/PdfFinalBoss](https://github.com/ashishgit4/PdfFinalBoss)  
-☕ **Support & Ko-fi**: [https://ko-fi.com/ashishsharma11](https://ko-fi.com/ashishsharma11)
+- Unlock password-protected PDFs when you provide the correct password, and remove restrictions from PDFs that do not require an open password.
+- Add password protection to PDFs.
+- Convert Word, Excel, PowerPoint, image, text, CSV, HTML, and Markdown files to PDF.
+- Remember passwords in a browser-local vault, if the user opts in.
+- Offer optional Razorpay and Ko-fi support links.
 
----
+The server accepts files up to 100 MB. Uploaded and generated files are stored under `backend/uploads` while processing and are removed after 24 hours; files left from a previous server run are cleared when the backend starts. The password vault is stored in the browser and is separate from server-side file processing.
 
-## 🌟 Key Features
+## Project layout
 
-### 1. 🔓 Bypass & Apply Restrictions
-* **Unlock PDF:** Instantly remove owner-restricted credentials or open-passwords on PDF files up to **100 MB**. Automatically detects restricted PDFs and decrypts them in seconds.
-* **Lock PDF:** Encrypt documents with **AES-256** military-grade standard encryption. Includes a live **Password Strength Indicator** and a 16-character **Random Password Generator**.
-
-### 2. 🔑 Zero-Knowledge Local Password Vault (Auto-Unlock)
-* When locking a PDF, check the **"Remember this password in my vault"** option.
-* Passwords are encrypted and saved **client-side only** inside your browser's local storage (`localStorage`), mapped to the document's unique SHA-256 PDF hash.
-* When you upload the exact same PDF again, the system recognizes the hash and prompts an **Auto-Unlock** action. **Your passwords never leave your device or get sent to any server.**
-
-### 3. ⏳ 24-Hour Auto-Wipe Policy
-* All uploaded documents and processed output files are automatically and permanently purged from server disks **24 hours** after upload by a background cleanup worker.
-* Uploaded files are verified via binary magic bytes (`%PDF-`) to prevent non-document payload execution.
-
-### 4. 🛡️ Hardened Security & Rate Limiting
-* **qpdf CLI Argument Sanitization:** Hardened command execution using `--` argument delimiters to prevent argument injection attacks.
-* **Header Injection Prevention:** All output filenames in `Content-Disposition` headers are sanitized to block HTTP Response Splitting.
-* **Rate Limiting:** Guarded with `express-rate-limit` (100 API requests / 30 file uploads per 15-minute window per IP) and `helmet` security headers.
-
-### 5. 🌓 Cinematic Day/Night Theme Engine
-* Smooth transition between a starry dark cinema interface and a warm light off-white layout with dynamic background video scrims.
-
-### 6. 💳 Integrated Dual Payment Hub
-* International support via **Ko-fi** (PayPal, Apple Pay, Card).
-* Domestic India support via **UPI QR Code** and **Razorpay** SDK integration.
-
----
-
-## 📂 Repository Architecture
-
-```
+```text
 unlockpdf/
 ├── backend/
-│   ├── bin/                    # qpdf 12.3.2 C++ PDF binary engine
-│   ├── cryptoHelper.js          # AES-256-GCM, SHA-256 & PBKDF2 cryptographic helpers
-│   ├── cryptoHelper.test.js     # Automated unit test suite
-│   ├── server.js                # Express API server with security & rate limiters
-│   ├── package.json
-│   └── .env.example             # Backend environment template
+│   ├── bin/                 # Bundled qpdf binary for Windows
+│   ├── cryptoHelper.js      # Hashing and password-vault crypto helpers
+│   ├── cryptoHelper.test.js # Backend unit tests
+│   ├── server.js            # Express API and conversion logic
+│   ├── .env.example
+│   └── package.json
 ├── frontend/
 │   ├── src/
-│   │   ├── components/          # UI Components & ErrorBoundary
-│   │   ├── pages/               # Home & BuyMeCoffeePage
-│   │   ├── services/            # API Service layer
-│   │   └── lib/                 # Payment SDK script loader
-│   ├── index.html               # OpenGraph & SEO metadata
-│   ├── package.json
-│   └── .env.example             # Frontend environment template
-├── package.json                 # Monorepo root scripts
-├── vercel.json                  # SPA rewrite configuration
-└── README.md
+│   │   ├── components/      # React UI
+│   │   ├── pages/           # Home and support pages
+│   │   └── services/        # API and document conversion code
+│   ├── .env.example
+│   └── package.json
+├── Dockerfile
+├── package.json             # Convenience scripts
+└── vercel.json              # Vercel frontend configuration
 ```
 
----
+## Requirements
 
-## 🛠️ Technology Stack
+- Node.js 20 or later and npm. The Docker image uses Node 20; use that version for local development.
+- qpdf on Linux/macOS, available on `PATH`. On Windows, the backend uses the qpdf binary included in `backend/bin`.
+- LibreOffice on the backend host for server-side conversion of Office and other supported formats. The Dockerfile installs LibreOffice. DOCX may use a remote Gotenberg-compatible converter as a fallback.
 
-* **Frontend**: React 19, Vite 8, TypeScript, Framer Motion, Tailwind CSS v4, Lucide React, Sonner Toasts.
-* **Backend**: Node.js, Express, qpdf (Native C++ PDF Processing Engine), Multer, Helmet, Express-Rate-Limit, Razorpay SDK.
-* **Security & Crypto**: Node.js Native Crypto (`aes-256-gcm`, `sha256`, `pbkdf2`), Binary Magic-Byte Verification.
-* **Testing**: Node Test Runner (`node --test`).
+## Local development
 
----
+Run commands from the repository root unless a command says otherwise.
 
-## 🚀 Step-by-Step Local Setup Guide
+1. Install frontend and backend dependencies:
 
-### 1. Prerequisites
-Make sure you have **Node.js (v18 or higher)** installed on your machine.
+   ```bash
+   npm ci --prefix frontend
+   npm ci --prefix backend
+   ```
 
-### 2. Monorepo Installation
-From the root directory of the project, install dependencies for both frontend and backend:
+2. Create local environment files from the examples.
+
+   macOS/Linux:
+
+   ```bash
+   cp backend/.env.example backend/.env
+   cp frontend/.env.example frontend/.env
+   ```
+
+   PowerShell:
+
+   ```powershell
+   Copy-Item backend/.env.example backend/.env
+   Copy-Item frontend/.env.example frontend/.env
+   ```
+
+3. Start the API in one terminal:
+
+   ```bash
+   npm run dev --prefix backend
+   ```
+
+   The API listens on `http://localhost:3000` by default. Confirm it is running at `http://localhost:3000/api/health`.
+
+4. Start the web app in another terminal:
+
+   ```bash
+   npm run dev --prefix frontend
+   ```
+
+   Open the local URL printed by Vite, usually `http://localhost:5173`. Vite proxies `/api` requests to the local backend.
+
+To run the production frontend build locally:
 
 ```bash
-npm run install:all
+npm run build --prefix frontend
+npm run preview --prefix frontend
 ```
 
-### 3. Environment Setup
-Copy the environment template files in both directories:
+## Environment variables
 
-```bash
-# Backend .env
-cp backend/.env.example backend/.env
+All variables are optional for basic local development. Copy the example files, then set only the values you need.
 
-# Frontend .env
-cp frontend/.env.example frontend/.env
-```
+### Backend (`backend/.env`)
 
-### 4. Run Development Servers
-Start the backend Express server and frontend Vite development server:
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `PORT` | `3000` | Port used by the Express API. |
+| `RAZORPAY_KEY_ID` | Test placeholder | Razorpay public key ID. Set real credentials to enable live payment order creation. |
+| `RAZORPAY_KEY_SECRET` | Placeholder | Razorpay secret used by the backend to verify payments. Keep it private and out of source control. |
+| `GOTENBERG_URL` | Unset | Base URL of a Gotenberg-compatible service used as a DOCX conversion fallback when local LibreOffice conversion fails. `DOCX_CONVERTER_API_URL` is also accepted. |
 
-* **Terminal 1 (Backend - Port 3000):**
-  ```bash
-  npm run start:backend
-  ```
+### Frontend (`frontend/.env`)
 
-* **Terminal 2 (Frontend - Port 5173):**
-  ```bash
-  npm run dev:frontend
-  ```
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `VITE_API_URL` | Production API fallback | Base URL for the backend API. Set to `http://localhost:3000` for local development. Vite's dev proxy is used for `/api` requests. |
 
-Open your browser and navigate to `http://localhost:5173`.
+Vite variables are included in browser code. Never put secrets in `frontend/.env` or in a `VITE_*` variable.
 
----
+## Useful commands
 
-## 🧪 Running Automated Unit Tests
+Run these from the repository root:
 
-Run the backend cryptographic and hashing test suite:
+| Command | What it does |
+| --- | --- |
+| `npm run dev --prefix frontend` | Start the Vite development server. |
+| `npm run dev --prefix backend` | Start the API with nodemon. |
+| `npm start --prefix backend` | Start the API without nodemon. |
+| `npm run build --prefix frontend` | Type-check and build the frontend. |
+| `npm run lint --prefix frontend` | Run ESLint on the frontend. |
+| `npm run typecheck --prefix frontend` | Run the frontend TypeScript check. |
+| `npm test --prefix backend` | Run backend tests with Node's test runner. |
 
-```bash
-npm test --prefix backend
-```
+## API overview
 
----
+The backend exposes these main routes:
 
-## ⚙️ Environment Variables Reference
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Health check. |
+| `POST` | `/api/upload` | Upload a PDF for unlock/lock workflows. |
+| `POST` | `/api/unlock` | Unlock an uploaded PDF. |
+| `POST` | `/api/lock` | Encrypt an uploaded PDF. |
+| `POST` | `/api/convert` | Convert a supported document to PDF. |
+| `POST` | `/api/download-converted` | Download a converted PDF. |
+| `POST` | `/api/payments/order` | Create a Razorpay order. |
+| `POST` | `/api/payments/verify` | Verify a Razorpay payment. |
 
-### Backend (`/backend/.env`)
+Uploads and conversion requests are limited to 30 per IP per 15 minutes; API requests are limited to 100 per IP per 15 minutes. The API currently enables CORS for browser clients.
 
-| Variable | Required | Default | Description |
-| :--- | :---: | :--- | :--- |
-| `PORT` | Optional | `3000` | Port for the Express server. |
-| `RAZORPAY_KEY_ID` | Optional | `rzp_test_placeholder` | Public key ID for Razorpay payments. |
-| `RAZORPAY_KEY_SECRET` | Optional | `placeholder_secret` | Secret key for verifying Razorpay HMAC signatures. |
-| `VAULT_SECRET` | Optional | Default 32-char key | Secret key for AES-256-GCM vault encryption. |
+## Conversion formats and system tools
 
-### Frontend (`/frontend/.env`)
+The conversion endpoint accepts `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx`, `.jpg`, `.jpeg`, `.png`, `.txt`, `.csv`, `.html`, `.htm`, and `.md` files. Office, CSV, HTML, and Markdown conversion uses LibreOffice on the backend. Images and plain text also have built-in converters. Conversion fidelity depends on the source document and installed fonts.
 
-| Variable | Required | Default | Description |
-| :--- | :---: | :--- | :--- |
-| `VITE_API_URL` | Optional | `http://localhost:3000` | Backend API URL (fallback: Render URL). |
+The repository includes a Dockerfile that installs qpdf and LibreOffice on Debian. The backend package also references the repository root as a local npm package (`file:..`), so a container build must include the root `package.json` in the image before running `npm install`. Review the Dockerfile and build context before using it for deployment. For persistent upload storage, mount a volume at `/app/backend/uploads`; note that backend startup clears files already in that directory.
 
----
+## Deployment notes
 
-## 🔒 Security & Privacy Blueprint
+- The root `vercel.json` configures a Vite frontend build and SPA fallback. Set `VITE_API_URL` in the frontend deployment environment to the publicly reachable backend URL.
+- Deploy the backend separately on a host that can run the Dockerfile or install Node.js, qpdf, and LibreOffice. Configure `PORT` if the platform requires it.
+- Configure Razorpay credentials only if enabling Razorpay payments. Use test credentials during development and production credentials only in the backend environment.
+- If using the DOCX fallback, set `GOTENBERG_URL` on the backend. Documents sent to this service leave the backend host, so configure a service you trust.
 
-1. **In-Memory Password Processing:** Passwords submitted to the backend reside in volatile RAM only during qpdf execution and are never written to disk, logged, or recorded.
-2. **Zero Server Retention Vault:** Local Password Vault items are encrypted client-side in browser `localStorage` and never transmitted over the network.
-3. **24-Hour File Purge Policy:** Server disk cache is automatically purged by a 24-hour cleanup worker.
-4. **CLI & Header Injection Protection:** qpdf commands use native array arguments with `--` delimiters, and download headers use sanitized filenames.
+## Development workflow
 
----
+1. Create a branch for your change.
+2. Install dependencies and configure the relevant environment file(s).
+3. Start the backend and frontend, then make and review your change in the browser.
+4. Before opening a pull request, run the relevant checks:
 
-## 📄 License & Credits
+   ```bash
+   npm run build --prefix frontend
+   npm run lint --prefix frontend
+   npm test --prefix backend
+   ```
 
-This project is licensed under the **GPL-3.0 License**.
+5. Include a short summary, screenshots for visible UI changes, and any configuration or deployment notes in the pull request.
 
-Developed with ❤️ by **[Ashish Sharma](https://github.com/ashishgit4)**.  
-Support open-source development on **[Ko-fi](https://ko-fi.com/ashishsharma11)**!
+## Troubleshooting
+
+- **Frontend cannot reach the API:** Make sure the backend is running on port 3000. Check `VITE_API_URL` if you are not using Vite's local proxy.
+- **PDF operations fail on Linux/macOS:** Install qpdf and ensure `qpdf` is on `PATH`.
+- **Office conversion fails:** Install LibreOffice and ensure `soffice` is on `PATH`. For DOCX, configure `GOTENBERG_URL` if local LibreOffice is unavailable.
+- **Upload is rejected:** Confirm the PDF is a valid PDF, or that the conversion file extension is supported, and that the file is below 100 MB.
+- **API reports the file expired:** Uploads are temporary and are removed after 24 hours or when the backend restarts.
+
+## License
+
+This project is licensed under the GNU General Public License v3.0. See the repository's license file or [the GPL-3.0 text](https://www.gnu.org/licenses/gpl-3.0.html).
+
+Developed by [Ashish Sharma](https://github.com/ashishgit4). Support the project on [Ko-fi](https://ko-fi.com/ashishsharma11).
 
