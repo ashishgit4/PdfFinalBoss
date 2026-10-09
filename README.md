@@ -7,6 +7,21 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express&logoColor=white" alt="Express.js" />
   <img src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
+  <br />
+  <a href="https://reactrouter.com/"><img src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white" alt="React Router" /></a>
+  <a href="https://www.framer.com/motion/"><img src="https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion" /></a>
+  <a href="https://lucide.dev/"><img src="https://img.shields.io/badge/Lucide_Icons-F56565?style=for-the-badge&logo=lucide&logoColor=white" alt="Lucide React" /></a>
+  <a href="https://sonner.emilkowal.ski/"><img src="https://img.shields.io/badge/Sonner-Toast_UI-111111?style=for-the-badge" alt="Sonner" /></a>
+  <br />
+  <a href="https://qpdf.sourceforge.io/"><img src="https://img.shields.io/badge/qpdf-PDF_Engine-4C6CB4?style=for-the-badge" alt="qpdf" /></a>
+  <a href="https://pdf-lib.js.org/"><img src="https://img.shields.io/badge/pdf--lib-PDF_Tools-6A5ACD?style=for-the-badge" alt="pdf-lib" /></a>
+  <a href="https://www.libreoffice.org/"><img src="https://img.shields.io/badge/LibreOffice-Document_Conversion-18A303?style=for-the-badge&logo=libreoffice&logoColor=white" alt="LibreOffice" /></a>
+  <br />
+  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" /></a>
+  <a href="https://vercel.com/"><img src="https://img.shields.io/badge/Vercel-Deployment-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" /></a>
+  <a href="https://eslint.org/"><img src="https://img.shields.io/badge/ESLint-Linting-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" alt="ESLint" /></a>
+  <a href="https://prettier.io/"><img src="https://img.shields.io/badge/Prettier-Formatting-F7B93E?style=for-the-badge&logo=prettier&logoColor=white" alt="Prettier" /></a>
+  <a href="https://www.gnu.org/licenses/gpl-3.0.html"><img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge" alt="GPL-3.0 license" /></a>
 </div>
 
 <br />
@@ -19,13 +34,25 @@ PdfFinalBoss is a web app for unlocking and locking PDFs and converting common d
 
 The interface includes day and night themes, password strength feedback, a random password generator, and a support page with Ko-fi and UPI options.
 
-## ✨ What it can do
+## ✨ Features
 
-- Unlock password-protected PDFs when you provide the correct password, and remove restrictions from PDFs that do not require an open password.
-- Add password protection to PDFs.
-- Convert Word, Excel, PowerPoint, image, text, CSV, HTML, and Markdown files to PDF.
-- Optionally remember a PDF password in browser storage, indexed by a SHA-256 hash of the PDF, to offer it again for the same file.
-- Offer Ko-fi and UPI support options.
+### 🔓 Unlock PDFs
+Unlock password-protected PDFs when you have the correct open password, or remove restrictions from PDFs that do not require an open password.
+
+### 🔒 Lock and encrypt PDFs
+Protect a PDF with a password using qpdf's AES-256 encryption. The password form includes a strength indicator, a random password generator, and an optional hint.
+
+### 🔄 Convert documents to PDF
+Convert supported Word, Excel, PowerPoint, image, text, CSV, HTML, and Markdown files into PDFs. Conversion can run in the browser or on the backend depending on the file type and conversion path.
+
+### 🔐 Optional password reminder
+Save a password in the browser and match it to the PDF's SHA-256 hash so the app can offer it again for the same file. See the security note below before enabling this feature.
+
+### 🌓 Day and night themes
+Switch between the app's day and night appearances.
+
+### ☕ Support the project
+Support links are available through Ko-fi and UPI.
 
 The server accepts files up to 100 MB. Uploaded and generated files are stored under `backend/uploads` while processing and are removed after 24 hours; files left from a previous server run are cleared when the backend starts.
 

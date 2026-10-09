@@ -1,10 +1,13 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Heart, Copy, Check, Globe, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 export function BuyMeCoffeePage() {
+  const handleKofiClick = () => {
+    toast.success("Opened Ko-fi in a new tab — thank you for supporting the project!");
+  };
   const [copied, setCopied] = useState<boolean>(false);
 
   const handleCopyUpiId = () => {
