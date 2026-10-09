@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
@@ -11,8 +11,6 @@ import { execFile } from 'child_process';
 import util from 'util';
 import fs from 'fs';
 import dotenv from 'dotenv';
-import Razorpay from 'razorpay';
-import crypto from 'crypto';
 import { PDFDocument } from 'pdf-lib';
 import { marked } from 'marked';
 import { getFileHash, getFileHashStream, encryptPassword, decryptPassword, hashUserPassword, verifyUserPassword } from './cryptoHelper.js';
@@ -32,12 +30,6 @@ process.on('uncaughtException', (err) => {
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('CRITICAL: Unhandled Rejection at:', promise, 'reason:', reason);
-});
-
-// Initialize Razorpay client
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'placeholder_secret',
 });
 
 const __filename = fileURLToPath(import.meta.url);
@@ -623,72 +615,6 @@ app.post('/api/download-converted', async (req, res) => {
 
   const readStream = fs.createReadStream(fileMeta.path);
   readStream.pipe(res);
-});
-
-// ---------------------------------
-// 4. RAZORPAY PAYMENT ENDPOINTS
-// ---------------------------------
-
-// API 4: Create Razorpay Order
-app.post('/api/payments/order', async (req, res) => {
-  const { amount, currency } = req.body;
-
-  const numericAmount = Number(amount);
-  if (isNaN(numericAmount) || numericAmount <= 0 || numericAmount > 50000) {
-    return res.status(400).json({ error: 'Valid payment amount is required (₹1 - ₹50,000).' });
-  }
-
-  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-    console.error('Razorpay credentials missing from server environment.');
-    return res.status(500).json({ error: 'Payment gateway configuration error' });
-  }
-
-  const options = {
-    amount: Math.round(numericAmount * 100), // Amount in paise
-    currency: currency || 'INR',
-    receipt: `receipt_${uuidv4().substring(0, 8)}`,
-  };
-
-  try {
-    const order = await razorpay.orders.create(options);
-    res.json({
-      id: order.id,
-      amount: order.amount,
-      currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID,
-    });
-  } catch (error) {
-    console.error('Razorpay order creation error:', error);
-    res.status(500).json({ error: 'Failed to create payment order' });
-  }
-});
-
-// API 5: Verify Razorpay Payment Signature
-app.post('/api/payments/verify', (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-    return res.status(400).json({ error: 'Missing verification parameters' });
-  }
-
-  if (!process.env.RAZORPAY_KEY_SECRET) {
-    return res.status(500).json({ error: 'Payment gateway configuration error' });
-  }
-
-  const body = razorpay_order_id + '|' + razorpay_payment_id;
-  const expectedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-    .update(body.toString())
-    .digest('hex');
-
-  const isSignatureValid = expectedSignature === razorpay_signature;
-
-  if (isSignatureValid) {
-    res.json({ success: true, message: 'Payment verified successfully' });
-  } else {
-    console.warn('Razorpay signature mismatch:', { expectedSignature, razorpay_signature });
-    res.status(400).json({ success: false, error: 'Signature verification failed' });
-  }
 });
 
 // Serve frontend build/files statically

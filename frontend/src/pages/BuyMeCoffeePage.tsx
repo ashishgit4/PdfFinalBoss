@@ -1,149 +1,11 @@
-import { useState, useEffect } from "react";
+﻿import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  ArrowLeft, Heart, 
-  Copy, Check, Globe, Send, CreditCard
-} from "lucide-react";
+import { ArrowLeft, Heart, Copy, Check, Globe, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { loadRazorpayScript } from "@/lib/payment";
 
 export function BuyMeCoffeePage() {
-  // Razorpay states
-  const customAmount = "250";
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
-  const [successDetails, setSuccessDetails] = useState<{
-    paymentId: string;
-    amount: number;
-  } | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
-  const [paymentMethod, setPaymentMethod] = useState<"UPI" | "Ko-fi" | null>(null);
-
-  const handleKofiClick = () => {
-    toast.success("Opened Ko-fi in a new tab — thank you for supporting the project!");
-  };
-
-  // Escape key listener to dismiss success modal
-  useEffect(() => {
-    if (!paymentSuccess) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setPaymentSuccess(false);
-        setSuccessDetails(null);
-        setPaymentMethod(null);
-        setIsProcessing(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [paymentSuccess]);
-
-  const handleRazorpayPayment = async () => {
-    const finalAmount = parseFloat(customAmount);
-
-    if (isNaN(finalAmount) || finalAmount <= 0) {
-      toast.error("Please enter a valid donation amount.");
-      return;
-    }
-
-    setIsProcessing(true);
-    toast.info("Connecting to secure payment gateway...");
-
-    try {
-      const scriptLoaded = await loadRazorpayScript();
-      if (!scriptLoaded) {
-        throw new Error("Razorpay SDK failed to load. Please check your network.");
-      }
-
-      const response = await fetch("/api/payments/order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: finalAmount, currency: "INR" }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to establish payment session");
-      }
-
-      const orderData = await response.json();
-      const keyId = orderData.keyId;
-
-      if (!keyId) {
-        throw new Error("Payment configuration error (Missing public Key ID)");
-      }
-
-      const options = {
-        key: keyId,
-        amount: orderData.amount,
-        currency: orderData.currency,
-        name: "PdfFinalBoss",
-        description: "Support open source development",
-        order_id: orderData.id,
-        handler: async function (response: any) {
-          toast.loading("Verifying transaction authenticity...");
-          try {
-            const verificationResponse = await fetch("/api/payments/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.order_id || orderData.id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
-
-            const verificationResult = await verificationResponse.json();
-
-            if (verificationResult.success) {
-              setSuccessDetails({
-                paymentId: response.razorpay_payment_id,
-                amount: finalAmount,
-              });
-              setPaymentMethod("UPI");
-              setPaymentSuccess(true);
-              toast.dismiss();
-              toast.success("Thank you for supporting PdfFinalBoss!");
-            } else {
-              throw new Error(verificationResult.error || "Payment verification failed");
-            }
-          } catch (verifyErr: any) {
-            console.error("Signature verification error:", verifyErr);
-            toast.dismiss();
-            toast.error(verifyErr.message || "Failed to confirm payment status.");
-          }
-        },
-        prefill: {
-          name: "",
-          email: "",
-          contact: "",
-        },
-        notes: {
-          project: "PdfFinalBoss",
-        },
-        theme: {
-          color: "#111111",
-        },
-        modal: {
-          ondismiss: function () {
-            setIsProcessing(false);
-            toast.dismiss();
-            toast.info("Payment session cancelled.");
-          },
-        },
-      };
-
-      const paymentObject = new (window as any).Razorpay(options);
-      paymentObject.open();
-    } catch (err: any) {
-      console.error("Razorpay initiation failed:", err);
-      toast.dismiss();
-      toast.error(err.message || "Failed to connect to gateway.");
-      setIsProcessing(false);
-    }
-  };
 
   const handleCopyUpiId = () => {
     navigator.clipboard.writeText("ashishtawniya1@okaxis");
@@ -221,7 +83,7 @@ export function BuyMeCoffeePage() {
 
                     <div className="mt-6 flex flex-wrap gap-2.5">
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
-                        <span className="text-xs"></span>
+                        <span className="text-xs">ï£¿</span>
                         <span>Apple Pay</span>
                       </span>
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-medium text-[#A1A1AA]">
@@ -281,7 +143,7 @@ export function BuyMeCoffeePage() {
                       <path d="M23.881 8.948c-.773-4.085-4.859-5.005-7.875-5.005h-9.52c-.775 0-1.404.63-1.404 1.405v13.315c0 .775.629 1.405 1.404 1.405h8.182c4.619 0 7.821-2.524 8.793-7.555.309-1.606.321-2.535.42-3.565zm-4.321 4.545c-.563 2.923-2.673 3.655-5.597 3.655H7.318V6.16h7.458c2.045 0 4.195.42 4.672 3.19.261 1.516.273 2.457.112 4.143zM16.592 11.23h1.365a1.82 1.82 0 1 1 0 3.64h-1.365V11.23z" />
                     </svg>
                     <span>Continue with Ko-fi</span>
-                    <span>→</span>
+                    <span>â†’</span>
                   </a>
                 </Button>
               </div>
@@ -292,7 +154,7 @@ export function BuyMeCoffeePage() {
                 <div className="flex items-start justify-between gap-6">
                   <div className="flex-1">
                     <div className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] font-medium tracking-[0.12em] text-[#A1A1AA] uppercase">
-                      <span className="text-xs">🇮🇳</span>
+                      <span className="text-xs">ðŸ‡®ðŸ‡³</span>
                       <span>Local Payment</span>
                     </div>
 
@@ -301,7 +163,7 @@ export function BuyMeCoffeePage() {
                     </h3>
 
                     <p className="mt-3 max-w-[300px] text-[16px] leading-[1.65] text-[#A1A1AA]">
-                      Support instantly using UPI, local cards, or net banking.
+                      Support instantly using UPI.
                     </p>
                   </div>
 
@@ -339,23 +201,11 @@ export function BuyMeCoffeePage() {
                   </div>
                 </div>
 
-                <Button
-                  onClick={handleRazorpayPayment}
-                  disabled={isProcessing}
-                  className="mt-6 min-w-[260px] rounded-full bg-[#F5F5F5] px-5 text-sm font-semibold text-zinc-950 hover:bg-white"
-                >
-                  {isProcessing ? (
-                    <div className="flex h-[52px] items-center justify-center gap-2">
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-950/30 border-t-zinc-950" />
-                      <span>Processing...</span>
-                    </div>
-                  ) : (
-                    <div className="flex h-[52px] items-center justify-center gap-2">
-                      <Send className="h-3.5 w-3.5" />
-                      <span>Pay with UPI</span>
-                      <span>→</span>
-                    </div>
-                  )}
+                <Button asChild className="mt-6 min-w-[260px] rounded-full bg-[#F5F5F5] px-5 text-sm font-semibold text-zinc-950 hover:bg-white">
+                  <a href={upiUrl} className="flex h-[52px] items-center justify-center gap-2">
+                    <span>Pay with UPI</span>
+                    <span>→</span>
+                  </a>
                 </Button>
               </div>
             </div>
@@ -373,73 +223,6 @@ export function BuyMeCoffeePage() {
 
       </div>
 
-      {/* Success Overlay Modal */}
-      <AnimatePresence>
-        {paymentSuccess && successDetails && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => {
-              setPaymentSuccess(false);
-              setSuccessDetails(null);
-              setPaymentMethod(null);
-              setIsProcessing(false);
-            }}
-            className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-6 cursor-pointer"
-          >
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ type: "spring", duration: 0.3 }}
-              onClick={(e) => e.stopPropagation()}
-              className="max-w-[340px] w-full bg-[#111111] border border-white/[0.08] p-8 rounded-[28px] text-center shadow-2xl items-center flex flex-col cursor-default"
-            >
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
-                className="w-16 h-16 bg-white/[0.03] border border-white/[0.08] rounded-[16px] flex items-center justify-center mb-6"
-              >
-                <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <motion.path
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ delay: 0.25, duration: 0.35, ease: "easeOut" }}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </motion.div>
-              
-              <h3 className="text-xl font-semibold text-white mb-2 font-sans tracking-tight">Support Confirmed</h3>
-              
-              <p className="text-[#A1A1AA] text-sm leading-relaxed font-normal mb-6 max-w-[260px]">
-                Thank you for contributing {successDetails.amount ? `₹${successDetails.amount}` : ""} via {paymentMethod === "Ko-fi" ? "Ko-fi" : "UPI"}. Your support keeps this project free.
-              </p>
-
-              <div className="bg-white/[0.02] border border-white/[0.04] p-3 rounded-[12px] text-left text-[10px] mb-6 font-mono text-[#A1A1AA] w-full select-all">
-                <div><span className="text-white/40">TXN:</span> {successDetails.paymentId}</div>
-                <div><span className="text-white/40">STATUS:</span> VERIFIED</div>
-              </div>
-
-              <Button
-                onClick={() => {
-                  setPaymentSuccess(false);
-                  setSuccessDetails(null);
-                  setPaymentMethod(null);
-                  setIsProcessing(false);
-                }}
-                className="w-full h-11 bg-[#F5F5F5] hover:bg-white text-zinc-950 font-semibold rounded-full cursor-pointer text-sm border-0 transition-transform active:scale-[0.97]"
-              >
-                Done
-              </Button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
     </div>
   );

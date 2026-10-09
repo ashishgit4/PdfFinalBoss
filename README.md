@@ -6,7 +6,7 @@ PdfFinalBoss is a web app for unlocking and locking PDFs and converting common d
 - **Source repository:** [github.com/ashishgit4/PdfFinalBoss](https://github.com/ashishgit4/PdfFinalBoss)
 - **Support:** [Ko-fi](https://ko-fi.com/ashishsharma11)
 
-The interface includes day and night themes, password strength feedback, a random password generator, and a support page with Ko-fi, UPI, and Razorpay options.
+The interface includes day and night themes, password strength feedback, a random password generator, and a support page with Ko-fi and UPI options.
 
 ## What it can do
 
@@ -14,7 +14,7 @@ The interface includes day and night themes, password strength feedback, a rando
 - Add password protection to PDFs.
 - Convert Word, Excel, PowerPoint, image, text, CSV, HTML, and Markdown files to PDF.
 - Optionally remember a PDF password in browser storage, indexed by a SHA-256 hash of the PDF, to offer it again for the same file.
-- Offer optional Razorpay and Ko-fi support links.
+- Offer Ko-fi and UPI support options.
 
 The server accepts files up to 100 MB. Uploaded and generated files are stored under `backend/uploads` while processing and are removed after 24 hours; files left from a previous server run are cleared when the backend starts.
 
@@ -62,7 +62,7 @@ unlockpdf/
 - **Frontend:** React 19, TypeScript, Vite, Tailwind CSS 4, React Router, Framer Motion, Lucide React, and Sonner.
 - **Backend:** Node.js, Express, Multer, qpdf, LibreOffice, Helmet, CORS, and express-rate-limit.
 - **PDF and document handling:** qpdf and pdf-lib on the backend; Mammoth, JSZip, html2pdf.js, and pdf-lib in browser-side conversion code.
-- **Payments:** Razorpay integration and Ko-fi/UPI support options.
+- **Project support:** Ko-fi and UPI links.
 - **Tests and quality tools:** Node.js test runner, TypeScript, ESLint, and Prettier.
 
 ## Local development
@@ -124,8 +124,6 @@ All variables are optional for basic local development. Copy the example files, 
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `PORT` | `3000` | Port used by the Express API. |
-| `RAZORPAY_KEY_ID` | Test placeholder | Razorpay public key ID. Set real credentials to enable live payment order creation. |
-| `RAZORPAY_KEY_SECRET` | Placeholder | Razorpay secret used by the backend to verify payments. Keep it private and out of source control. |
 | `GOTENBERG_URL` | Unset | Base URL of a Gotenberg-compatible service used as a DOCX conversion fallback when local LibreOffice conversion fails. `DOCX_CONVERTER_API_URL` is also accepted. |
 
 ### Frontend (`frontend/.env`)
@@ -162,8 +160,6 @@ The backend exposes these main routes:
 | `POST` | `/api/lock` | Encrypt an uploaded PDF. |
 | `POST` | `/api/convert` | Convert a supported document to PDF. |
 | `POST` | `/api/download-converted` | Download a converted PDF. |
-| `POST` | `/api/payments/order` | Create a Razorpay order. |
-| `POST` | `/api/payments/verify` | Verify a Razorpay payment. |
 
 Uploads and conversion requests are limited to 30 per IP per 15 minutes; API requests are limited to 100 per IP per 15 minutes. The API currently enables CORS for browser clients.
 
@@ -179,7 +175,6 @@ The repository includes a Dockerfile that installs qpdf and LibreOffice on Debia
 
 - The root `vercel.json` configures a Vite frontend build and SPA fallback. Set `VITE_API_URL` in the frontend deployment environment to the publicly reachable backend URL.
 - Deploy the backend separately on a host that can run the Dockerfile or install Node.js, qpdf, and LibreOffice. Configure `PORT` if the platform requires it.
-- Configure Razorpay credentials only if enabling Razorpay payments. Use test credentials during development and production credentials only in the backend environment.
 - If using the DOCX fallback, set `GOTENBERG_URL` on the backend. Documents sent to this service leave the backend host, so configure a service you trust.
 
 ## Development workflow
@@ -210,4 +205,3 @@ The repository includes a Dockerfile that installs qpdf and LibreOffice on Debia
 This project is licensed under the GNU General Public License v3.0. See the [GPL-3.0 license text](https://www.gnu.org/licenses/gpl-3.0.html).
 
 Developed by [Ashish Sharma](https://github.com/ashishgit4). Support the project on [Ko-fi](https://ko-fi.com/ashishsharma11).
-
