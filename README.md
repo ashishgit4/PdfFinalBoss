@@ -1,16 +1,32 @@
-﻿# PDF Final Boss
+﻿# PdfFinalBoss 🛡️
 
-PDF Final Boss is a web app for unlocking and locking PDFs and converting common document formats to PDF. It has a React and Vite frontend and an Express API that uses qpdf for PDF encryption operations.
+PdfFinalBoss is a web app for unlocking and locking PDFs and converting common document formats to PDF. It has a React and Vite frontend and an Express API that uses qpdf for PDF encryption operations.
+
+- **Live application:** [pdf-final-boss.vercel.app](https://pdf-final-boss.vercel.app)
+- **Source repository:** [github.com/ashishgit4/PdfFinalBoss](https://github.com/ashishgit4/PdfFinalBoss)
+- **Support:** [Ko-fi](https://ko-fi.com/ashishsharma11)
+
+The interface includes day and night themes, password strength feedback, a random password generator, and a support page with Ko-fi, UPI, and Razorpay options.
 
 ## What it can do
 
 - Unlock password-protected PDFs when you provide the correct password, and remove restrictions from PDFs that do not require an open password.
 - Add password protection to PDFs.
 - Convert Word, Excel, PowerPoint, image, text, CSV, HTML, and Markdown files to PDF.
-- Remember passwords in a browser-local vault, if the user opts in.
+- Optionally remember a PDF password in browser storage, indexed by a SHA-256 hash of the PDF, to offer it again for the same file.
 - Offer optional Razorpay and Ko-fi support links.
 
-The server accepts files up to 100 MB. Uploaded and generated files are stored under `backend/uploads` while processing and are removed after 24 hours; files left from a previous server run are cleared when the backend starts. The password vault is stored in the browser and is separate from server-side file processing.
+The server accepts files up to 100 MB. Uploaded and generated files are stored under `backend/uploads` while processing and are removed after 24 hours; files left from a previous server run are cleared when the backend starts.
+
+> **Password vault detail:** The current frontend stores the opted-in password as plain text in the browser's `localStorage`. It is not encrypted by the backend crypto helpers. Anyone with access to that browser profile or its developer tools may be able to read it. Do not use the vault on a shared or untrusted device.
+
+## Using the app
+
+1. Open the application and choose **Unlock**, **Lock**, or **Convert**.
+2. Select or drop a file. PDFs are required for lock and unlock; conversion accepts the listed document formats. The maximum file size is 100 MB.
+3. For an encrypted PDF, enter its password to unlock it. To lock a PDF, choose a password and optionally add a hint, then download the resulting file.
+4. To convert a document, upload it in Convert mode and download the generated PDF when processing finishes.
+5. The optional password vault can offer a saved password again when the same PDF is uploaded. See the vault security note above before enabling it.
 
 ## Project layout
 
@@ -18,7 +34,7 @@ The server accepts files up to 100 MB. Uploaded and generated files are stored u
 unlockpdf/
 ├── backend/
 │   ├── bin/                 # Bundled qpdf binary for Windows
-│   ├── cryptoHelper.js      # Hashing and password-vault crypto helpers
+│   ├── cryptoHelper.js      # SHA-256, AES-256-GCM and PBKDF2 helper functions
 │   ├── cryptoHelper.test.js # Backend unit tests
 │   ├── server.js            # Express API and conversion logic
 │   ├── .env.example
@@ -40,6 +56,14 @@ unlockpdf/
 - Node.js 20 or later and npm. The Docker image uses Node 20; use that version for local development.
 - qpdf on Linux/macOS, available on `PATH`. On Windows, the backend uses the qpdf binary included in `backend/bin`.
 - LibreOffice on the backend host for server-side conversion of Office and other supported formats. The Dockerfile installs LibreOffice. DOCX may use a remote Gotenberg-compatible converter as a fallback.
+
+## Technology stack
+
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS 4, React Router, Framer Motion, Lucide React, and Sonner.
+- **Backend:** Node.js, Express, Multer, qpdf, LibreOffice, Helmet, CORS, and express-rate-limit.
+- **PDF and document handling:** qpdf and pdf-lib on the backend; Mammoth, JSZip, html2pdf.js, and pdf-lib in browser-side conversion code.
+- **Payments:** Razorpay integration and Ko-fi/UPI support options.
+- **Tests and quality tools:** Node.js test runner, TypeScript, ESLint, and Prettier.
 
 ## Local development
 
@@ -143,6 +167,8 @@ The backend exposes these main routes:
 
 Uploads and conversion requests are limited to 30 per IP per 15 minutes; API requests are limited to 100 per IP per 15 minutes. The API currently enables CORS for browser clients.
 
+The browser sends PDF lock/unlock operations and backend conversions to the API. DOCX and PPTX also have frontend conversion code; conversion output and fidelity can differ by file and conversion path. The backend helper module contains AES-256-GCM password encryption and PBKDF2 hashing functions, but the current frontend vault does not use those helpers.
+
 ## Conversion formats and system tools
 
 The conversion endpoint accepts `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx`, `.jpg`, `.jpeg`, `.png`, `.txt`, `.csv`, `.html`, `.htm`, and `.md` files. Office, CSV, HTML, and Markdown conversion uses LibreOffice on the backend. Images and plain text also have built-in converters. Conversion fidelity depends on the source document and installed fonts.
@@ -181,7 +207,7 @@ The repository includes a Dockerfile that installs qpdf and LibreOffice on Debia
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0. See the repository's license file or [the GPL-3.0 text](https://www.gnu.org/licenses/gpl-3.0.html).
+This project is licensed under the GNU General Public License v3.0. See the [GPL-3.0 license text](https://www.gnu.org/licenses/gpl-3.0.html).
 
 Developed by [Ashish Sharma](https://github.com/ashishgit4). Support the project on [Ko-fi](https://ko-fi.com/ashishsharma11).
 
