@@ -8,16 +8,33 @@ export function Footer() {
               <div className="footer-brand-row">
                 <span className="footer-logo">PdfFinalBoss</span>
                 <details className="version-details">
-                  <summary className="version-badge" aria-label="Show release notes for version 1.3.1">
-                    v1.3.1
+                  <summary className="version-badge" aria-label="Show release notes for version 1.3.2">
+                    v1.3.2
                   </summary>
-                  <div className="version-notes">
-                    <strong>What’s new in v1.3.1</strong>
-                    <ul>
-                      <li>Faster PDF upload processing</li>
-                      <li>Improved light and dark mode readability</li>
-                      <li>New PFB PDF favicon</li>
-                    </ul>
+                  <div className="version-notes" aria-label="Release history">
+                    <strong className="version-history-title">Release history</strong>
+                    <section className="version-release">
+                      <div className="version-release-heading">
+                        <strong>v1.3.2</strong>
+                        <span className="version-current">Current</span>
+                      </div>
+                      <p className="version-description">Improved the mobile experience on phone-sized screens.</p>
+                      <ul>
+                        <li>Fixed upload controls overflowing on narrow screens</li>
+                        <li>Made the main heading visible on mobile</li>
+                      </ul>
+                    </section>
+                    <section className="version-release">
+                      <div className="version-release-heading">
+                        <strong>v1.3.1</strong>
+                      </div>
+                      <p className="version-description">Improved upload performance and theme readability.</p>
+                      <ul>
+                        <li>Faster PDF upload processing</li>
+                        <li>Improved light and dark mode readability</li>
+                        <li>Added the PFB PDF favicon</li>
+                      </ul>
+                    </section>
                   </div>
                 </details>
               </div>
