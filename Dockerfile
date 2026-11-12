@@ -1,7 +1,20 @@
 FROM node:20-bookworm
 
-# Install qpdf and libreoffice for document conversion
-RUN apt-get update && apt-get install -y qpdf libreoffice fontconfig fonts-dejavu && rm -rf /var/lib/apt/lists/*
+# Install document conversion tools and fonts used by LibreOffice.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    qpdf \
+    fontconfig \
+    fonts-liberation \
+    fonts-crosextra-carlito \
+    fonts-crosextra-caladea \
+    fonts-noto-core \
+    fonts-noto-color-emoji \
+    fonts-dejavu \
+    libreoffice-writer \
+    libreoffice-calc \
+    libreoffice-impress \
+    && fc-cache -f \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

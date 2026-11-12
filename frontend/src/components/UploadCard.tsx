@@ -114,15 +114,12 @@ export function UploadCard() {
 
       const ext = fileToUpload.name.toLowerCase();
 
-      // High-speed browser client-side conversion for supported formats
+      // Keep lightweight formats on the client; Word and PowerPoint use the server first.
       try {
         let blob: Blob | null = null;
         let extPattern = /\.[^.]+$/;
 
-        if (ext.endsWith(".docx") || ext.endsWith(".doc")) {
-          blob = await convertDocxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
-          extPattern = /\.docx?$/i;
-        } else if (ext.endsWith(".csv")) {
+        if (ext.endsWith(".csv")) {
           blob = await convertCsvToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
           extPattern = /\.csv$/i;
         } else if (ext.endsWith(".txt") || ext.endsWith(".text") || ext.endsWith(".log")) {
@@ -134,9 +131,6 @@ export function UploadCard() {
         } else if (ext.endsWith(".jpg") || ext.endsWith(".jpeg") || ext.endsWith(".png")) {
           blob = await convertImageToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
           extPattern = /\.(jpg|jpeg|png)$/i;
-        } else if (ext.endsWith(".pptx") || ext.endsWith(".ppt")) {
-           blob = await convertPptxToPdfBlob(fileToUpload, (p) => setUploadProgress(p));
-           extPattern = /\.pptx?$/i;
         }
 
         if (blob) {

@@ -518,7 +518,7 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
       try {
         await execFilePromise(sofficePath, sofficeArgs, {
           cwd: absOutputDir,
-          timeout: 45000,
+          timeout: 90000,
           maxBuffer: 25 * 1024 * 1024
         });
         
@@ -535,6 +535,8 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
           }
         }
       } catch (execErr) {
+        console.error('LibreOffice conversion failed:', execErr.message || execErr);
+
         if (cleanTempHtml && fs.existsSync(fileToConvertPath)) {
           try { fs.unlinkSync(fileToConvertPath); } catch (e) {}
         }
@@ -543,7 +545,6 @@ app.post('/api/convert', uploadLimiter, upload.single('file'), async (req, res) 
           console.log('Local LibreOffice process unavailable. Invoking high-fidelity remote DOCX rendering service...');
           await convertDocxViaRemoteService(inputFilePath, outputPdfPath);
         } else {
-          console.error('LibreOffice conversion failed:', execErr.message || execErr);
           throw new Error('Document conversion failed. Unable to render format.');
         }
       } finally {
