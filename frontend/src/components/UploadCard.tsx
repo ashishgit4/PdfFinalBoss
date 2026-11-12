@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { uploadPDF, unlockPDF, lockPDF, convertFileToPDF, downloadConvertedPDF } from "@/services/api";
@@ -43,6 +43,59 @@ export function UploadCard() {
   const [showLockPassword, setShowLockPassword] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isProcessing =
+    flowState === "uploading" ||
+    flowState === "converting" ||
+    flowState === "unlocking";
+
+  useEffect(() => {
+    if (!isProcessing) return;
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    const handleNavigationClick = (event: MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        !(event.target instanceof Element)
+      ) {
+        return;
+      }
+
+      const link = event.target.closest<HTMLAnchorElement>("a[href]");
+      if (
+        !link ||
+        link.hasAttribute("download") ||
+        (link.target && link.target !== "_self") ||
+        link.getAttribute("href")?.startsWith("#")
+      ) {
+        return;
+      }
+
+      const destination = new URL(link.href, window.location.href);
+      if (destination.href === window.location.href) return;
+
+      if (!window.confirm("Your document is still processing. Leave this page?")) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("click", handleNavigationClick, true);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("click", handleNavigationClick, true);
+    };
+  }, [isProcessing]);
 
   // Analyze password strength
   const getPasswordStrength = (pass: string) => {

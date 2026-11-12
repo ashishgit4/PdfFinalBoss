@@ -8,7 +8,12 @@ export function LoadingState({ progress, label, fileName }: LoadingStateProps) {
   const isUploading = progress !== undefined;
 
   return (
-    <div className="card-state active flex flex-col items-center justify-center p-10 text-center animate-in fade-in zoom-in-95 duration-200">
+    <div
+      className="card-state active flex flex-col items-center justify-center p-10 text-center animate-in fade-in zoom-in-95 duration-200"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
       {isUploading ? (
         <>
           <div className="upload-icon-container shadow-inner">
@@ -20,11 +25,16 @@ export function LoadingState({ progress, label, fileName }: LoadingStateProps) {
           </div>
           <h3 className="card-state-title">{label}</h3>
           {fileName && <p className="card-state-subtitle truncate max-w-xs px-4" title={fileName}>{fileName}</p>}
-          
+          <div className="processing-skeleton" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
           <div className="progress-bar-container w-full max-w-xs">
             <div className="progress-bar" style={{ width: `${progress}%` }} />
           </div>
           <span className="progress-text">{progress}%</span>
+          <p className="processing-reminder">Keep this tab open while your document is processing.</p>
         </>
       ) : (
         <>
@@ -36,6 +46,12 @@ export function LoadingState({ progress, label, fileName }: LoadingStateProps) {
           </div>
           <h3 className="card-state-title">{label}</h3>
           <p className="card-state-subtitle">Please wait, processing document algorithms.</p>
+          <div className="processing-skeleton" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+          <p className="processing-reminder">Keep this tab open while your document is processing.</p>
         </>
       )}
     </div>
