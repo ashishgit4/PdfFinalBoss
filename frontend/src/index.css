@@ -1522,7 +1522,7 @@
       }
 
       .hero-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 24px;
         width: 100%;
       }
@@ -1533,6 +1533,16 @@
         max-width: 100%;
         margin-top: 20px;
         width: 100%;
+        min-width: 0;
+      }
+
+      .hero-left {
+        display: block;
+      }
+
+      .hero-left h1 {
+        font-size: clamp(40px, 11vw, 52px);
+        line-height: 1;
       }
 
       .sub-line {
@@ -1674,8 +1684,9 @@
 
       .liquid-tab {
         flex: 1;
-        padding: 10px 12px;
-        font-size: 13px;
+        min-width: 0;
+        padding: 8px 6px;
+        font-size: 12px;
       }
 
       .card-state {
@@ -2093,6 +2104,23 @@
         right: 20px;
         padding: 9px 16px;
         font-size: 12.5px;
+      }
+
+      .tab-icon-badge {
+        display: none;
+      }
+
+      .tab-content {
+        gap: 4px;
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .liquid-tab {
+        padding-right: 4px;
+        padding-left: 4px;
+        font-size: 11px;
       }
     }
   
