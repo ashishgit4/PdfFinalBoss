@@ -7,7 +7,19 @@ export function Footer() {
             <div className="footer-left">
               <div className="footer-brand-row">
                 <span className="footer-logo">PdfFinalBoss</span>
-                <span className="version-badge">v1.2.1</span>
+                <details className="version-details">
+                  <summary className="version-badge" aria-label="Show release notes for version 1.3.1">
+                    v1.3.1
+                  </summary>
+                  <div className="version-notes">
+                    <strong>What’s new in v1.3.1</strong>
+                    <ul>
+                      <li>Faster PDF upload processing</li>
+                      <li>Improved light and dark mode readability</li>
+                      <li>New PFB PDF favicon</li>
+                    </ul>
+                  </div>
+                </details>
               </div>
               <span className="copyright">© 2026 PdfFinalBoss. Open Source • Privacy First.</span>
             </div>

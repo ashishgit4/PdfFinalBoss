@@ -385,10 +385,11 @@
       background: rgba(255, 221, 0, 0.03);
     }
 
-    /* Darker background mode during processing/success states for improved visibility */
+    /* Keep active upload states readable against the current theme. */
     .upload-card.active-processing {
-      background: rgba(13, 11, 9, 0.75);
-      border-color: rgba(243, 239, 230, 0.24);
+      color: var(--text-primary);
+      background: rgba(var(--bg-color-rgb), 0.88);
+      border-color: var(--border-hairline);
       box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
     }
 
@@ -995,6 +996,62 @@
       border-radius: 9999px;
       letter-spacing: 0.03em;
       line-height: 1.2;
+    }
+
+    .version-details {
+      position: relative;
+    }
+
+    .version-badge {
+      cursor: pointer;
+      list-style: none;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .version-badge::-webkit-details-marker {
+      display: none;
+    }
+
+    .version-badge:hover,
+    .version-details[open] .version-badge {
+      color: var(--text-primary);
+      border-color: var(--text-dim);
+    }
+
+    .version-badge:focus-visible {
+      outline: 2px solid var(--text-primary);
+      outline-offset: 3px;
+    }
+
+    .version-notes {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 0;
+      z-index: 30;
+      width: min(280px, calc(100vw - 40px));
+      padding: 14px 16px;
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      background: var(--bg-color);
+      color: var(--text-primary);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .version-notes strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .version-notes ul {
+      padding-left: 18px;
+      color: var(--text-secondary);
+    }
+
+    .version-notes li + li {
+      margin-top: 4px;
     }
 
     .footer-logo sup {
