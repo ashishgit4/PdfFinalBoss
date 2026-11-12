@@ -265,25 +265,24 @@ app.post('/api/upload', uploadLimiter, upload.single('file'), async (req, res) =
       return res.status(400).json({ error: 'Invalid file content. Uploaded file is not a valid PDF document.' });
     }
 
-    const fileHash = await getFileHashStream(filePath);
+    const [fileHash, encrypted] = await Promise.all([
+      getFileHashStream(filePath),
+      (async () => {
+        try {
+          // Inspect encryption while the hash stream reads the same file.
+          const { stdout } = await execFilePromise(qpdfPath, ['--show-encryption', '--', filePath]);
+          return !stdout.includes('File is not encrypted');
+        } catch (err) {
+          const isEncrypted = err.code === 3 || err.message.includes('password') || err.message.includes('encrypted');
+          if (isEncrypted) {
+            return true;
+          }
+          throw err;
+        }
+      })()
+    ]);
 
-    let encrypted = false;
     let autoDecrypted = false;
-
-    try {
-      // Run show-encryption safely using CLI delimiter --
-      const { stdout } = await execFilePromise(qpdfPath, ['--show-encryption', '--', filePath]);
-      if (!stdout.includes('File is not encrypted')) {
-        encrypted = true;
-      }
-    } catch (err) {
-      const isEncrypted = err.code === 3 || err.message.includes('password') || err.message.includes('encrypted');
-      if (isEncrypted) {
-        encrypted = true;
-      } else {
-        throw err;
-      }
-    }
 
     let actuallyLocked = encrypted;
 
